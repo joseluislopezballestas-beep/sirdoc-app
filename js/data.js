@@ -1,4 +1,6 @@
 'use strict';
+/* Versión del algoritmo clínico y estado de validación (se muestra en la app). */
+const ALG={version:'1.1.2',fecha:'2026-11-14',estado:'Experimental · sin validación clínica formal'};
 /* ================= PRESENTACIONES (Colombia) ================= */
 const PRES={
  etom:[{l:'Etomidato 20 mg/10 mL',amt:20,vol:10,u:'mg'}],

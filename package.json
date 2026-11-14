@@ -1,0 +1,12 @@
+{
+  "name": "sirdoc-app",
+  "version": "1.1.2",
+  "private": true,
+  "description": "SirDoc — app web (PWA). Pruebas automatizadas del motor de cálculo y de la interfaz.",
+  "scripts": {
+    "test": "node --test \"tests/**/*.test.js\""
+  },
+  "devDependencies": {
+    "jsdom": "^24.1.0"
+  }
+}

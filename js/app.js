@@ -16,11 +16,6 @@ SEL.prop=ST.prop;SEL.mida=ST.mida;
 
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(e){}}
-function r(x,unit){ if(x==null||isNaN(x)||!isFinite(x))return '–';
- if(unit==='mL') return x<1?x.toFixed(2):x<10?x.toFixed(1):(Math.round(x*10)/10)+'';
- if(unit==='h') return x>=24?'> 24':(Math.round(x*10)/10)+'';
- return x<20?(Math.round(x*10)/10)+'':Math.round(x)+''; }
-const plural=(n,s,p)=>n+' '+(n===1?s:p);
 let tt;function toast(t,ms){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),ms||1800)}
 const esc2=s=>s; // contenido propio, sin datos externos
 
@@ -29,13 +24,17 @@ function bcalc(id,k,opts={}){
  const basis=opts.basis||(id==='succ'||id==='suga'?'tbw':id==='roc'?'abw':id==='vec'?'ibw':'lbw');
  const W=wt(basis,P),unit=id==='fent'?'mcg':'mg';
  let dose=k*W.w,capped=false;if(opts.max&&dose>opts.max){dose=opts.max;capped=true}
+ dose=roundDose(dose);
  const bp=bprep(id,dose);
- return {id,k,W,unit,dose,capped,bp,vol:dose/bp.conc,max:opts.max};
+ const c={id,k,W,unit,dose,capped,bp,vol:dose/bp.conc,max:opts.max};
+ c.ok=[k,W.w,dose,bp.conc,c.vol].every(usable);
+ return c;
 }
 function bolus(id,k,range,role,why,opts={}){
  const tag=role==='first'?'<span class="pill p-ok">1.ª elección</span>':role==='alt'?'<span class="pill p-mut">Alternativa</span>':'<span class="pill p-bad">Evitar</span>';
  if(role==='avoid')return `<div class="drug avoid"><div class="hd"><span class="nm">${NAMES[id]}</span>${tag}</div><div class="why">${why}</div></div>`;
  const c=bcalc(id,k,opts);
+ if(!c.ok)return calcErr(NAMES[id]);
  return `<div class="drug ${role}"><div class="hd"><span class="nm">${NAMES[id]}</span>${tag}</div>
  <div class="dose">${r(c.dose)} ${c.unit} <small>· ${r(c.vol,'mL')} mL de ${r(c.bp.conc)} ${c.bp.u}</small></div>
  <div class="calc">${k} ${c.unit}/kg × ${r(c.W.w)} kg (${c.W.l}) · rango ${range}${c.capped?` · máx. ${c.max} ${c.unit}`:''}</div>
@@ -43,6 +42,7 @@ function bolus(id,k,range,role,why,opts={}){
  <div class="why">${why}</div></div>`;
 }
 function syrRow(label,c){
+ if(!c.ok)return `<div class="row"><div class="k">${label}</div><div class="v">—</div><div class="n">${NAMES[c.id]} <span class="pill p-bad">No calculado</span></div></div>`;
  return `<div class="row"><div class="k">${label}</div><div class="v">${r(c.dose)} ${c.unit}<small>${r(c.vol,'mL')} mL</small></div>
  <div class="n">${NAMES[c.id]} <span class="calc">${c.k} ${c.unit}/kg</span></div></div>`;
 }
@@ -53,9 +53,9 @@ function renderPlan(){
  const st=p.state==='shock'?'<span class="pill p-bad">Shock</span>':p.state==='riesgo'?'<span class="pill p-warn">Riesgo de hipotensión</span>':'<span class="pill p-ok">Estable</span>';
  const i1=ind.find(x=>x[1]==='first'),d1=indDose(i1[0],p),n1=nm.L.find(x=>x.role==='first');
  const cI=bcalc(i1[0],d1.k),cN=bcalc(n1.id,n1.k,{basis:n1.basis,max:n1.max});
- let h=`<div class="title"><h2>${ESC[p.esc]}${p.tce?' + TCE':''}</h2>${st}</div>
+ let h=expBanner()+`<div class="title"><h2>${ESC[p.esc]}${p.tce?' + TCE':''}</h2>${st}</div>
  <div class="strip">
-  <div class="chip"><b>${r(p.w)}</b>kg real</div><div class="chip"><b>${r(p.ibw)}</b>kg ideal</div>
+  <div class="chip"><b>${p.w}</b>kg real</div><div class="chip"><b>${r(p.ibw)}</b>kg ideal</div>
   ${p.obese?`<div class="chip"><b>${r(p.lbw)}</b>kg magro</div>`:''}
   <div class="chip"><b>${p.bmi.toFixed(1)}</b>IMC</div><div class="chip"><b>${Math.round(p.pam)}</b>PAM</div>
   <div class="chip"><b>${p.si?p.si.toFixed(2):'–'}</b>Índ. shock</div>
@@ -78,7 +78,7 @@ function renderPlan(){
  h+=step('T 0 +','Bloqueo neuromuscular · opciones',nm.L.map(x=>bolus(x.id,x.k,x.r,x.role,x.why,{basis:x.basis,max:x.max})).join('')+nm.notes.map(n=>`<div class="alert w">${n}</div>`).join(''));
  h+=step('+45 s','Laringoscopia e intubación','<div class="note">Videolaringoscopio de primera intención. Rocuronio: 45–60 s; succinilcolina: al terminar las fasciculaciones; vecuronio: 90–150 s. Confirmar con capnografía de onda.</div>');
  h+=step('+5 min','Post-intubación',`<ul class="t">${vent(p).map(x=>`<li>${x}</li>`).join('')}<li><b>Iniciar analgosedación sin demora</b> (pestaña Infusiones).</li></ul>`);
- const sg=16*p.w,sp=bprep('suga',sg);
+ const sg=roundDose(16*p.w),sp=bprep('suga',sg);
  h+=step('Rescate','Vía aérea fallida',`<ul class="t"><li>Sugammadex 16 mg/kg (peso real): <b>${r(sg)} mg = ${r(sg/sp.conc,'mL')} mL</b>. ${sp.txt} Revierte rocuronio o vecuronio; no sustituye el plan quirúrgico.${p.erc?' En ERC grave no es de rutina, pero en un rescate prima la vida.':''}</li><li>Dispositivo supraglótico → si no se puede intubar ni oxigenar: cricotiroidotomía.</li></ul>`);
  h+=`</div><button class="cta" id="toInf">Infusiones de mantenimiento</button>`;
  $('plan').innerHTML=h;
@@ -101,7 +101,7 @@ function renderMaint(){
  if(M.ind===null){const d=defaults(p);M.ind=d.ind;M.nmb=d.nmb;M.sed=d.sed;M.bnm='none';M.adj=false;}
  const old=p.edad>=65,low=p.state!=='estable'||old;
  const opt=(v,arr)=>arr.map(a=>`<option value="${a[0]}"${a[0]===v?' selected':''}>${a[1]}</option>`).join('');
- let h=`<p class="lead">Administrado en la SIR</p><div class="grid2">
+ let h=expBanner()+`<p class="lead">Administrado en la SIR</p><div class="grid2">
  <label>Inductor<select id="mInd">${opt(M.ind,[['etom','Etomidato'],['keta','Ketamina'],['prop','Propofol']])}</select></label>
  <label>Bloqueante<select id="mNmb">${opt(M.nmb,[['roc','Rocuronio'],['succ','Succinilcolina'],['vec','Vecuronio']])}</select></label></div>
  <p class="lead">Esquema</p><div class="grid2">
@@ -153,6 +153,7 @@ function renderMaint(){
  $('copy').addEventListener('click',copySummary);
 }
 function copySummary(){
+ if(!P){toast('Primero calcula con datos válidos');return}
  const p=P,L=[];
  L.push(`SIR — ${ESC[p.esc]}${p.tce?' + TCE':''}`);
  L.push(`${p.sexo==='M'?'H':'M'}, ${p.edad} a, ${p.w} kg, ${p.h} cm (IMC ${p.bmi.toFixed(1)}). PA ${p.pas}/${p.pad} (PAM ${Math.round(p.pam)})${p.fc?', FC '+p.fc+', IS '+p.si.toFixed(2):''}${p.spo2?', SpO2 '+p.spo2+'%':''}.`);
@@ -192,10 +193,33 @@ function show(v){
  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
  window.scrollTo(0,0);
 }
+/* ---- control de resultados: nunca se muestra un resultado de datos anteriores ---- */
+let confirmedSig=null;
+function placeholder(msg){
+ const h=`<div class="ph" role="status"><b>Sin resultados vigentes</b><p>${msg}</p></div>`;
+ $('plan').innerHTML=h;$('maint').innerHTML=h;
+}
+function invalidate(){P=null;M.ind=null;placeholder('Los datos del paciente cambiaron. Pulsa <b>Calcular</b> en Paciente para obtener dosis actualizadas.');}
 function compute(silent){
- const p=read(),e=validate(p);
- if(e.length){if(!silent){$('err').innerHTML=e.join('<br>');$('err').classList.remove('hide');}return false}
- $('err').classList.add('hide');P=derive(p);renderPlan();renderMaint();return true;
+ const p=read(),v=validateFull(p),box=$('err');
+ if(v.errors.length){
+  P=null;placeholder('Hay datos que corregir en Paciente:<br>• '+v.errors.join('<br>• '));
+  if(!silent){box.className='alert';box.innerHTML='<b>Corrige antes de calcular:</b><br>• '+v.errors.join('<br>• ');}
+  return false;
+ }
+ const sig=signature(p);
+ if(v.warns.length&&sig!==confirmedSig){
+  P=null;placeholder('Hay valores extremos pendientes de confirmar en Paciente.');
+  if(!silent){box.className='alert w';box.innerHTML='<b>Valores inusuales — confirma que son correctos:</b><br>• '+v.warns.join('<br>• ')+'<button class="cta" id="confirmVals" type="button">Los datos son correctos · calcular</button>';
+   $('confirmVals').addEventListener('click',()=>{confirmedSig=sig;if(compute())show('v-plan');});}
+  return false;
+ }
+ box.className='alert hide';
+ try{P=derive(p);renderPlan();renderMaint();return true}
+ catch(e){P=null;placeholder('No fue posible calcular con estos datos. Revísalos y vuelve a intentarlo.');return false}
+}
+function expBanner(){
+ return `<div class="exp" role="note"><b>⚠ Atención:</b> algoritmo v${ALG.version} (${ALG.fecha}) · ${ALG.estado}. Verifica cada dosis antes de administrar.</div>`;
 }
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
  const v=b.dataset.v;if((v==='v-plan'||v==='v-inf')&&!P&&!compute(true)){show(v);return}
@@ -206,10 +230,10 @@ function renderExtra(){
  const x={poli:[['tce','TCE asociado']],raqui:[['tce','TCE asociado'],['sci72','Más de 72 h desde la lesión']],sangra:[['trauma','Origen traumático']],isq:[['trombo','Candidato a trombólisis o trombectomía']]}[S.esc]||[];
  $('extra').innerHTML=x.map(a=>`<label><input type="checkbox" id="${a[0]}">${a[1]}</label>`).join('');
 }
-document.querySelectorAll('#esc button').forEach(b=>b.addEventListener('click',()=>{S.esc=b.dataset.v;document.querySelectorAll('#esc button').forEach(x=>x.classList.toggle('on',x===b));renderExtra();M.ind=null;P=null;}));
-document.querySelectorAll('#sexo button').forEach(b=>b.addEventListener('click',()=>{S.sexo=b.dataset.v;document.querySelectorAll('#sexo button').forEach(x=>x.classList.toggle('on',x===b));M.ind=null;P=null;}));
-$('v-pac').addEventListener('input',()=>{M.ind=null;P=null;});
-$('v-pac').addEventListener('change',()=>{M.ind=null;P=null;});
+document.querySelectorAll('#esc button').forEach(b=>b.addEventListener('click',()=>{S.esc=b.dataset.v;document.querySelectorAll('#esc button').forEach(x=>x.classList.toggle('on',x===b));renderExtra();invalidate();}));
+document.querySelectorAll('#sexo button').forEach(b=>b.addEventListener('click',()=>{S.sexo=b.dataset.v;document.querySelectorAll('#sexo button').forEach(x=>x.classList.toggle('on',x===b));invalidate();}));
+$('v-pac').addEventListener('input',invalidate);
+$('v-pac').addEventListener('change',e=>{if(e.target.id!=='confirmVals')invalidate();});
 
 /* ================= teclado (escritorio) ================= */
 document.addEventListener('keydown',e=>{

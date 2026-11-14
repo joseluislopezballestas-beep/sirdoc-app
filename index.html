@@ -50,16 +50,16 @@
   </div>
   <div id="extra" class="checks"></div>
 
-  <p class="lead">Paciente</p>
+  <p class="lead">Paciente <span class="req">* obligatorio</span></p>
   <div class="seg" id="sexo"><button data-v="M" class="on">Hombre</button><button data-v="F">Mujer</button></div>
   <div class="fields">
-    <label><span>Edad</span><input id="edad" type="number" inputmode="numeric" placeholder="años"></label>
-    <label><span>Peso</span><input id="peso" type="number" inputmode="decimal" placeholder="kg"></label>
-    <label><span>Talla</span><input id="talla" type="number" inputmode="numeric" placeholder="cm"></label>
-    <label><span>PAS</span><input id="pas" type="number" inputmode="numeric" placeholder="mmHg"></label>
-    <label><span>PAD</span><input id="pad" type="number" inputmode="numeric" placeholder="mmHg"></label>
-    <label><span>FC</span><input id="fc" type="number" inputmode="numeric" placeholder="lpm"></label>
-    <label><span>SpO₂</span><input id="spo2" type="number" inputmode="numeric" placeholder="% (opc.)"></label>
+    <label><span>Edad *</span><input id="edad" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="años" aria-label="Edad (obligatorio)"></label>
+    <label><span>Peso *</span><input id="peso" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="kg" aria-label="Peso (obligatorio)"></label>
+    <label><span>Talla *</span><input id="talla" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="cm" aria-label="Talla (obligatorio)"></label>
+    <label><span>PAS *</span><input id="pas" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="mmHg" aria-label="PAS (obligatorio)"></label>
+    <label><span>PAD *</span><input id="pad" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="mmHg" aria-label="PAD (obligatorio)"></label>
+    <label><span>FC (opcional)</span><input id="fc" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="lpm" aria-label="FC (opcional)"></label>
+    <label><span>SpO₂ (opcional)</span><input id="spo2" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="%" aria-label="SpO₂ (opcional)"></label>
   </div>
 
   <p class="lead">Comorbilidades y alertas</p>
@@ -118,7 +118,7 @@
   <p class="hint">Pesos: ideal (Devine), magro (Janmahasatian), ajustado = ideal + 0,4 × (real − ideal); se usan solo con IMC ≥ 30.</p>
   <button class="ghost" id="showDisc">Ver aviso de uso</button>
   <p class="credit"><svg class="asc" viewBox="0 0 24 24" aria-hidden="true"><path class="st" d="M12 3v18.5"/><circle class="st" cx="12" cy="2.6" r=".9"/><path class="sn" d="M15.4 5.6C9.2 6 8.6 8.9 12 9.4c3.6.5 3.8 3.2 0 3.7-3.6.5-3.4 3.2 0 3.6 2.6.3 2.4 2.2.2 2.6"/><circle class="hd" cx="15.9" cy="5.4" r="1.25"/></svg><span>Created and designed<br><b>Md. Jose Luis Lopez Ballestas</b></span></p>
-  <p class="ver">SirDoc 1.1.1</p>
+  <p class="ver">SirDoc 1.1.2 · algoritmo v1.1.2 (2026-11-14)<br>Experimental · sin validación clínica formal</p>
 </section>
 </main>
 
@@ -139,6 +139,8 @@
 </div>
 <div id="toast"></div>
 
+<script src="js/util.js"></script>
+<script src="js/validate.js"></script>
 <script src="js/data.js"></script>
 <script src="js/logic.js"></script>
 <script src="js/app.js"></script>

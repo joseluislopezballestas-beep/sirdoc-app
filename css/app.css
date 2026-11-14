@@ -198,3 +198,11 @@ main{position:relative;z-index:1}
 .i-by .asc{width:30px;height:30px;color:#d8fffa;filter:drop-shadow(0 0 4px rgba(46,230,208,.6))}
 .i-by .asc .sn{stroke:#2ee6d0}.i-by .asc .hd{fill:#2ee6d0}
 .credit .asc{color:var(--tx)}
+
+/* ===== seguridad de resultados (F0) ===== */
+.exp{margin-top:14px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--warn);background:var(--warn-soft);font-size:13.5px}
+.ph{margin-top:24vh;padding:18px;border:1.5px dashed var(--line);border-radius:var(--r);text-align:center;color:var(--mut)}
+.ph b{display:block;color:var(--tx);font-size:16px;margin-bottom:6px}
+.drug.err{border:1.5px solid var(--bad);background:var(--bad-soft)}
+.req{text-transform:none;letter-spacing:0;font-weight:500;margin-left:6px}
+#err .cta{margin-top:12px}

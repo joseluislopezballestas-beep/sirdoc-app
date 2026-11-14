@@ -1,22 +1,14 @@
 'use strict';
 /* ================= lectura ================= */
 function read(){
- const n=id=>{const v=parseFloat($(id).value);return isNaN(v)?null:v};
- const p={esc:S.esc,sexo:S.sexo,edad:n('edad'),w:n('peso'),h:n('talla'),pas:n('pas'),pad:n('pad'),fc:n('fc'),spo2:n('spo2')};
+ const fmt=[];
+ const n=(id,key)=>{const x=parseNum($(id).value);if(!x.ok)fmt.push(key);return x.value};
+ const p={esc:S.esc,sexo:S.sexo,edad:n('edad','edad'),w:n('peso','w'),h:n('talla','h'),pas:n('pas','pas'),pad:n('pad','pad'),fc:n('fc','fc'),spo2:n('spo2','spo2')};
+ p._fmt=fmt;
  ['hta','dm','erc','hepa','hiperK','neuro','quem','via','acid'].forEach(k=>p[k]=$(k).checked);
  p.etomOk=ST.etomOk;p.rocOk=ST.rocOk;p.succOk=ST.succOk;
  ['tce','sci72','trombo','trauma'].forEach(k=>{const e=$(k);p[k]=e?e.checked:false});
  return p;
-}
-function validate(p){
- const e=[];
- if(!p.esc)e.push('Selecciona el escenario clínico.');
- if(p.edad==null||p.w==null||p.h==null||p.pas==null||p.pad==null)e.push('Completa edad, peso, talla, PAS y PAD.');
- if(p.edad!=null&&p.edad<18)e.push('Esta herramienta es solo para adultos (≥ 18 años): la dosificación pediátrica es distinta.');
- if(p.w!=null&&(p.w<30||p.w>300))e.push('Peso fuera de rango (30–300 kg).');
- if(p.h!=null&&(p.h<120||p.h>220))e.push('Talla fuera de rango (120–220 cm).');
- if(p.pas!=null&&p.pad!=null&&p.pad>=p.pas)e.push('La PAD debe ser menor que la PAS.');
- return e;
 }
 function derive(p){
  const hm=p.h/100; p.bmi=p.w/(hm*hm);
@@ -167,6 +159,7 @@ function infPrep(id,perKg,unit,lo,hi,basis,H){
 }
 function infCard(id,title,perKg,unit,lo,hi,basis,extra){
  const H=M.H,o=infPrep(id,perKg,unit,lo,hi,basis,H);
+ if(![o.Vf,o.conc,o.rate(perKg),o.rate(lo),o.rate(hi),o.dStart].every(usable))return calcErr(title);
  const doseH=x=>{const v=o.ph(x);return o.pu==='mg'&&v<1?`${r(v*1000)} mcg/h`:`${r(v)} ${o.pu}/h`};
  return `<div class="drug first inf"><div class="hd"><span class="nm">${title}</span><span class="note">${o.cTxt}</span></div>
  <div class="rate">${r(o.rate(perKg),'mL')} mL/h</div>
@@ -224,4 +217,9 @@ function vent(p){
   case 'poli':if(p.tce)a.push('Normocapnia (PaCO₂ 35–45 mmHg).');break;
  }
  return a;
+}
+
+/* Tarjeta que sustituye a un resultado no calculable: nunca se muestra una dosis inválida. */
+function calcErr(title){
+ return `<div class="drug err" role="alert"><div class="hd"><span class="nm">${title}</span><span class="pill p-bad">No calculado</span></div><div class="why">El cálculo produjo un valor no válido (cero, negativo o indefinido). Revisa los datos del paciente y la presentación seleccionada en Ajustes.</div></div>`;
 }
