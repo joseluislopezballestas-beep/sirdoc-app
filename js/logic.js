@@ -78,9 +78,9 @@ function inductorsBase(p){
    break;}
   case 'isq':L.push(['etom','first','Preserva la PA: la penumbra isquémica depende de la presión de perfusión.'],['keta','alt','Alternativa; vigila la hipertensión si es candidato a trombólisis (< 185/110).'],['prop','avoid','La hipotensión empeora la penumbra isquémica.']);break;
   case 'ic':L.push(['etom','first','Mínima depresión miocárdica; usar dosis reducida.'],['keta','alt','Dosis baja; con catecolaminas agotadas puede actuar como depresor miocárdico directo.'],['prop','avoid','Vasodilatación e inotropismo negativo: alto riesgo de colapso.']);break;
-  case 'sangra':L.push(['etom','first','Menos hipotensión peri-intubación que la ketamina (ensayo RSI, NEJM 2025).'],['keta','alt','Dosis reducida; preserva el tono simpático.'],['prop','avoid','Colapso cardiovascular en hipovolemia.']);break;
+  case 'sangra':L.push(['etom','first','Menos hipotensión peri-intubación que la ketamina (ensayo RSI, NEJM 2026).'],['keta','alt','Dosis reducida; preserva el tono simpático.'],['prop','avoid','Colapso cardiovascular en hipovolemia.']);break;
   case 'raqui':L.push(['etom','first','Estabilidad hemodinámica ante el riesgo de shock neurogénico.'],['keta','alt','Alternativa con dosis según hemodinamia.'],['prop','avoid','Potencia la vasoplejía del shock neurogénico.']);break;
-  default:L.push(['etom','first','Menos hipotensión peri-intubación que la ketamina (ensayo RSI, NEJM 2025).'],['keta','alt',p.tce?'Aceptable en TCE: no eleva la PIC de forma clínicamente relevante.':'Alternativa válida; reducir dosis si hay shock.'],['prop','avoid','Hipotensión en trauma con pérdida sanguínea oculta.']);
+  default:L.push(['etom','first','Menos hipotensión peri-intubación que la ketamina (ensayo RSI, NEJM 2026).'],['keta','alt',p.tce?'Aceptable en TCE: no eleva la PIC de forma clínicamente relevante.':'Alternativa válida; reducir dosis si hay shock.'],['prop','avoid','Hipotensión en trauma con pérdida sanguínea oculta.']);
  }
  return L;
 }
@@ -95,7 +95,7 @@ function inductors(p){
 function nmbList(p){
  const ci=succCI(p),shock=p.state==='shock',L=[];
  const succUse=p.succOk&&!ci.length;
- if(p.rocOk)L.push({id:'roc',role:'first',k:1.2,r:'1–1.2',basis:'abw',why:(shock?'En shock se mantiene 1,2 mg/kg (techo de la ficha técnica): el gasto bajo retrasa el inicio, espera 60–90 s antes de la laringoscopia. ':'')+'Sin riesgo de hiperkalemia y más tiempo de apnea segura. Reversible con sugammadex 16 mg/kg (estudiado tras 1,2 mg/kg). SCCM 2023: sin diferencia de éxito frente a la succinilcolina.'+(p.obese?' Obesidad: la ficha indica peso real; la app usa peso ajustado (Erstad & Barletta 2021).':'')});
+ if(p.rocOk)L.push({id:'roc',role:'first',k:1.2,r:'1–1.2',basis:'abw',why:(shock?'En shock se mantiene 1,2 mg/kg (techo de la ficha técnica): el gasto bajo retrasa el inicio, espera 60–90 s antes de la laringoscopia. ':'')+'Sin riesgo de hiperkalemia y más tiempo de apnea segura. Reversible con sugammadex 16 mg/kg (estudiado tras 1,2 mg/kg). SCCM 2023: sin diferencia de éxito frente a la succinilcolina; en un ECA prehospitalario (Guihard, JAMA 2019) el rocuronio no demostró no inferioridad.'+(p.obese?' Obesidad: la ficha indica peso real; la app usa peso ajustado (Erstad & Barletta 2021).':'')});
  if(succUse)L.push({id:'succ',role:p.rocOk?'alt':'first',k:1.5,r:'1–1.5',basis:'tbw',max:200,why:(p.esc==='raqui'?'Segura en las primeras 48 h de la lesión medular. ':'')+(p.erc?'<b>ERC: úsala solo con potasio normal reciente.</b> ':'')+'Inicio 45 s, duración 8–10 min.'+(p.obese?' Peso real; tope de seguridad de la app 200 mg (la ficha no fija máximo).':'')});
  const vecFirst=!p.rocOk&&!succUse;
  L.push({id:'vec',role:vecFirst?'first':'alt',k:0.15,r:'0.1–0.2',basis:'ibw',why:(vecFirst?'<b>Sin rocuronio ni succinilcolina utilizables.</b> ':'Respaldo ante desabastecimiento. ')+'Inicio lento (90–150 s con 0,15–0,2 mg/kg): ventila con presión positiva suave mientras tanto. Duración 60–90 min o más. <b>Sugammadex solo está establecido para reversión de rutina guiada por TOF (2–4 mg/kg); la reversión inmediata con 16 mg/kg tras vecuronio no está establecida en ficha técnica.</b>'});

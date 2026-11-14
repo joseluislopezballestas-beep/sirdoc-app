@@ -46,7 +46,7 @@
 - Casey JD et al. Ensayo RSI, ketamina vs etomidato. NEJM — https://www.nejm.org/doi/10.1056/NEJMoa2511420 (PubMed https://pubmed.ncbi.nlm.nih.gov/41369227/)
 - Greer A et al. Crit Care Med 2025 — https://pubmed.ncbi.nlm.nih.gov/39570063/
 - Koroki T et al. Crit Care 2024 — https://doi.org/10.1186/s13054-024-04831-4
-- Kotani Y, Russotto V et al. Induction agents for tracheal intubation in critically ill patients. Crit Care Med 2025;53:e173–e181 (sin enlace verificado)
+- Kotani Y, Russotto V. Induction agents for tracheal intubation in critically ill patients. Crit Care Med 2025 — https://pubmed.ncbi.nlm.nih.gov/39774207
 - Greenberg SM et al. AHA/ASA 2022, hemorragia intracerebral — https://doi.org/10.1161/STR.0000000000000407
 - AHA/ASA 2026, ictus isquémico agudo — https://doi.org/10.1161/STR.0000000000000513
 - Carney N et al. Brain Trauma Foundation, 4.ª ed. — https://doi.org/10.1227/NEU.0000000000001432
@@ -58,6 +58,23 @@
 - CRASH-2. Lancet 2010 — https://doi.org/10.1016/S0140-6736(10)60835-5
 - PATCH-Trauma. NEJM 2023 — https://doi.org/10.1056/NEJMoa2215457
 - Spahn DR et al. Guía europea de hemorragia en trauma, 5.ª ed. Crit Care 2019 — https://doi.org/10.1186/s13054-019-2347-3
+
+### Referencias añadidas en v1.3.1 (aportadas por el autor)
+Enlaces incorporados a la matriz; se retiraron los parámetros de rastreo de las URL. De estas fuentes no se revisó el texto completo.
+- DeMasi SC, Casey JD, Semler MW. Evidence-based emergency tracheal intubation. AJRCCM 2025 (revisión) — https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12264701/ · R-05, R-06, R-09
+- Miner J. Ketamine, etomidate, and the outcomes that matter in emergency intubation. JAMA Netw Open 2025 — https://jamanetwork.com/journals/jamanetworkopen/fullarticle/10.1001/jamanetworkopen.2025.47966 · R-05, R-06
+- Russotto V, Sorbello M. Airway management in critically ill patients. BJA Education 2025 — https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12365515/ · R-07, R-09
+- McDougall G et al. Induction agents… network meta-analysis of RCTs. Chest 2026 — https://pubmed.ncbi.nlm.nih.gov/42612901 · R-05, R-06, R-07, R-09
+- Casey JD et al. Ketamine or etomidate for tracheal intubation of critically ill adults. NEJM 2026 — https://doi.org/10.1056/NEJMoa2511420 · R-05, R-06, R-09
+- Zampieri FG et al. Induction agents for emergency tracheal intubation… network meta-analysis. Crit Care 2026 — https://doi.org/10.1186/s13054-026-06067-w · R-05, R-06, R-09
+- Andriazzi VH et al. Etomidate versus ketamine… updated meta-analysis. J Intensive Care Med 2026 — https://doi.org/10.1177/08850666261460825 · R-05, R-06
+- Guihard B et al. Rocuronium vs succinylcholine in out-of-hospital RSI (ECA). JAMA 2019 — https://jamanetwork.com/journals/jama/fullarticle/10.1001/jama.2019.18254 · R-02, R-03 (nota añadida: el rocuronio no demostró no inferioridad)
+- Grillot N et al. Remifentanil vs neuromuscular blockers during RSI (ECA). JAMA 2023 — https://jamanetwork.com/journals/jama/fullarticle/10.1001/jama.2022.23550 · R-02
+- Ko CL, Celmins L. Pharmacology for RSI airway management in trauma patients. J Med Insight 2024 — https://jomi.com/article/pharmacology-for-rapid-sequence-intubation-(rsi)-airway-management-in-trauma-patients · R-03, R-08
+- Gottlieb M et al. Airway management of adults in the acute care setting. BMJ 2026 — https://pubmed.ncbi.nlm.nih.gov/41951238 · R-09
+- Accilien D et al. Airway management: techniques and equipment. J Med Insight 2024 — https://jomi.com/article/airway-management-techniques-and-equipment · R-09
+
+Sin cambios de dosis en v1.3.1.
 
 ## 4. Pendiente
 - R-04 (vecuronio SIR), R-08 (fentanilo de pretratamiento) y R-14 (vasopresores): sin fuente primaria localizada.
