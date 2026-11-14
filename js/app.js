@@ -94,6 +94,7 @@ function defaults(p){
  if(p.state==='shock')sed='mida';
  else if(p.state==='riesgo')sed=p.esc==='epoc'?'keta':'mida';
  else if(p.esc==='sangra')sed='mida';
+ if(p.esc==='sepsis')sed='prop';   // analgesia primero; propofol a dosis baja; evitar benzodiacepinas
  return {ind,nmb,sed};
 }
 function renderMaint(){
@@ -124,9 +125,9 @@ function renderMaint(){
  if(M.adj&&M.sed!=='keta')h+=infCard('keta','Ketamina · coadyuvante',1,'mcg/kg/min',1,2,'abw','Ahorra opioide (PADIS 2018: bolo opcional de 0,5 mg/kg, omitir si se indujo con ketamina; luego 1–2 mcg/kg/min). La ampolla de 500 mg se usa en fracción.'+(p.esc==='epoc'?' Broncodilatadora.':''));
  const neuro=p.esc==='ich'||p.esc==='isq'||(p.esc==='poli'&&p.tce);
  if(M.sed==='prop'){const st=(low||p.esc==='ic')?5:10;
-  h+=infCard('prop','Propofol · sedación',st,'mcg/kg/min',5,50,'abw',`Puro, sin diluir. Desechar frasco y equipo a las 12 h (6 h si se pasa a jeringa). Titular de 5 en 5 mcg/kg/min.${neuro?' Preferido en neurocrítico.':''} Más de 4 mg/kg/h o 48 h: triglicéridos, CK y lactato.${M.bnm==='none'?' Al pasar a sedación ligera, PADIS 2025 sugiere dexmedetomidina antes que propofol.':''}`+(p.state!=='estable'?' <b>Inestable: considera midazolam o ketamina.</b>':''));}
+  h+=infCard('prop','Propofol · sedación',st,'mcg/kg/min',5,50,'abw',`Puro, sin diluir. Desechar frasco y equipo a las 12 h (6 h si se pasa a jeringa). Titular de 5 en 5 mcg/kg/min.${neuro?' Preferido en neurocrítico.':''} ${p.esc==='sepsis'?'<b>Sepsis:</b> analgesia primero (fentanilo) y propofol a la menor dosis eficaz; reducir si cae la PA, sin suspender el vasopresor. ':''}Más de 4 mg/kg/h o 48 h: triglicéridos, CK y lactato.${M.bnm==='none'?' Al pasar a sedación ligera, PADIS 2025 sugiere dexmedetomidina antes que propofol.':''}`+(p.state!=='estable'?' <b>Inestable: considera midazolam o ketamina.</b>':''));}
  if(M.sed==='mida'){const st=(old||p.erc||p.hepa)?0.02:0.03;
-  h+=infCard('mida','Midazolam · sedación',st,'mg/kg/h',0.02,0.1,'abw',`Por estabilidad hemodinámica. Cambiar a propofol o dexmedetomidina cuando la PA lo permita (acumulación, delirium).${p.erc?' <b>ERC: acumula metabolitos activos.</b>':''}${p.hepa?' <b>Hepatopatía: aclaramiento reducido.</b>':''}`);}
+  h+=infCard('mida','Midazolam · sedación',st,'mg/kg/h',0.02,0.1,'abw',`${p.esc==='sepsis'?'<b>Sepsis: evitar benzodiacepinas; solo si no hay alternativa.</b> ':''}Por estabilidad hemodinámica. Cambiar a propofol o dexmedetomidina cuando la PA lo permita (acumulación, delirium).${p.erc?' <b>ERC: acumula metabolitos activos.</b>':''}${p.hepa?' <b>Hepatopatía: aclaramiento reducido.</b>':''}`);}
  if(M.sed==='dex'){const st=low?0.2:0.4;
   h+=infCard('dex','Dexmedetomidina · sedación ligera',st,'mcg/kg/h',0.2,1.5,'abw','De elección para sedación ligera (PADIS 2025). Sin bolo de carga. Bradicardia e hipotensión. <b>No para sedación profunda ni con BNM continuo.</b>'+(p.esc==='raqui'?' Cuidado con la bradicardia medular.':''));}
  if(M.sed==='keta')h+=infCard('keta','Ketamina · analgosedación',0.2,'mg/kg/h',0.1,0.5,'abw','<b>Sedante único fuera de guía</b> (PADIS sin recomendación): rango limitado a 0,1–0,5 mg/kg/h; asocia otro sedante si no alcanzas la meta. Mantiene el tono simpático; broncodilatadora. Hipertensión y taquicardia posibles; en falla cardiaca vigila la depresión miocárdica.');

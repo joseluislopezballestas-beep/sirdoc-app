@@ -196,3 +196,16 @@ test('[v1.3.5] IAM: oxígeno según ACC/AHA 2025, fentanilo si PA alta y VD', as
   assert.match(a.text('plan'), /Compromiso de VD/);
   assert.deepEqual(a.errors, []);
 });
+
+test('[v1.3.6] sepsis: sedación sin midazolam por defecto, hidrocortisona y líquidos; IAM: fentanilo por taquicardia', async () => {
+  const a = await app(); a.fill('sepsis', { ...OK, pas: 85, pad: 50, fc: 120 }); a.calc();
+  const t = a.text('plan');
+  assert.match(t, /hidrocortisona 200 mg\/día/); assert.match(t, /30 mL\/kg en las primeras 3 h/); assert.match(t, /0,25–0,5 mcg\/kg\/min/);
+  assert.match(t, /R-17 · .*Aprobada por Md\. Jose Luis Lopez Ballestas/);
+  const m = a.text('maint'); assert.match(m, /Propofol · sedación/); assert.doesNotMatch(m, /Midazolam · sedación/);
+  const b = await app(); b.fill('iam', { ...OK, pas: 135, pad: 85, fc: 105 }); b.calc();
+  const u = b.text('plan');
+  assert.match(u, /Fentanilo/); assert.match(u, /rango 1–3/); assert.match(u, /SpO₂ 92–96 %/); assert.match(u, /No usar betabloqueadores ni esmolol/);
+  assert.match(u, /No intubar de forma profiláctica/); assert.match(u, /R-18 · .*Aprobada/);
+  assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []);
+});

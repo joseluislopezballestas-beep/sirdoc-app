@@ -112,7 +112,7 @@ function pretreat(p){
  if(p.state!=='estable')return null;
  if(p.esc==='ich'&&p.pas>=140)return {k:2,r:'1–3',why:'Atenúa la respuesta simpática (pico de PA y PIC) a la laringoscopia. Administrar lento, 3 min antes del inductor.'};
  if(p.esc==='poli'&&p.tce&&p.pas>=140)return {k:1,r:'1–2',why:'TCE con PA alta: atenúa el pico hipertensivo. Omitir si hay sospecha de sangrado oculto.'};
- if(p.esc==='iam'&&p.pas>=140)return {k:1,r:'0.5–1',why:'Atenúa la taquicardia y la hipertensión de la laringoscopia, que aumentan el consumo miocárdico de O₂. Omitir si hay signos de bajo gasto.'};
+ if(p.esc==='iam'&&(p.pas>=140||(p.fc&&p.fc>=100)))return {k:1,r:'1–3',why:'Atenúa la taquicardia y la hipertensión de la laringoscopia, que aumentan el consumo miocárdico de O₂. Solo con PA estable; en shock se omite. Omitir si hay signos de bajo gasto.'};
  if(p.esc==='isq'&&p.trombo&&p.pas>=185)return {k:1,r:'0.5–1',why:'Candidato a reperfusión con PA ≥ 185/110: ayuda a no superar el umbral durante la laringoscopia.'};
  return null;
 }
@@ -132,8 +132,8 @@ function targets(p){
    else t.push('Sin reperfusión: con PA < 220/120 mmHg, bajarla en las primeras 48–72 h no mejora el pronóstico; con ≥ 220/120 o comorbilidad que lo exija (falla cardiaca aguda, disección aórtica), reducción inicial ≈ 15 % (AHA/ASA 2026).');
    t.push('Evitar hipotensión durante la inducción.');break;
   case 'ic':t.push('PAM ≥ 65 mmHg. Evitar hipoxemia e hipercapnia (empeoran la falla del VD).');break;
-  case 'sepsis':t.push(p.edad>=65?'PAM inicial 60–65 mmHg en ≥ 65 años (SSC 2026).':'PAM inicial 65 mmHg, con un margen de ± 5 mmHg (SSC 2026).');t.push('Norepinefrina de primera línea; puede iniciarse por vía periférica sin esperar el catéter central. Si la PAM no se alcanza, añadir vasopresina y luego epinefrina (SSC 2026).');t.push('Corticoides IV sugeridos en choque séptico. Antimicrobianos sin demora (idealmente en la primera hora) y control del foco (SSC 2026).');break;
-  case 'iam':t.push('PAM ≥ 65 mmHg: evitar la hipotensión (perfusión coronaria) y también la taquicardia y la hipertensión (consumo de O₂).');t.push('Tras intubar, titular la FiO₂ a SpO₂ ≥ 90 % evitando la hiperoxia: el oxígeno solo está indicado con SpO₂ < 90 % (ACC/AHA 2025).');t.push('Shock cardiogénico: revascularización urgente de la arteria culpable; asistencia circulatoria mecánica en casos seleccionados (ACC/AHA 2025). La intubación no debe retrasar la reperfusión.');if(p.vd)t.push('Compromiso de VD: dependiente de precarga; evitar nitratos y PEEP alta.');break;
+  case 'sepsis':t.push(p.edad>=65?'PAM inicial 60–65 mmHg en ≥ 65 años (SSC 2026).':'PAM inicial 65 mmHg, con un margen de ± 5 mmHg (SSC 2026).');t.push('Norepinefrina de primera línea; puede iniciarse por vía periférica sin esperar el catéter central. Añadir vasopresina cuando la norepinefrina llega a 0,25–0,5 mcg/kg/min; si la PAM sigue baja, epinefrina (SSC 2026).');t.push('Corticoides IV sugeridos en choque séptico (SSC 2026): pauta habitual hidrocortisona 200 mg/día (50 mg c/6 h), con o sin fludrocortisona. Antimicrobianos sin demora (idealmente en la primera hora) y control del foco.');break;
+  case 'iam':t.push('PAM ≥ 65 mmHg: evitar la hipotensión (perfusión coronaria) y también la taquicardia y la hipertensión (consumo de O₂).');t.push('Tras intubar, SpO₂ 92–96 % evitando la hiperoxia (el techo es práctica clínica). Antes de intubar, oxígeno solo con SpO₂ < 90 % (ACC/AHA 2025).');t.push('Shock cardiogénico: revascularización urgente de la arteria culpable; asistencia circulatoria mecánica en casos seleccionados (ACC/AHA 2025). La intubación no debe retrasar la reperfusión.');t.push('No intubar de forma profiláctica solo para el cateterismo. Si está inestable, intubar en hemodinamia con vasopresores y asistencia mecánica listos.');if(p.vd)t.push('Compromiso de VD: dependiente de precarga; evitar nitratos y PEEP alta.');break;
  }
  return t;
 }
@@ -193,8 +193,8 @@ function prep(p){
  if(p.esc==='poli'||p.esc==='sangra')a.push('Hemoderivados en curso. Si es trauma de < 3 h: ácido tranexámico 1 g IV en 10 min + 1 g en 8 h.');
  if(p.esc==='raqui')a.push('Atropina 0.5–1 mg cargada (ampolla 1 mg/1 mL, sin diluir): bradicardia vagal por laringoscopia o aspiración'+(p.fc&&p.fc<60?' — <b>ya hay bradicardia</b>.':'.'));
  if(p.esc==='ic')a.push('Si PAS < 100: iniciar norepinefrina antes de inducir; considerar dobutamina si hay bajo gasto. En edema pulmonar hipertensivo, nitroglicerina antes (no después) de intubar.');
- if(p.esc==='sepsis')a.push('Cristaloides de primera línea si hay hipoperfusión, guiados por la respuesta a volumen (SSC 2026). Antimicrobianos y control del foco sin retrasarlos por la intubación.');
- if(p.esc==='iam')a.push('Parches de desfibrilación colocados (arritmias ventriculares en la inducción). Antitrombóticos en curso: laringoscopia cuidadosa y evitar la vía nasal. Coordinar con hemodinamia.');
+ if(p.esc==='sepsis')a.push('Si hay hipoperfusión: cristaloide balanceado, al menos 30 mL/kg en las primeras 3 h (recomendación condicional, certeza baja), guiado por la respuesta a volumen. Antimicrobianos y control del foco sin retrasarlos por la intubación.');
+ if(p.esc==='iam')a.push('Línea arterial antes de inducir si hay tiempo. Parches de desfibrilación colocados (arritmias ventriculares en la inducción). Si hay bajo gasto, añadir dobutamina a la norepinefrina. <b>No usar betabloqueadores ni esmolol en shock cardiogénico.</b> Antitrombóticos en curso: laringoscopia cuidadosa y evitar la vía nasal. Coordinar con hemodinamia.');
  if(p.esc==='ich'||p.esc==='isq')a.push('Antihipertensivo titulable preparado (labetalol 100 mg/20 mL o nicardipino si lo hay) y vasopresor: el objetivo es evitar picos y caídas.');
  if(p.dm)a.push('DM: posible gastroparesia → mayor riesgo de aspiración; considerar SNG antes de la inducción. Glucemia capilar.');
  if(p.hta)a.push('HTA: respuesta hipertensiva exagerada a la laringoscopia y vasoplejía post-inducción (sobre todo con IECA/ARA-II).');
@@ -224,8 +224,8 @@ function vent(p){
  switch(p.esc){
   case 'epoc':a.push('FR 10–12, I:E 1:4–1:5, flujo inspiratorio alto, PEEP baja. Medir auto-PEEP y presión meseta (< 30).','Hipotensión tras intubar: desconectar del ventilador 20–30 s (hiperinsuflación) y reevaluar.');break;
   case 'ich':case 'isq':a.push('Normocapnia (PaCO₂ 35–45 mmHg); hiperventilación solo como puente en herniación.');break;
-  case 'sepsis':a.push('Si hay SDRA asociado: 6 mL/kg de peso ideal y presión meseta < 30 cmH₂O.');break;
-  case 'iam':a.push(p.vd?'Compromiso de VD: PEEP baja; la presión positiva puede desplomar el gasto. Volumen si hay hipotensión.':'PEEP 5–8 cmH₂O (reduce la poscarga del VI); vigilar la caída de la precarga.');break;
+  case 'sepsis':a.push('Ventilación protectora: 6 mL/kg de peso ideal y presión meseta < 30 cmH₂O si hay SDRA; evitar la hiperventilación.');break;
+  case 'iam':a.push('6–8 mL/kg de peso ideal; evitar la hipercapnia y la acidosis.',p.vd?'Compromiso de VD: la menor PEEP eficaz y volumen con prudencia; la presión positiva puede desplomar el gasto. Considerar vasodilatador pulmonar inhalado si está disponible.':'PEEP 5–8 cmH₂O (reduce la poscarga del VI); vigilar la caída de la precarga.');break;
   case 'ic':a.push('PEEP 5–8 cmH₂O (reduce la poscarga del VI); vigilar la caída de la precarga y la falla del VD.');break;
   case 'poli':if(p.tce)a.push('Normocapnia (PaCO₂ 35–45 mmHg).');break;
  }

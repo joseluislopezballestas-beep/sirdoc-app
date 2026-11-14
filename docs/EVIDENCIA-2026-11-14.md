@@ -101,7 +101,7 @@ Resultado: R-10 pasa a "verificada en parte" (ictus isquémico contrastado; HIC,
 | Dosis de succinilcolina | ESAIC cita 1 mg/kg (contexto perioperatorio); ficha FDA 0,3–1,1 mg/kg; la app usaba 1,5 mg/kg | **Cambiado en v1.3.4 a 1 mg/kg por peso real** (rango mostrado 0,3–1,1), aprobado por Md. Jose Luis Lopez Ballestas (autor, médico) el 2026-11-14 |
 
 ### Escenarios nuevos: sepsis e infarto agudo de miocardio (v1.3.5)
-Reglas nuevas R-17 y R-18, con **aprobación clínica pendiente**.
+Reglas nuevas R-17 y R-18. **Aprobadas por Md. Jose Luis Lopez Ballestas (autor, médico) el 2026-11-14** tras la revisión de evidencia de v1.3.6.
 
 **Sepsis / choque séptico (R-17).** Fuentes: Surviving Sepsis Campaign 2026 (Prescott et al., Crit Care Med 2026; https://doi.org/10.1097/CCM.0000000000007089; https://www.sccm.org/survivingsepsiscampaign/guidelines/adult-patients) y ensayo RSI (Casey et al., NEJM).
 | Elemento | Evidencia | En la app |
@@ -120,6 +120,23 @@ Reglas nuevas R-17 y R-18, con **aprobación clínica pendiente**.
 | Shock cardiogénico | Revascularización urgente de la culpable; bomba de flujo microaxial en casos seleccionados | Mencionado; la intubación no debe retrasar la reperfusión |
 | Inductor, PEEP, fentanilo 0,5–1 mcg/kg si PAS ≥ 140 | Sin ensayo específico en IAM: fisiología y práctica clínica | Etomidato reducido; ketamina solo a dosis baja; propofol a evitar; opción "Compromiso de VD" (PEEP baja, sin nitratos) |
 | Preparación | Práctica clínica | Parches de desfibrilación, antitrombóticos en curso (evitar vía nasal), coordinación con hemodinamia |
+
+### Revisión de evidencia y ajustes de Sepsis e IAM (v1.3.6)
+Hallazgos que confirman la app: etomidato de elección en sepsis (ensayo RSI; Andriazzi 2026: sin diferencia de mortalidad en sepsis, más hipotensión con ketamina 14,2 % vs 11,3 %, más supresión suprarrenal con etomidato 14,7 % vs 5,3 %); metas y secuencia de vasopresores de SSC 2026; en IAM no hay ensayos de SIR específicos y todo se extrapola de pacientes críticos (McDougall 2026: más inestabilidad con ketamina).
+| ID | Cambio aplicado | Fundamento |
+|---|---|---|
+| S-1 | Sepsis: sedación por defecto fentanilo + propofol a dosis baja; midazolam solo si no hay alternativa | Analgesia primero, evitar benzodiacepinas (PADIS) |
+| S-2 | Cristaloide balanceado ≥ 30 mL/kg en 3 h si hay hipoperfusión | Recomendación condicional, certeza baja (Seymour, JAMA 2026) |
+| S-3 | Hidrocortisona 200 mg/día (50 mg c/6 h), con o sin fludrocortisona | Pauta habitual de los corticoides sugeridos por SSC 2026 |
+| S-4 | Vasopresina cuando la norepinefrina llega a 0,25–0,5 mcg/kg/min | Umbral habitual (Dubech, Crit Care 2026) |
+| S-5 | Dosis reducidas con PA normal, rotuladas como práctica clínica | Sin ensayo; la PA normal no descarta el colapso |
+| I-1 | Fentanilo 1–3 mcg/kg (inicio 1) con PAS ≥ 140 o FC ≥ 100 y PA estable; se omite en shock o con índice de shock ≥ 0,8; sin betabloqueadores ni esmolol en shock cardiogénico | Fisiología; práctica clínica |
+| I-2 | Línea arterial antes de inducir si hay tiempo; dobutamina si hay bajo gasto | Jentzer, Crit Care Med 2023 |
+| I-3 | SpO₂ 92–96 % tras intubar, sin hiperoxia | Oxígeno solo con SpO₂ < 90 % (ACC/AHA 2025); techo por práctica |
+| I-4 | No intubar de forma profiláctica para el cateterismo; si inestable, en hemodinamia con vasopresores y asistencia listos | Revisiones de shock cardiogénico |
+| I-5 | 6–8 mL/kg, evitar hipercapnia; VD: menor PEEP eficaz, volumen prudente, vasodilatador pulmonar inhalado | Práctica clínica (sin evidencia específica) |
+
+Referencias añadidas: Srivilaithon, Sci Rep 2023 (https://doi.org/10.1038/s41598-023-33679-x); Seymour, JAMA 2026 (https://jamanetwork.com/journals/jama/fullarticle/10.1001/jama.2026.3793); Meyer & Prescott, NEJM 2024 (https://doi.org/10.1056/nejmra2403213); Dubech, Crit Care 2026 (https://doi.org/10.1186/s13054-026-06109-3); Jentzer, Crit Care Med 2023 (https://pubmed.ncbi.nlm.nih.gov/37184336); Kothari, J Cardiothorac Vasc Anesth 2026 (https://pubmed.ncbi.nlm.nih.gov/41807238).
 
 ## 4. Pendiente
 - R-04 (vecuronio SIR), R-08 (fentanilo de pretratamiento) y R-14 (vasopresores): sin fuente primaria localizada.

@@ -2,7 +2,13 @@
 
 Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) o **clínico** (requiere aprobación de especialista).
 
-## 1.3.5 — 2026-11-14 · Escenarios Sepsis e IAM (clínico, aprobación pendiente)
+## 1.3.6 — 2026-11-14 · Sepsis e IAM revisados y aprobados (clínico)
+Aprobado por Md. Jose Luis Lopez Ballestas (autor, médico) el 2026-11-14 por instrucción escrita, tras revisión de evidencia.
+- Sepsis: sedación por defecto fentanilo + propofol a dosis baja (sin midazolam); líquidos ≥ 30 mL/kg en 3 h si hay hipoperfusión; hidrocortisona 200 mg/día; vasopresina con norepinefrina 0,25–0,5 mcg/kg/min.
+- IAM: fentanilo 1–3 mcg/kg también con taquicardia y PA estable; sin betabloqueadores en shock cardiogénico; línea arterial y dobutamina; SpO₂ 92–96 % tras intubar; no intubar de forma profiláctica para el cateterismo; VD con vasodilatador pulmonar inhalado.
+- Pruebas: 35/35.
+
+## 1.3.5 — 2026-11-14 · Escenarios Sepsis e IAM (clínico; aprobados en 1.3.6)
 - Nuevo escenario **Sepsis / choque séptico** (R-17): metas SSC 2026, norepinefrina periférica, vasopresina/epinefrina, corticoides, etomidato de elección (ensayo RSI, subgrupo sepsis), dosis reducidas; opción "Con vasopresor en curso".
 - Nuevo escenario **Infarto agudo de miocardio** (R-18): oxígeno según ACC/AHA 2025, perfusión coronaria y consumo de O₂, etomidato reducido, fentanilo si PAS ≥ 140, parches de desfibrilación; opción "Compromiso de ventrículo derecho".
 - Pruebas: 34/34.
