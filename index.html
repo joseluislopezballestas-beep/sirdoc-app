@@ -104,6 +104,13 @@
   <p class="lead">Duración predeterminada de las infusiones</p>
   <div class="seg" id="s-h"><button data-h="6">6 h</button><button data-h="8">8 h</button><button data-h="10">10 h</button><button data-h="12">12 h</button></div>
 
+  <p class="lead">Estado de las reglas clínicas</p>
+  <p class="hint">Cada dosis de la app muestra su regla. Ninguna regla tiene aún validación clínica formal completa.</p>
+  <ul class="rules" id="rules"></ul>
+
+  <p class="lead">Privacidad</p>
+  <p class="hint">SirDoc no envía datos a ningún servidor ni usa analítica. Los datos del paciente existen solo en pantalla y se borran al cerrar la app. En el dispositivo se guardan únicamente los ajustes y la hora de inicio del cronómetro. El resumen copiado contiene datos clínicos sin nombre: pégalo solo en la historia clínica.</p>
+
   <p class="lead">Referencias</p>
   <ul class="refs">
     <li>SCCM 2023 — Guía de SIR en el adulto crítico</li>
@@ -118,7 +125,7 @@
   <p class="hint">Pesos: ideal (Devine), magro (Janmahasatian), ajustado = ideal + 0,4 × (real − ideal); se usan solo con IMC ≥ 30.</p>
   <button class="ghost" id="showDisc">Ver aviso de uso</button>
   <p class="credit"><svg class="asc" viewBox="0 0 24 24" aria-hidden="true"><path class="st" d="M12 3v18.5"/><circle class="st" cx="12" cy="2.6" r=".9"/><path class="sn" d="M15.4 5.6C9.2 6 8.6 8.9 12 9.4c3.6.5 3.8 3.2 0 3.7-3.6.5-3.4 3.2 0 3.6 2.6.3 2.4 2.2.2 2.6"/><circle class="hd" cx="15.9" cy="5.4" r="1.25"/></svg><span>Created and designed<br><b>Md. Jose Luis Lopez Ballestas</b></span></p>
-  <p class="ver">SirDoc 1.1.2 · algoritmo v1.1.2 (2026-11-14)<br>Experimental · sin validación clínica formal</p>
+  <p class="ver" id="algv"></p>
 </section>
 </main>
 

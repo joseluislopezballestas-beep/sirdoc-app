@@ -5,8 +5,15 @@ const path = require('path');
 const { JSDOM } = require('jsdom');
 const INDEX = path.join(__dirname, '..', 'index.html');
 
-async function app() {
-  const dom = await JSDOM.fromFile(INDEX, { runScripts: 'dangerously', resources: 'usable', pretendToBeVisual: true });
+// Almacenamiento en memoria (jsdom no ofrece localStorage en file://). Se puede precargar para simular una recarga.
+function memStorage(seed = {}) {
+  const m = new Map(Object.entries(seed));
+  return { getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: k => m.delete(k), _m: m };
+}
+async function app(seed) {
+  const store = memStorage(seed);
+  const dom = await JSDOM.fromFile(INDEX, { runScripts: 'dangerously', resources: 'usable', pretendToBeVisual: true,
+    beforeParse(w) { Object.defineProperty(w, 'localStorage', { value: store, configurable: true }); } });
   const w = dom.window; w.scrollTo = () => {};
   const errors = []; w.addEventListener('error', e => errors.push(e.message));
   await new Promise(res => w.addEventListener('load', res));
@@ -23,7 +30,7 @@ const OK = { edad: 45, peso: 70, talla: 175, pas: 120, pad: 80, fc: 85 };
 
 test('cálculo válido muestra dosis y el aviso de uso experimental', async () => {
   const a = await app(); a.fill('poli', OK); a.calc();
-  assert.ok(a.doses() > 0); assert.match(a.text('plan'), /algoritmo v1\.1\.2/); assert.match(a.text('maint'), /sin validación clínica formal/);
+  assert.ok(a.doses() > 0); assert.match(a.text('plan'), /algoritmo v\d+\.\d+\.\d+/); assert.match(a.text('maint'), /sin validación clínica formal/);
   assert.deepEqual(a.errors, []);
 });
 
@@ -97,4 +104,35 @@ test('[clínico] sugammadex 16 mg/kg solo como reversión inmediata tras rocuron
   const t = a.text('plan');
   assert.match(t, /reversión inmediata solo tras rocuronio/); assert.doesNotMatch(t, /Revierte rocuronio o vecuronio/);
   assert.doesNotMatch(t, /el sugammadex también lo revierte/);
+});
+
+test('[matriz] cada dosis muestra su regla, estado de fuente y aprobación', async () => {
+  const a = await app(); a.fill('poli', OK); a.calc();
+  const t = a.text('plan');
+  assert.match(t, /R-05 · Fuente pendiente de verificar · Aprobación clínica pendiente/);   // etomidato
+  assert.match(t, /R-02 ·/); assert.match(t, /R-09 ·/); assert.match(t, /R-10 ·/);
+  assert.match(t, /R-01 · Fuente verificada · Aprobada por el autor/);                       // sugammadex
+  assert.match(a.text('maint'), /R-12 ·/);
+  const rules = a.d.querySelectorAll('#rules li'); assert.equal(rules.length, 16);
+});
+
+test('[H-07] las alertas llevan etiqueta de texto (no solo color)', async () => {
+  const a = await app(); a.fill('sangra', { ...OK, pas: 85, pad: 55, fc: 120 }); a.calc();
+  assert.match(a.text('plan'), /Riesgo alto: Shock/);
+});
+
+test('[H-17] talla baja: se avisa del peso ideal mínimo de 35 kg', async () => {
+  const a = await app(); a.fill('poli', { ...OK, talla: 130, peso: 40 }); a.calc();
+  assert.match(a.text('plan'), /peso ideal calculado \(.+ kg\) es menor de 35 kg/);
+});
+
+test('[H-18] el cronómetro se guarda, se restaura tras recargar y se detiene', async () => {
+  const a = await app(); a.$('timer').click();
+  const saved = Number(a.w.localStorage.getItem('sirdoc.t0'));
+  try { assert.ok(saved > 0); } finally { a.$('timer').click(); }
+  assert.equal(a.w.localStorage.getItem('sirdoc.t0'), null);
+  const b = await app({ 'sirdoc.t0': String(Date.now() - 125000) });          // "recarga" 2 min 5 s después
+  try { assert.match(b.$('timer').textContent, /BNM \+2:0[5-6]/); } finally { b.$('timer').click(); }
+  const c = await app({ 'sirdoc.t0': String(Date.now() - 7 * 3600e3) });      // > 6 h: no se restaura
+  assert.match(c.$('timer').textContent, /Marcar BNM/);
 });

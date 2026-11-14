@@ -12,7 +12,9 @@ function read(){
 }
 function derive(p){
  const hm=p.h/100; p.bmi=p.w/(hm*hm);
- p.ibw=Math.max(35,(p.sexo==='M'?50:45.5)+0.9055*(p.h-152.4));
+ const ibwRaw=(p.sexo==='M'?50:45.5)+0.9055*(p.h-152.4);
+ p.ibwClamped=ibwRaw<35;p.ibwRaw=ibwRaw;
+ p.ibw=Math.max(35,ibwRaw);
  p.lbw=p.sexo==='M'?9270*p.w/(6680+216*p.bmi):9270*p.w/(8780+244*p.bmi);
  p.abw=p.ibw+0.4*(p.w-p.ibw);
  p.obese=p.bmi>=30;
@@ -165,7 +167,7 @@ function infCard(id,title,perKg,unit,lo,hi,basis,extra){
  <div class="rate">${r(o.rate(perKg),'mL')} mL/h</div>
  <div class="calc">Inicio ${perKg} ${unit} × ${r(o.W.w)} kg (${o.W.l}) = ${doseH(perKg)}<br>Rango ${lo}–${hi} ${unit} = <b>${r(o.rate(lo),'mL')}–${r(o.rate(hi),'mL')} mL/h</b></div>
  <div class="prep"><b>Preparación (${H} h):</b> ${o.txt}<br>Dura ≈ ${r(o.dStart,'h')} h a la dosis de inicio · ≈ ${r(o.dMax,'h')} h a la dosis máxima.</div>
- ${extra?`<div class="why">${extra}</div>`:''}</div>`;
+ ${extra?`<div class="why">${extra}</div>`:''}${ruleTag(RULE_INF[id])}</div>`;
 }
 
 /* ================= plan ================= */
@@ -203,6 +205,7 @@ function alerts(p){
  if(p.esc==='raqui'&&p.fc&&p.fc<60&&p.pas<90)a.push(['bad','Hipotensión + bradicardia: sugiere shock neurogénico (descartar hemorragia).']);
  if(p.acid)a.push(['bad','Acidosis metabólica grave: la apnea y la hipoventilación tras intubar pueden precipitar el paro. Mantén VNI hasta el último momento, minimiza el tiempo de apnea e iguala la ventilación minuto previa.']);
  if(p.via)a.push(['w','Vía aérea difícil anticipada: operador más experto, plan B y C verbalizados, considera intubación despierto si la fisiología lo permite.']);
+ if(p.ibwClamped)a.push(['w',`Talla baja: el peso ideal calculado (${r(p.ibwRaw)} kg) es menor de 35 kg y se usa 35 kg. Regla pendiente de validación clínica (H-17).`]);
  if(p.obese)a.push(['i',`IMC ${p.bmi.toFixed(1)}: dosis por peso magro (inductores, fentanilo), ajustado (rocuronio, infusiones) o ideal (vecuronio, cisatracurio); succinilcolina por peso real.`]);
  return a;
 }
@@ -222,4 +225,12 @@ function vent(p){
 /* Tarjeta que sustituye a un resultado no calculable: nunca se muestra una dosis inválida. */
 function calcErr(title){
  return `<div class="drug err" role="alert"><div class="hd"><span class="nm">${title}</span><span class="pill p-bad">No calculado</span></div><div class="why">El cálculo produjo un valor no válido (cero, negativo o indefinido). Revisa los datos del paciente y la presentación seleccionada en Ajustes.</div></div>`;
+}
+
+/* Etiqueta de trazabilidad: regla de la matriz científica, su estado y su aprobación (texto, no solo color). */
+function ruleTag(id){
+ const x=RULES[id];if(!x)return '';
+ const ver=x.v==='verificada'?'Fuente verificada':x.v==='parcial'?'Fuente verificada en parte':'Fuente pendiente de verificar';
+ const cls=x.v==='verificada'&&/^Aprobada/.test(x.a)?'ok':'pend';
+ return `<div class="rule ${cls}"><b>${id}</b> · ${ver} · ${/^Aprobada/.test(x.a)?x.a:'Aprobación clínica pendiente'}</div>`;
 }

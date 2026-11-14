@@ -1,12 +1,12 @@
-# Matriz científica — reglas farmacológicas de SirDoc (algoritmo v1.1.2)
+# Matriz científica — reglas farmacológicas de SirDoc (algoritmo v1.2.0)
 
-**Estado global: ninguna regla cuenta con aprobación clínica formal.**
+**Estado global: solo R-01 está verificada y aprobada (por el autor). El resto no cuenta con aprobación clínica formal.** El estado de cada regla se muestra también dentro de la app.
 Columna "Verificación": solo se marca "verificada" cuando se contrastó el texto con la fuente primaria en esta auditoría.
 No se inventan referencias: donde la app cita una guía sin versión exacta contrastada, se indica "pendiente de contrastar".
 
 | ID | Regla en la app | Fuente citada / consultada | Población | Verificación | Aprobación clínica |
 |---|---|---|---|---|---|
-| R-01 | Sugammadex 16 mg/kg (peso real) para reversión inmediata | Ficha técnica Bridion (FDA, rev. 11/2022; EMA): 16 mg/kg **solo tras rocuronio**, ~3 min después de una dosis única de 1,2 mg/kg; eficacia tras vecuronio no estudiada / sin datos | Adultos | **Verificada — la app NO coincide** (H-01) | Pendiente |
+| R-01 | Sugammadex 16 mg/kg (peso real) para reversión inmediata | Ficha técnica Bridion (FDA, rev. 11/2022; EMA): 16 mg/kg **solo tras rocuronio**, ~3 min después de una dosis única de 1,2 mg/kg; eficacia tras vecuronio no estudiada / sin datos | Adultos | **Verificada** · la app se corrigió en v1.2.0 (H-01) | Aprobada por Md. Jose Luis Lopez Ballestas (autor, médico), 2026-11-14 · revisión independiente recomendada |
 | R-02 | Rocuronio SIR 1,2 mg/kg; 1,6 mg/kg en shock | Ficha técnica rocuronio (pendiente de contrastar versión INVIMA); 1,6 mg/kg sin fuente citada | Adultos | Pendiente | Pendiente |
 | R-03 | Succinilcolina 1,5 mg/kg peso real, máx. 200 mg; contraindicaciones (hiperK, enf. neuromuscular, HM, quemadura/aplastamiento/denervación > 72 h, lesión medular > 72 h) | Pendiente de contrastar ficha técnica | Adultos | Pendiente | Pendiente |
 | R-04 | Vecuronio SIR 0,15 mg/kg (rango 0,1–0,2) peso ideal | Pendiente (dosis superior a la habitual de intubación de ficha) | Adultos | Pendiente | Pendiente |
@@ -23,4 +23,4 @@ No se inventan referencias: donde la app cita una guía sin versión exacta cont
 | R-15 | Ácido tranexámico 1 g en 10 min + 1 g en 8 h (trauma < 3 h) | ATLS 11 citado de forma general | Adultos trauma | Pendiente | Pendiente |
 | R-16 | Presentaciones colombianas | Registros INVIMA (vecuronio 10 mg verificado); MinSalud 2025 (abastecimiento) | — | Parcial | No aplica |
 
-Responsable de aprobación: _pendiente de designar_. Fecha de aprobación: _—_.
+Responsable de aprobación: R-01 — Md. Jose Luis Lopez Ballestas (2026-11-14). Resto: _pendiente de designar_.

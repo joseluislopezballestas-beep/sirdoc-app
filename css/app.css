@@ -206,3 +206,16 @@ main{position:relative;z-index:1}
 .drug.err{border:1.5px solid var(--bad);background:var(--bad-soft)}
 .req{text-transform:none;letter-spacing:0;font-weight:500;margin-left:6px}
 #err .cta{margin-top:12px}
+
+/* ===== trazabilidad de reglas (matriz científica) ===== */
+.rule{margin-top:7px;font-size:11.5px;color:var(--mut);border-top:1px dashed var(--line);padding-top:6px}
+.rule b{color:var(--tx)}
+.rule.ok::before{content:"✓ "}
+.rule.pend::before{content:"◌ "}
+.lbl{font-weight:700}
+.rules{margin:0;padding:0;list-style:none;font-size:13px}
+.rules li{padding:9px 0;border-top:1px solid var(--line)}
+.rules li b{display:inline-block;min-width:44px}
+.rules small{display:block;color:var(--mut)}
+#upd{position:fixed;left:12px;right:12px;top:calc(62px + var(--safe-t));z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:12px;background:var(--tx);color:var(--bg);font-size:14px;max-width:616px;margin:0 auto}
+#upd button{border:0;border-radius:8px;padding:7px 12px;background:var(--acc);color:#fff;font-weight:700}

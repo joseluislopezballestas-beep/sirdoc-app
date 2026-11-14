@@ -2,12 +2,23 @@
 
 Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) o **clínico** (requiere aprobación de especialista).
 
-## 1.1.3 (propuesta, NO publicada) — cambios clínicos pendientes de aprobación
+## 1.2.0 — 2026-11-14 · Aplicación de la auditoría y la matriz científica
+**Clínico (aprobado):** textos de sugammadex y rocuronio en shock (ver 1.1.3). Aprobado por Md. Jose Luis Lopez Ballestas (autor, médico) el 2026-11-14 por instrucción escrita.
+**Técnico:**
+- Matriz científica en la app: regla, estado de la fuente y aprobación junto a cada dosis; lista completa en Ajustes.
+- Alertas con etiqueta de texto (Riesgo alto / Precaución / Información). (H-07 parcial)
+- Aviso cuando el peso ideal se ajusta al mínimo de 35 kg. (H-17, mitigación)
+- Cronómetro de BNM persistente (bloqueo, cambio de app, recarga; máx. 6 h) y aclaración de que no confirma el bloqueo. (H-18)
+- Aviso de nueva versión con recarga. (H-21)
+- Sección de privacidad y aviso al copiar el resumen. (H-25)
+- Pruebas: 26/26. **Sin cambios de dosis.**
+
+## 1.1.3 — cambios clínicos (fusionados en 1.2.0)
 Rama `clinico/f0-pendiente-aprobacion`. Fuente: ficha técnica de sugammadex (FDA rev. 11/2022; EMA).
 - Rescate: 16 mg/kg descrito como reversión inmediata **solo tras rocuronio**; aviso si el plan usa vecuronio; ClCr < 30 según ficha. (H-01)
 - Rocuronio 1,6 mg/kg en shock: advertencia de que la reversión inmediata se estudió tras 1,2 mg/kg. (H-02)
 - Vecuronio: sugammadex solo para reversión de rutina (2–4 mg/kg). (H-01)
-- Sin cambios de dosis. Aprobado por: _pendiente_. Fecha: _—_.
+- Sin cambios de dosis. Aprobado por: Md. Jose Luis Lopez Ballestas (autor, médico). Fecha: 2026-11-14.
 
 ## 1.1.2 — 2026-11-14 · Fase 0 de auditoría (técnico)
 - Validación de datos (`js/validate.js`): rangos de plausibilidad, mensajes por campo, confirmación de valores extremos ligada a los datos exactos. (H-09, H-14)

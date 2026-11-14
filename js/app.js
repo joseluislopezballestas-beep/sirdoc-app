@@ -39,7 +39,7 @@ function bolus(id,k,range,role,why,opts={}){
  <div class="dose">${r(c.dose)} ${c.unit} <small>· ${r(c.vol,'mL')} mL de ${r(c.bp.conc)} ${c.bp.u}</small></div>
  <div class="calc">${k} ${c.unit}/kg × ${r(c.W.w)} kg (${c.W.l}) · rango ${range}${c.capped?` · máx. ${c.max} ${c.unit}`:''}</div>
  <div class="prep">${c.bp.txt}</div>
- <div class="why">${why}</div></div>`;
+ <div class="why">${why}</div>${ruleTag(RULE_BOLUS[id])}</div>`;
 }
 function syrRow(label,c){
  if(!c.ok)return `<div class="row"><div class="k">${label}</div><div class="v">—</div><div class="n">${NAMES[c.id]} <span class="pill p-bad">No calculado</span></div></div>`;
@@ -66,20 +66,21 @@ function renderPlan(){
   ${syrRow('Bloqueo NM · T 0 +',cN)}
   <div class="row"><div class="k">Vasopresor en bolo · a la mano</div><div class="v">10–20 mcg<small>1–2 mL</small></div><div class="n">Epinefrina <span class="calc">10 mcg/mL</span></div></div>
  </div>`;
- alerts(p).forEach(a=>h+=`<div class="alert ${a[0]==='bad'?'':a[0]}">${a[1]}</div>`);
- h+=`<div class="sec"><h3>Metas</h3><ul class="t">${targets(p).map(x=>`<li>${x}</li>`).join('')}</ul></div>`;
+ const LBL={bad:'Riesgo alto',w:'Precaución',i:'Información'};
+ alerts(p).forEach(a=>h+=`<div class="alert ${a[0]==='bad'?'':a[0]}"><b class="lbl">${LBL[a[0]]}:</b> ${a[1]}</div>`);
+ h+=`<div class="sec"><h3>Metas</h3><ul class="t">${targets(p).map(x=>`<li>${x}</li>`).join('')}</ul>${ruleTag('R-10')}</div>`;
 
  const step=(tm,title,body,open)=>`<details class="step"${open?' open':''}><summary><span class="tm">${tm}</span>${title}</summary><div class="body">${body}</div></details>`;
  h+=`<div class="sec"><h3>Secuencia</h3>`;
  h+=step('T −10 min','Preparación y optimización',`<ul class="t">${prep(p).map(x=>`<li>${x}</li>`).join('')}</ul>`);
  h+=step('T −5 min','Preoxigenación','<div class="note">3–5 min con FiO₂ 100 % (u 8 respiraciones a capacidad vital). Oxigenación apneica con cánula nasal durante la laringoscopia.</div>');
  h+=step('T −3 min','Pretratamiento',pre?bolus('fent',pre.k,pre.r,'first',pre.why):'<div class="note">No indicado en este contexto (riesgo de hipotensión). La lidocaína no se recomienda de rutina.</div>');
- h+=step('T 0','Inducción · opciones',ind.map(x=>{const d=indDose(x[0],p);return bolus(x[0],d.k,d.r,x[1],x[2]);}).join(''));
+ h+=step('T 0','Inducción · opciones',ind.map(x=>{const d=indDose(x[0],p);return bolus(x[0],d.k,d.r,x[1],x[2]);}).join('')+ruleTag('R-09'));
  h+=step('T 0 +','Bloqueo neuromuscular · opciones',nm.L.map(x=>bolus(x.id,x.k,x.r,x.role,x.why,{basis:x.basis,max:x.max})).join('')+nm.notes.map(n=>`<div class="alert w">${n}</div>`).join(''));
  h+=step('+45 s','Laringoscopia e intubación','<div class="note">Videolaringoscopio de primera intención. Rocuronio: 45–60 s; succinilcolina: al terminar las fasciculaciones; vecuronio: 90–150 s. Confirmar con capnografía de onda.</div>');
  h+=step('+5 min','Post-intubación',`<ul class="t">${vent(p).map(x=>`<li>${x}</li>`).join('')}<li><b>Iniciar analgosedación sin demora</b> (pestaña Infusiones).</li></ul>`);
  const sg=roundDose(16*p.w),sp=bprep('suga',sg);
- h+=step('Rescate','Vía aérea fallida',`<ul class="t"><li>Sugammadex 16 mg/kg (peso real): <b>${r(sg)} mg = ${r(sg/sp.conc,'mL')} mL</b>. ${sp.txt} <b>Ficha técnica: reversión inmediata solo tras rocuronio</b> (≈3 min después de una dosis única de 1,2 mg/kg). Tras vecuronio no está establecida. No sustituye el plan quirúrgico.${n1.id==='vec'?' <b>Este plan usa vecuronio: no cuentes con sugammadex para una reversión inmediata.</b>':''}${p.erc?' Ficha técnica: no recomendado con ClCr &lt; 30 mL/min.':''}</li><li>Dispositivo supraglótico → si no se puede intubar ni oxigenar: cricotiroidotomía.</li></ul>`);
+ h+=step('Rescate','Vía aérea fallida',`<ul class="t"><li>Sugammadex 16 mg/kg (peso real): <b>${r(sg)} mg = ${r(sg/sp.conc,'mL')} mL</b>. ${sp.txt} <b>Ficha técnica: reversión inmediata solo tras rocuronio</b> (≈3 min después de una dosis única de 1,2 mg/kg). Tras vecuronio no está establecida. No sustituye el plan quirúrgico.${n1.id==='vec'?' <b>Este plan usa vecuronio: no cuentes con sugammadex para una reversión inmediata.</b>':''}${p.erc?' Ficha técnica: no recomendado con ClCr &lt; 30 mL/min.':''}${ruleTag('R-01')}</li><li>Dispositivo supraglótico → si no se puede intubar ni oxigenar: cricotiroidotomía.</li></ul>`);
  h+=`</div><button class="cta" id="toInf">Infusiones de mantenimiento</button>`;
  $('plan').innerHTML=h;
  $('toInf').addEventListener('click',()=>show('v-inf'));
@@ -161,7 +162,7 @@ function copySummary(){
  L.push(`Administrado: ${NAMES[M.ind]} + ${NAMES[M.nmb]}. Infusiones para ${M.H} h:`);
  document.querySelectorAll('#maint .inf').forEach(c=>L.push('• '+c.querySelector('.nm').textContent+': '+c.querySelector('.rate').textContent+'. '+c.querySelector('.prep').textContent.replace(/\s+/g,' ').trim()));
  const txt=L.join('\n');
- const done=()=>toast('Resumen copiado'),fail=()=>toast('No se pudo copiar');
+ const done=()=>toast('Resumen copiado. Contiene datos clínicos: pégalo solo en la historia clínica.',3500),fail=()=>toast('No se pudo copiar');
  if(window.SirDocNative&&window.SirDocNative.copy){try{window.SirDocNative.copy(txt);done()}catch(e){fail()}return}
  try{navigator.clipboard.writeText(txt).then(done,fail)}catch(e){fail()}
 }
@@ -179,12 +180,19 @@ function upd(){
  const s=Math.floor((Date.now()-t0)/1000);$('timer').textContent='BNM +'+fmt(s);
  if(s>=600&&!warned){warned=true;toast('10 min desde el BNM: ¿analgosedación en curso?',4000);try{window.SirDocNative?window.SirDocNative.vibrate(500):navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
 }
-function stopTimer(){clearInterval(tick);t0=null;keepAwake(false);const b=$('timer');b.classList.remove('run');b.textContent='⏱ Marcar BNM'}
+const TKEY='sirdoc.t0';
+function startTimer(at,restored){
+ t0=at;warned=(Date.now()-at)>=600000;$('timer').classList.add('run');upd();clearInterval(tick);tick=setInterval(upd,1000);keepAwake(true);
+ try{localStorage.setItem(TKEY,String(at))}catch(e){}
+ toast(restored?'Cronómetro restaurado desde la hora registrada del bloqueante':'Cronómetro iniciado. Mide el tiempo desde el bloqueante; no confirma el bloqueo ni su reversión.',4000);
+}
+function stopTimer(){clearInterval(tick);t0=null;keepAwake(false);try{localStorage.removeItem(TKEY)}catch(e){}const b=$('timer');b.classList.remove('run');b.textContent='⏱ Marcar BNM'}
 $('timer').addEventListener('click',()=>{
  if(t0){stopTimer();toast('Cronómetro detenido');return}
- t0=Date.now();warned=false;$('timer').classList.add('run');upd();tick=setInterval(upd,1000);keepAwake(true);
- toast('Cronómetro iniciado: hora del bloqueante');
+ startTimer(Date.now(),false);
 });
+// La hora de inicio se guarda en el dispositivo: el cronómetro sobrevive a bloqueo, cambio de app y recarga (máx. 6 h).
+(function restoreTimer(){try{const v=Number(localStorage.getItem(TKEY));if(v&&Date.now()-v<6*3600e3&&Date.now()>=v)startTimer(v,true);else localStorage.removeItem(TKEY)}catch(e){}})();
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&t0){upd();keepAwake(true)}});
 
 /* ================= navegación y formulario ================= */
@@ -250,6 +258,9 @@ function initSettings(){
  $('showDisc').addEventListener('click',()=>$('disc').classList.remove('hide'));
  $('okDisc').addEventListener('click',()=>{ST.disc=true;save();$('disc').classList.add('hide')});
  if(!ST.disc)$('disc').classList.remove('hide');
+ const est=x=>(x.v==='verificada'?'Fuente verificada':x.v==='parcial'?'Fuente verificada en parte':'Fuente pendiente de verificar')+' · '+x.a;
+ $('rules').innerHTML=Object.keys(RULES).map(k=>`<li><b>${k}</b>${RULES[k].t}<small>${RULES[k].f}</small><small>${est(RULES[k])}</small></li>`).join('');
+ $('algv').textContent=`SirDoc ${ALG.version} · algoritmo v${ALG.version} (${ALG.fecha}) · ${ALG.estado}`;
 }
 initSettings();
 
@@ -279,5 +290,15 @@ window.sirdocBack=function(){
 
 /* app web instalable (iPhone/Android desde el navegador): trabajo sin conexión */
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!window.Capacitor&&!window.SirDocNative){
- window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})});
+ window.addEventListener('load',()=>{
+  const had=!!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+  // Nueva versión activada: se pide recargar para no mezclar algoritmo anterior y nuevo en la misma sesión.
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+   if(!had||$('upd'))return;
+   const b=document.createElement('div');b.id='upd';b.setAttribute('role','alert');
+   b.innerHTML='<span>Hay una versión nueva de SirDoc. Recarga antes de calcular.</span><button type="button">Recargar</button>';
+   b.querySelector('button').addEventListener('click',()=>location.reload());document.body.appendChild(b);
+  });
+ });
 }
