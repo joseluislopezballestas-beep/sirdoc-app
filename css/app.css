@@ -1,11 +1,11 @@
 :root{
- --bg:#ffffff;--soft:#f5f6f7;--tx:#111418;--mut:#6b7280;--line:#e9eaec;
- --acc:#0f766e;--acc-soft:#e7f3f1;--ok:#0f766e;--warn:#a15c00;--warn-soft:#fff5e6;--bad:#c0262d;--bad-soft:#fdeeee;
+ --bg:#ffffff;--soft:#f3f4f6;--tx:#0b0d10;--mut:#4b5563;--line:#d9dce1;
+ --acc:#0b6b63;--acc-soft:#e3f2ef;--ok:#0b6b63;--warn:#8a4b00;--warn-soft:#fff3dc;--bad:#b42318;--bad-soft:#fde8e7;--ev:#1e4fd8;--ev-soft:#e8eefe;--nd:#475467;--nd-soft:#eceef2;
  --r:14px;--safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px)
 }
 @media (prefers-color-scheme:dark){:root{
- --bg:#0d0f12;--soft:#171a1f;--tx:#eceef1;--mut:#9aa1ab;--line:#252930;
- --acc:#3fb8a9;--acc-soft:#12302c;--ok:#3fb8a9;--warn:#f0b357;--warn-soft:#2b2214;--bad:#ff7b72;--bad-soft:#2d1716}}
+ --bg:#0b0d10;--soft:#161a20;--tx:#f5f7fa;--mut:#b8c0cc;--line:#2c323b;
+ --acc:#4fd1c0;--acc-soft:#10302b;--ok:#4fd1c0;--warn:#ffc266;--warn-soft:#2e2312;--bad:#ff8a80;--bad-soft:#3a1714;--ev:#8fb0ff;--ev-soft:#172447;--nd:#c1c7d0;--nd-soft:#23272e}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--tx)}
 body{font:16px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text","Roboto","Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
@@ -38,11 +38,12 @@ main{max-width:640px;margin:0 auto;padding:6px 18px calc(96px + var(--safe-b))}
 .seg button.on{background:var(--bg);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 .fields.one{grid-template-columns:1fr}
-.fields label{display:flex;flex-direction:column;gap:5px}
+.fields label{display:flex;flex-direction:column;gap:5px;min-width:0}
+.fields span{font-size:14px;font-weight:600;color:var(--mut)}
 .fields span{font-size:12.5px;color:var(--mut)}
-input[type=number],select{width:100%;border:1px solid var(--line);background:var(--soft);border-radius:11px;padding:12px;font-size:17px;outline:none;-webkit-appearance:none;appearance:none}
+input[type=number],input[type=text],select{width:100%;min-width:0;border:1px solid var(--line);background:var(--soft);border-radius:11px;padding:12px;font-size:17px;outline:none;-webkit-appearance:none;appearance:none}
 select{font-size:15px}
-input:focus,select:focus{border-color:var(--acc);background:var(--bg)}
+input:focus,select:focus{outline:3px solid color-mix(in srgb,var(--acc) 35%,transparent);outline-offset:1px;border-color:var(--acc);background:var(--bg)}
 .checks{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:10px}
 .checks:empty{display:none}
 .checks label{display:flex;align-items:center;gap:12px;padding:13px 14px;font-size:15px;border-top:1px solid var(--line)}
@@ -222,3 +223,60 @@ main{position:relative;z-index:1}
 .refs a,.rules a{color:var(--tx);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:2px}
 .rules a{display:block;font-size:12px;margin-top:3px;word-break:break-word}
 .rules a::before{content:"↗ "}
+/* presentaciones */
+.pres{border-top:1px solid var(--line);padding:10px 0}
+.pres:first-child{border-top:0}
+.pres .custom{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+.pres .custom input{width:96px;min-height:48px;border:1px solid var(--line);background:var(--soft);border-radius:10px;padding:11px;font-size:17px}
+.pres .custom span{font-size:14px;color:var(--mut)}
+.mini{min-height:44px;border:0;border-radius:10px;background:var(--acc);color:#fff;font-weight:700;padding:0 16px}
+.perr{margin-top:8px;font-size:14px;font-weight:600;color:var(--bad)}
+
+/* ===== v1.4: botones grandes, cifras legibles, alto contraste ===== */
+.esc button{min-height:48px;padding:11px 16px;font-size:16px;font-weight:600;border-width:1.5px}
+.seg button{min-height:46px;font-size:16px}
+.cta{min-height:56px;font-size:18px}
+.ghost{min-height:50px}
+.timer{min-height:40px;font-size:14px}
+.checks label{min-height:52px;font-size:16px}
+.tabs button{min-height:54px;font-size:12.5px}
+input[type=text],select{min-height:50px;font-size:18px}
+.dose{font-size:30px;line-height:1.15;font-weight:850;color:var(--tx)}
+.dose small{display:block;font-size:16px;font-weight:700;color:var(--tx);margin-top:2px}
+.syr .v{font-size:24px;font-weight:850}
+.syr .v small{font-size:15px}
+.inf .rate{font-size:30px}
+.calc{font-size:14px;color:var(--mut)}
+.prep{font-size:14.5px}
+.why{font-size:14.5px}
+.drug{border-width:1.5px}
+/* avisos tipificados */
+.wn{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;border-radius:12px;padding:10px 12px;margin-top:8px;border:2px solid;font-size:15px}
+.wn-h{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-weight:850;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+.wn-i{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;font-size:14px;font-weight:900}
+.wn-t{grid-column:1/-1}
+.cond{display:block;margin-top:4px;font-size:13px;font-weight:600;opacity:.9}
+.wn-ci{background:var(--bad);border-color:var(--bad);color:#fff}
+.wn-ci .wn-i{background:#fff;color:var(--bad)}
+.wn-prec{background:var(--warn-soft);border-color:var(--warn);color:var(--tx);border-left-width:8px}
+.wn-prec .wn-h{color:var(--warn)}.wn-prec .wn-i{background:var(--warn);color:#fff}
+.wn-ev{background:var(--ev-soft);border-color:var(--ev);border-style:dashed;color:var(--tx)}
+.wn-ev .wn-h{color:var(--ev)}.wn-ev .wn-i{background:var(--ev);color:#fff}
+.wn-nd{background:var(--nd-soft);border-color:var(--nd);color:var(--tx)}
+.wn-nd .wn-h{color:var(--nd)}.wn-nd .wn-i{background:var(--nd);color:#fff}
+.wn-info{background:var(--soft);border-color:var(--line);color:var(--tx);border-width:1px}
+.wn-info .wn-h{color:var(--mut)}.wn-info .wn-i{background:var(--mut);color:var(--bg);font-style:italic}
+.cibox{margin-top:12px}
+.cibox .wn-ci{font-size:16px}
+/* tarjetas según estado del fármaco */
+.drug.ci{background:var(--bad-soft);border:2.5px solid var(--bad)}
+.drug.ci .nm{text-decoration:line-through;text-decoration-thickness:2px}
+.drug.nd{background:var(--nd-soft);border:1.5px dashed var(--nd)}
+.drug.avoid{background:var(--warn-soft);border:1.5px dashed var(--warn)}
+.p-ci{background:var(--bad);color:#fff}.p-nd{background:var(--nd);color:#fff}
+.pill{font-size:13px;padding:5px 11px}
+.syr .row.ci{background:var(--bad-soft)}
+ul.t li{margin:6px 0}
+@media (prefers-contrast:more){.wn{border-width:3px}.calc,.cond{opacity:1;color:var(--tx)}}
+.drug,.syr,.wn-info,.chip,.exp{position:relative;background-color:var(--bg)}
+.drug.ci{background-color:var(--bad-soft)}.drug.nd{background-color:var(--nd-soft)}.drug.avoid{background-color:var(--warn-soft)}.exp{background-color:var(--warn-soft)}.chip{background-color:var(--soft)}.wn-info{background-color:var(--soft)}

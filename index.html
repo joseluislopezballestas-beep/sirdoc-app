@@ -14,7 +14,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="css/app.css?v=1.3.7">
+<link rel="stylesheet" href="css/app.css?v=1.4.0">
 </head>
 <body>
 <div id="intro" aria-hidden="true">
@@ -64,7 +64,7 @@
     <label><span>SpO₂ (opcional)</span><input id="spo2" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="%" aria-label="SpO₂ (opcional)"></label>
   </div>
 
-  <p class="lead">Comorbilidades y alertas</p>
+  <p class="lead">Comorbilidades</p>
   <div class="checks cols">
     <label><input type="checkbox" id="hta">HTA</label>
     <label><input type="checkbox" id="dm">Diabetes</label>
@@ -72,9 +72,22 @@
     <label><input type="checkbox" id="hepa">Hepatopatía</label>
     <label><input type="checkbox" id="via">Vía aérea difícil anticipada</label>
     <label><input type="checkbox" id="acid">Acidosis metabólica grave (pH &lt; 7,2)</label>
+  </div>
+  <p class="lead">Contraindicaciones de bloqueantes</p>
+  <div class="checks cols">
     <label><input type="checkbox" id="hiperK">Hiperkalemia (K⁺ &gt; 5,5)</label>
-    <label><input type="checkbox" id="neuro">Enf. neuromuscular / hipertermia maligna</label>
+    <label><input type="checkbox" id="hm">Hipertermia maligna (personal o familiar)</label>
+    <label><input type="checkbox" id="neuro">Enfermedad neuromuscular o denervación (distrofia, ELA, Guillain-Barré)</label>
     <label><input type="checkbox" id="quem">Quemadura, aplastamiento o inmovilización &gt; 48 h</label>
+    <label><input type="checkbox" id="alRoc">Alergia a rocuronio o vecuronio</label>
+  </div>
+  <p class="lead">Interacciones y situaciones especiales</p>
+  <div class="checks cols">
+    <label><input type="checkbox" id="mg">Miastenia gravis</label>
+    <label><input type="checkbox" id="betab">Betabloqueador o bradicardia basal</label>
+    <label><input type="checkbox" id="potNMB">Sulfato de magnesio o aminoglucósidos en curso</label>
+    <label><input type="checkbox" id="anticoag">Anticoagulación en curso</label>
+    <label><input type="checkbox" id="aco">Anticonceptivo hormonal</label>
   </div>
   <div id="err" class="alert hide"></div>
   <button class="cta" id="calc">Calcular</button>
@@ -96,12 +109,9 @@
   </div>
   <p class="hint">MinSalud (2025) reporta el etomidato desabastecido y la succinilcolina en riesgo de desabastecimiento. Sin ellos, la app usa ketamina y vecuronio como respaldo.</p>
 
-  <p class="lead">Presentaciones</p>
-  <div class="fields one">
-    <label><span>Propofol</span><select id="s-prop"></select></label>
-    <label><span>Midazolam</span><select id="s-mida"></select></label>
-  </div>
-  <p class="hint">Resto de presentaciones (Colombia): etomidato 20 mg/10 mL · ketamina 500 mg/10 mL · fentanilo 0,5 mg/10 mL · rocuronio 50 mg/5 mL · succinilcolina 100 mg/2 mL · vecuronio 10 mg polvo · cisatracurio 10 mg/5 mL · dexmedetomidina 200 mcg/2 mL · norepinefrina 4 mg/4 mL · sugammadex 200 mg/2 mL.</p>
+  <p class="lead">Presentaciones disponibles</p>
+  <p class="hint">Elige la presentación que tienes. Volúmenes, diluciones y velocidades se recalculan con ella. "Otra presentación" acepta solo concentraciones dentro del rango plausible de cada fármaco.</p>
+  <div class="fields one" id="presList"></div>
 
   <p class="lead">Duración predeterminada de las infusiones</p>
   <div class="seg" id="s-h"><button data-h="6">6 h</button><button data-h="8">8 h</button><button data-h="10">10 h</button><button data-h="12">12 h</button></div>
@@ -163,10 +173,10 @@
 </div>
 <div id="toast"></div>
 
-<script src="js/util.js?v=1.3.7"></script>
-<script src="js/validate.js?v=1.3.7"></script>
-<script src="js/data.js?v=1.3.7"></script>
-<script src="js/logic.js?v=1.3.7"></script>
-<script src="js/app.js?v=1.3.7"></script>
+<script src="js/util.js?v=1.4.0"></script>
+<script src="js/validate.js?v=1.4.0"></script>
+<script src="js/data.js?v=1.4.0"></script>
+<script src="js/logic.js?v=1.4.0"></script>
+<script src="js/app.js?v=1.4.0"></script>
 </body>
 </html>

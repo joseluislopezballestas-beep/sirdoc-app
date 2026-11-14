@@ -1,6 +1,6 @@
 'use strict';
 /* Versión del algoritmo clínico y estado de validación (se muestra en la app). */
-const ALG={version:'1.3.7',fecha:'2026-11-14',estado:'Experimental · sin validación clínica formal'};
+const ALG={version:'1.4.0',fecha:'2026-11-14',estado:'Experimental · sin validación clínica formal'};
 /* Matriz científica (docs/MATRIZ-CIENTIFICA.md). Estado de verificación y aprobación de cada regla.
    No se inventan fuentes: "pendiente" significa que aún no se contrastó con la fuente primaria. */
 const RULES={
@@ -21,27 +21,45 @@ const RULES={
  'R-15':{t:'Ácido tranexámico en trauma < 3 h',f:'CRASH-2 (1 g en 10 min + 1 g en 8 h); guía europea 2019; PATCH-Trauma 2023 (menor mortalidad a 24 h y 28 días, sin cambio en el desenlace funcional)',v:'secundaria',a:'Pendiente',u:[['CRASH-2. Lancet 2010','https://doi.org/10.1016/S0140-6736(10)60835-5'],['Guía europea de hemorragia en trauma 2019','https://doi.org/10.1186/s13054-019-2347-3'],['PATCH-Trauma. NEJM 2023','https://doi.org/10.1056/NEJMoa2215457']]},
  'R-17':{t:'Sepsis y choque séptico: inductor, metas y vasopresores',f:'SSC 2026 (Prescott et al., Crit Care Med 2026): PAM inicial 65 mmHg (fuerte, certeza moderada) y 60–65 en ≥ 65 años; norepinefrina de primera línea, periférica si hace falta; vasopresina y luego epinefrina; corticoides IV sugeridos. Ensayo RSI: en sepsis, colapso 30,6 % con ketamina vs 20,9 % con etomidato, mortalidad similar. Metaanálisis de Andriazzi 2026: sin diferencia de mortalidad en sepsis; más hipotensión con ketamina y más supresión suprarrenal con etomidato. Líquidos ≥ 30 mL/kg en 3 h (condicional, certeza baja; Seymour, JAMA 2026). Sedación: analgesia primero, sin benzodiacepinas (PADIS). Dosis reducidas con PA normal: práctica clínica, sin ensayo',v:'secundaria',a:'Aprobada por Md. Jose Luis Lopez Ballestas (autor, médico) 2026-11-14',u:[['SSC 2026. Guía de sepsis (SCCM)','https://www.sccm.org/survivingsepsiscampaign/guidelines/adult-patients'],['SSC 2026. Resumen ejecutivo (Crit Care Med)','https://doi.org/10.1097/CCM.0000000000007089'],['Casey et al. Ensayo RSI. NEJM','https://www.nejm.org/doi/10.1056/NEJMoa2511420'],['Srivilaithon et al. Sci Rep 2023 (ECA en sepsis)','https://doi.org/10.1038/s41598-023-33679-x'],['Andriazzi et al. J Intensive Care Med 2026 (metaanálisis)','https://doi.org/10.1177/08850666261460825'],['Seymour et al. JAMA 2026 (sepsis en adultos)','https://jamanetwork.com/journals/jama/fullarticle/10.1001/jama.2026.3793'],['Meyer & Prescott. NEJM 2024 (revisión)','https://doi.org/10.1056/nejmra2403213'],['Dubech et al. Crit Care 2026 (catecolaminas)','https://doi.org/10.1186/s13054-026-06109-3'],['PADIS 2025, actualización focalizada','https://doi.org/10.1097/CCM.0000000000006574']]},
  'R-18':{t:'Infarto agudo de miocardio: inductor, oxígeno y metas',f:'ACC/AHA/ACEP/NAEMSP/SCAI 2025 (Rao et al.): oxígeno solo con SpO₂ < 90 %; shock cardiogénico con revascularización urgente y asistencia mecánica seleccionada. Elección de inductor, PEEP y pretratamiento con fentanilo por fisiología y práctica clínica (no hay ensayos de SIR en IAM: se extrapola de pacientes críticos). Fentanilo 1–3 mcg/kg con PA alta o taquicardia y PA estable; sin betabloqueadores en shock cardiogénico; SpO₂ 92–96 % tras intubar; no intubar de forma profiláctica para el cateterismo',v:'secundaria',a:'Aprobada por Md. Jose Luis Lopez Ballestas (autor, médico) 2026-11-14',u:[['ACC/AHA 2025. Síndromes coronarios agudos (Circulation)','https://doi.org/10.1161/CIR.0000000000001309'],['ACC/AHA 2025. Síndromes coronarios agudos (JACC)','https://doi.org/10.1016/j.jacc.2024.11.009'],['McDougall et al. Chest 2026 (metaanálisis en red)','https://pubmed.ncbi.nlm.nih.gov/42612901'],['Jentzer et al. Crit Care Med 2023 (shock cardiogénico)','https://pubmed.ncbi.nlm.nih.gov/37184336'],['Kothari et al. J Cardiothorac Vasc Anesth 2026 (ACC/AHA 2025 en anestesia)','https://pubmed.ncbi.nlm.nih.gov/41807238'],['Ko & Celmins. J Med Insight 2024','https://jomi.com/article/pharmacology-for-rapid-sequence-intubation-(rsi)-airway-management-in-trauma-patients']]},
- 'R-16':{t:'Presentaciones disponibles en Colombia',f:'INVIMA (vecuronio verificado); MinSalud 2025',v:'parcial',a:'No aplica'}
+ 'R-19':{t:'Contraindicaciones, interacciones y situaciones especiales de los bloqueantes y del sugammadex',f:'Fichas técnicas: succinilcolina contraindicada tras la fase aguda de quemaduras, trauma múltiple, denervación o lesión de motoneurona superior, en hipertermia maligna y en hiperkalemia; rocuronio potenciado por magnesio y ciertos antibióticos; sugammadex no recomendado con ClCr < 30, reduce la eficacia de anticonceptivos hormonales y prolonga transitoriamente TTPa/INR. Miastenia gravis, betabloqueador/bradicardia: práctica clínica',v:'parcial',a:'Pendiente',u:[['Succinilcolina, ficha FDA (DailyMed)','https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=1d4302db-a0d5-d0e8-e063-6294a90a22f8'],['Rocuronio, ficha FDA (DailyMed)','https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=818f7cc6-2c3f-1788-e053-2991aa0a4c6a'],['Bridion (sugammadex), ficha FDA 2022','https://www.accessdata.fda.gov/drugsatfda_docs/label/2022/022225Orig1s012lbl.pdf'],['Sugammadex, ficha técnica AEMPS','https://cima.aemps.es/cima/dochtml/ft/88606/FT_88606.html']]},
+ 'R-16':{t:'Presentaciones disponibles en Colombia (seleccionables; "otra" con concentración limitada)',f:'Registros INVIMA y listados de abastecimiento MinSalud 2025: rocuronio 50 mg/5 mL, vecuronio 10 mg, midazolam 50/10, 15/3 y 5/5, fentanilo 0,5 mg/10 mL y 0,1 mg/2 mL, cisatracurio 10 mg, succinilcolina 1 g/10 mL y vitales no disponibles, dexmedetomidina 200 mcg/2 mL y premezclas 4 mcg/mL, sugammadex 200 y 500 mg',v:'parcial',a:'No aplica',u:[['INVIMA: rocuronio 50 mg/5 mL (Res. 2024005848)','https://webservice.invima.gov.co/registros/pdf/16500728_2024005848.pdf'],['INVIMA: vecuronio 10 mg (Res. 2024003846)','https://webservice.invima.gov.co/registros/pdf/16508906_2024003846.pdf'],['MinSalud 2025: inyectables de UCI','https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/VS/MET/20250826-mesa-trabajo-medicamentos-inyectables-uci.pdf'],['INVIMA: succinilcolina, vitales no disponibles','https://www.invima.gov.co/biblioteca/preview/122790'],['Precedex Colombia (Pfizer)','https://labeling.pfizer.com/ShowLabeling.aspx?id=11927']]}
 };
 const RULE_BOLUS={etom:'R-05',keta:'R-06',prop:'R-07',fent:'R-08',roc:'R-02',succ:'R-03',vec:'R-04',suga:'R-01'};
 const RULE_INF={fent:'R-12',prop:'R-12',mida:'R-12',dex:'R-12',keta:'R-12',roc:'R-13',cis:'R-13',vec:'R-13',nore:'R-14'};
-/* ================= PRESENTACIONES (Colombia) ================= */
+/* ================= PRESENTACIONES (Colombia) =================
+   Fuente: registros INVIMA y listados de abastecimiento MinSalud/INVIMA 2024–2025 (ver docs/EVIDENCIA).
+   src: 'invima' = registro o comercialización en Colombia documentada; 'mvnd' = autorizada como vital no disponible / importación.
+   Cada fármaco admite además una presentación "Otra" que el usuario define (cantidad y volumen), limitada por
+   el rango de concentración plausible (lim) para evitar errores de digitación. */
 const PRES={
- etom:[{l:'Etomidato 20 mg/10 mL',amt:20,vol:10,u:'mg'}],
- keta:[{l:'Ketamina 500 mg/10 mL (50 mg/mL)',amt:500,vol:10,u:'mg',step:50}],
- prop:[{l:'Propofol 1 % · 200 mg/20 mL',amt:200,vol:20,u:'mg'},{l:'Propofol 2 % · 1000 mg/50 mL',amt:1000,vol:50,u:'mg'}],
- fent:[{l:'Fentanilo 0,5 mg/10 mL (50 mcg/mL)',amt:500,vol:10,u:'mcg'}],
- mida:[{l:'Midazolam 50 mg/10 mL',amt:50,vol:10,u:'mg'},{l:'Midazolam 15 mg/3 mL',amt:15,vol:3,u:'mg'},{l:'Midazolam 5 mg/5 mL',amt:5,vol:5,u:'mg'}],
- dex:[{l:'Dexmedetomidina 200 mcg/2 mL',amt:200,vol:2,u:'mcg'}],
- roc:[{l:'Rocuronio 50 mg/5 mL',amt:50,vol:5,u:'mg'}],
- succ:[{l:'Succinilcolina 100 mg/2 mL',amt:100,vol:2,u:'mg'}],
- vec:[{l:'Vecuronio 10 mg polvo liofilizado',amt:10,vol:10,u:'mg',powder:true}],
- cis:[{l:'Cisatracurio 10 mg/5 mL',amt:10,vol:5,u:'mg'}],
- suga:[{l:'Sugammadex 200 mg/2 mL',amt:200,vol:2,u:'mg'}],
- nore:[{l:'Norepinefrina 4 mg/4 mL',amt:4,vol:4,u:'mg'}]
+ etom:[{l:'Etomidato 20 mg/10 mL',amt:20,vol:10,u:'mg',src:'invima'}],
+ keta:[{l:'Ketamina 500 mg/10 mL (50 mg/mL)',amt:500,vol:10,u:'mg',src:'invima'}],
+ prop:[{l:'Propofol 1 % · 200 mg/20 mL',amt:200,vol:20,u:'mg',src:'invima'},{l:'Propofol 2 % · 1000 mg/50 mL',amt:1000,vol:50,u:'mg',src:'invima'}],
+ fent:[{l:'Fentanilo 0,5 mg/10 mL (50 mcg/mL)',amt:500,vol:10,u:'mcg',src:'invima'},{l:'Fentanilo 0,1 mg/2 mL (50 mcg/mL)',amt:100,vol:2,u:'mcg',src:'invima'}],
+ mida:[{l:'Midazolam 50 mg/10 mL',amt:50,vol:10,u:'mg',src:'invima'},{l:'Midazolam 15 mg/3 mL',amt:15,vol:3,u:'mg',src:'invima'},{l:'Midazolam 5 mg/5 mL',amt:5,vol:5,u:'mg',src:'invima'}],
+ dex:[{l:'Dexmedetomidina 200 mcg/2 mL (100 mcg/mL)',amt:200,vol:2,u:'mcg',src:'invima'},{l:'Dexmedetomidina premezclada 200 mcg/50 mL (4 mcg/mL)',amt:200,vol:50,u:'mcg',src:'invima'},{l:'Dexmedetomidina premezclada 400 mcg/100 mL (4 mcg/mL)',amt:400,vol:100,u:'mcg',src:'invima'}],
+ roc:[{l:'Rocuronio 50 mg/5 mL',amt:50,vol:5,u:'mg',src:'invima'}],
+ succ:[{l:'Succinilcolina 100 mg/2 mL (50 mg/mL)',amt:100,vol:2,u:'mg',src:'invima'},{l:'Succinilcolina 1 g/10 mL (100 mg/mL)',amt:1000,vol:10,u:'mg',src:'invima'},{l:'Succinilcolina 20 mg/mL · 10 mL',amt:200,vol:10,u:'mg',src:'mvnd'}],
+ vec:[{l:'Vecuronio 10 mg polvo liofilizado',amt:10,vol:10,u:'mg',powder:true,src:'invima'}],
+ cis:[{l:'Cisatracurio 10 mg/5 mL',amt:10,vol:5,u:'mg',src:'invima'}],
+ suga:[{l:'Sugammadex 200 mg/2 mL',amt:200,vol:2,u:'mg',src:'invima'},{l:'Sugammadex 500 mg/5 mL',amt:500,vol:5,u:'mg',src:'invima'}],
+ nore:[{l:'Norepinefrina 4 mg/4 mL',amt:4,vol:4,u:'mg',src:'invima'}]
 };
-const SEL={prop:0,mida:0};
-const pr=id=>PRES[id][SEL[id]||0];
+/* Concentración (unidad/mL) admitida para una presentación definida por el usuario, y concentración objetivo del bolo
+   en jeringa (se diluye solo si la presentación es más concentrada). */
+const PRES_LIM={etom:[1,4],keta:[10,100],prop:[10,20],fent:[10,100],mida:[1,5],dex:[4,100],roc:[10,10],succ:[20,100],cis:[2,5],suga:[100,100],nore:[1,1]};
+const BOL_TARGET={keta:10,succ:10};
+const SEL={};Object.keys(PRES).forEach(k=>SEL[k]=0);
+const CUSTOM={};   // CUSTOM[id]={amt,vol}: presentación "Otra" definida por el usuario
+const pr=id=>{const c=CUSTOM[id];if(SEL[id]===-1&&c){const u=PRES[id][0].u;return {l:`${NAMES[id]} ${c.amt} ${u}/${c.vol} mL (otra)`,amt:c.amt,vol:c.vol,u,custom:true}}return PRES[id][SEL[id]||0]||PRES[id][0]};
+/* Valida una presentación definida por el usuario. Devuelve el texto del error o null. */
+function customErr(id,amt,vol){
+ if(!usable(amt)||!usable(vol))return 'Escribe cantidad y volumen mayores que cero.';
+ if(vol>500)return 'Volumen mayor de 500 mL: revisa el dato.';
+ const c=amt/vol,[lo,hi]=PRES_LIM[id]||[0,Infinity],u=PRES[id][0].u;
+ if(c<lo*0.999||c>hi*1.001)return `Concentración ${r(c)} ${u}/mL fuera del rango admitido para ${NAMES[id]} (${lo===hi?lo:lo+'–'+hi} ${u}/mL). Revisa cantidad y volumen.`;
+ return null;
+}
 // reglas de preparación de infusiones
 const INF={
  fent:{pure:true,dil:'SSN 0,9 %'},

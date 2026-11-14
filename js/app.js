@@ -10,9 +10,16 @@ const $=id=>document.getElementById(id);
 let S={esc:null,sexo:'M'};
 let P=null;
 const KEY='sirdoc.v1';
-const ST=Object.assign({etomOk:true,rocOk:true,succOk:true,prop:0,mida:0,H:8,disc:false},load());
+const ST=Object.assign({etomOk:true,rocOk:true,succOk:true,H:8,disc:false,pres:{},custom:{}},load());
+if(ST.prop!=null&&ST.pres.prop==null)ST.pres.prop=ST.prop;   // ajustes de versiones anteriores
+if(ST.mida!=null&&ST.pres.mida==null)ST.pres.mida=ST.mida;
 let M={ind:null,nmb:null,anal:'fent',sed:null,adj:false,bnm:'none',H:ST.H};
-SEL.prop=ST.prop;SEL.mida=ST.mida;
+// Restaura presentaciones guardadas; una presentación "otra" inválida vuelve a la estándar.
+Object.keys(PRES).forEach(k=>{
+ const c=ST.custom[k],v=ST.pres[k];
+ if(v===-1&&c&&!customErr(k,c.amt,c.vol)){SEL[k]=-1;CUSTOM[k]={amt:c.amt,vol:c.vol};}
+ else if(Number.isInteger(v)&&v>=0&&v<PRES[k].length)SEL[k]=v; else SEL[k]=0;
+});
 
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(e){}}
@@ -30,30 +37,41 @@ function bcalc(id,k,opts={}){
  c.ok=[k,W.w,dose,bp.conc,c.vol].every(usable);
  return c;
 }
+/* Avisos tipificados: icono + etiqueta + color; la condición que los activa se muestra siempre. */
+const WN={ci:['⛔','Contraindicación'],prec:['⚠','Precaución'],ev:['?','Evidencia insuficiente'],nd:['⊘','No disponible'],info:['i','Información']};
+function warn(w){const [k,t,c]=w,[ic,lb]=WN[k];return `<div class="wn wn-${k}" role="${k==='ci'?'alert':'note'}"><div class="wn-h"><span class="wn-i" aria-hidden="true">${ic}</span>${lb}</div><div class="wn-t">${t}${c?`<span class="cond">Condición: ${c}</span>`:''}</div></div>`;}
+const condLi=x=>Array.isArray(x)?`<li>${x[0]}${x[1]?`<span class="cond">Condición: ${x[1]}</span>`:''}</li>`:`<li>${x}</li>`;
+const PILL={first:'<span class="pill p-ok">✓ 1.ª elección</span>',alt:'<span class="pill p-mut">Alternativa</span>',avoid:'<span class="pill p-warn">⚠ Evitar</span>',ci:'<span class="pill p-ci">⛔ Contraindicado</span>',nd:'<span class="pill p-nd">⊘ No disponible</span>'};
+function evNote(id){const x=RULES[RULE_BOLUS[id]];return x&&x.v==='pendiente'?warn(['ev','Dosis sin fuente primaria verificada; confírmala con tu protocolo.',`regla ${RULE_BOLUS[id]}`]):'';}
 function bolus(id,k,range,role,why,opts={}){
- const tag=role==='first'?'<span class="pill p-ok">1.ª elección</span>':role==='alt'?'<span class="pill p-mut">Alternativa</span>':'<span class="pill p-bad">Evitar</span>';
+ const tag=PILL[role];
+ if(role==='ci')return `<div class="drug ci" role="alert"><div class="hd"><span class="nm">${NAMES[id]}</span>${tag}</div><div class="why"><b>${why}</b> No se calcula dosis.</div></div>`;
+ if(role==='nd')return `<div class="drug nd"><div class="hd"><span class="nm">${NAMES[id]}</span>${tag}</div><div class="why">${why}</div></div>`;
  if(role==='avoid')return `<div class="drug avoid"><div class="hd"><span class="nm">${NAMES[id]}</span>${tag}</div><div class="why">${why}</div></div>`;
  const c=bcalc(id,k,opts);
  if(!c.ok)return calcErr(NAMES[id]);
+ const pr_=(drugPrec(P)[id]||[]).map(t=>warn(['prec',t])).join('');
  return `<div class="drug ${role}"><div class="hd"><span class="nm">${NAMES[id]}</span>${tag}</div>
- <div class="dose">${r(c.dose)} ${c.unit} <small>· ${r(c.vol,'mL')} mL de ${r(c.bp.conc)} ${c.bp.u}</small></div>
- <div class="calc">${k} ${c.unit}/kg × ${r(c.W.w)} kg (${c.W.l}) · rango ${range}${c.capped?` · máx. ${c.max} ${c.unit}`:''}</div>
+ <div class="dose">${r(c.dose)} ${c.unit}<small>${r(c.vol,'mL')} mL · ${r(c.bp.conc)} ${c.bp.u}</small></div>
+ <div class="calc">${k} ${c.unit}/kg × ${r(c.W.w)} kg (${c.W.l}) · rango ${range}${c.capped?` · máx. ${c.max} ${c.unit}`:''}${opts.cond?`<br>Dosis para: ${opts.cond}`:''}</div>
  <div class="prep">${c.bp.txt}</div>
- <div class="why">${why}</div>${ruleTag(RULE_BOLUS[id])}</div>`;
+ <div class="why">${why}</div>${pr_}${evNote(id)}${ruleTag(RULE_BOLUS[id])}</div>`;
 }
 function syrRow(label,c){
+ if(c.none)return `<div class="row ci"><div class="k">${label}</div><div class="v">—</div><div class="n"><span class="pill p-ci">⛔ Sin bloqueante utilizable</span></div></div>`;
  if(!c.ok)return `<div class="row"><div class="k">${label}</div><div class="v">—</div><div class="n">${NAMES[c.id]} <span class="pill p-bad">No calculado</span></div></div>`;
  return `<div class="row"><div class="k">${label}</div><div class="v">${r(c.dose)} ${c.unit}<small>${r(c.vol,'mL')} mL</small></div>
  <div class="n">${NAMES[c.id]} <span class="calc">${c.k} ${c.unit}/kg</span></div></div>`;
 }
 
 /* ================= plan ================= */
+function escTitle(p){return ESC[p.esc]+(p.esc==='poli'?(p.hemo?' con hemorragia activa':' sin hemorragia activa'):'')+(p.tce?' + TCE':'');}
 function renderPlan(){
  const p=P,pre=pretreat(p),ind=inductors(p),nm=nmbList(p);
  const st=p.state==='shock'?'<span class="pill p-bad">Shock</span>':p.state==='riesgo'?'<span class="pill p-warn">Riesgo de hipotensión</span>':'<span class="pill p-ok">Estable</span>';
- const i1=ind.find(x=>x[1]==='first'),d1=indDose(i1[0],p),n1=nm.L.find(x=>x.role==='first');
- const cI=bcalc(i1[0],d1.k),cN=bcalc(n1.id,n1.k,{basis:n1.basis,max:n1.max});
- let h=expBanner()+`<div class="title"><h2>${ESC[p.esc]}${p.tce?' + TCE':''}</h2>${st}</div>
+ const i1=ind.find(x=>x[1]==='first'),d1=indDose(i1[0],p),n1=nm.L.find(x=>x.role==='first')||null;
+ const cI=bcalc(i1[0],d1.k),cN=n1?bcalc(n1.id,n1.k,{basis:n1.basis,max:n1.max}):{none:true};
+ let h=expBanner()+`<div class="title"><h2>${escTitle(p)}</h2>${st}</div>
  <div class="strip">
   <div class="chip"><b>${p.w}</b>kg real</div><div class="chip"><b>${r(p.ibw)}</b>kg ideal</div>
   ${p.obese?`<div class="chip"><b>${r(p.lbw)}</b>kg magro</div>`:''}
@@ -66,21 +84,23 @@ function renderPlan(){
   ${syrRow('Bloqueo NM · T 0 +',cN)}
   <div class="row"><div class="k">Vasopresor en bolo · a la mano</div><div class="v">10–20 mcg<small>1–2 mL</small></div><div class="n">Epinefrina <span class="calc">10 mcg/mL</span></div></div>
  </div>`;
- const LBL={bad:'Riesgo alto',w:'Precaución',i:'Información'};
- alerts(p).forEach(a=>h+=`<div class="alert ${a[0]==='bad'?'':a[0]}"><b class="lbl">${LBL[a[0]]}:</b> ${a[1]}</div>`);
- h+=`<div class="sec"><h3>Metas</h3><ul class="t">${targets(p).map(x=>`<li>${x}</li>`).join('')}</ul>${ruleTag(p.esc==='sepsis'?'R-17':p.esc==='iam'?'R-18':'R-10')}</div>`;
+ const ci=ciSummary(p);
+ if(!n1)ci.unshift(['ci','<b>Ningún bloqueante neuromuscular es utilizable</b> (contraindicado o no disponible). El cisatracurio no sirve para SIR por su inicio lento. Pide ayuda experta; valora intubación sin bloqueante o vía aérea quirúrgica según el contexto.','rocuronio, succinilcolina y vecuronio bloqueados']);
+ h=h.replace('<div class="strip">',(ci.length?`<div class="cibox">${ci.map(warn).join('')}</div>`:'')+'<div class="strip">');
+ alerts(p).forEach(a=>h+=warn(a));
+ h+=`<div class="sec"><h3>Metas</h3><ul class="t">${targets(p).map(condLi).join('')}</ul>${ruleTag(p.esc==='sepsis'?'R-17':p.esc==='iam'?'R-18':'R-10')}</div>`;
 
  const step=(tm,title,body,open)=>`<details class="step"${open?' open':''}><summary><span class="tm">${tm}</span>${title}</summary><div class="body">${body}</div></details>`;
  h+=`<div class="sec"><h3>Secuencia</h3>`;
- h+=step('T −10 min','Preparación y optimización',`<ul class="t">${prep(p).map(x=>`<li>${x}</li>`).join('')}</ul>`);
+ h+=step('T −10 min','Preparación y optimización',`<ul class="t">${prep(p).map(condLi).join('')}</ul>`,true);
  h+=step('T −5 min','Preoxigenación','<div class="note">3–5 min con FiO₂ 100 % (u 8 respiraciones a capacidad vital). Oxigenación apneica con cánula nasal durante la laringoscopia.</div>');
  h+=step('T −3 min','Pretratamiento',pre?bolus('fent',pre.k,pre.r,'first',pre.why):'<div class="note">No indicado en este contexto (riesgo de hipotensión). La lidocaína no se recomienda de rutina.</div>');
- h+=step('T 0','Inducción · opciones',ind.map(x=>{const d=indDose(x[0],p);return bolus(x[0],d.k,d.r,x[1],x[2]);}).join('')+ruleTag('R-09'));
- h+=step('T 0 +','Bloqueo neuromuscular · opciones',nm.L.map(x=>bolus(x.id,x.k,x.r,x.role,x.why,{basis:x.basis,max:x.max})).join('')+nm.notes.map(n=>`<div class="alert w">${n}</div>`).join(''));
+ h+=step('T 0','Inducción · opciones',ind.map(x=>{if(x[1]==='nd')return bolus(x[0],0,'','nd',x[2]);const d=indDose(x[0],p);return bolus(x[0],d.k,d.r,x[1],x[2],{cond:doseWhy(p)});}).join('')+ruleTag('R-09'),true);
+ h+=step('T 0 +','Bloqueo neuromuscular · opciones',nm.L.map(x=>bolus(x.id,x.k,x.r,x.role,x.why,{basis:x.basis,max:x.max})).join(''),true);
  h+=step('+45 s','Laringoscopia e intubación','<div class="note">Videolaringoscopio de primera intención (ASA 2022: de elección en la vía aérea difícil prevista). Rocuronio: 45–60 s; succinilcolina: al terminar las fasciculaciones; vecuronio: 90–150 s. Confirmar con capnografía de onda.</div>');
- h+=step('+5 min','Post-intubación',`<ul class="t">${vent(p).map(x=>`<li>${x}</li>`).join('')}<li><b>Iniciar analgosedación sin demora</b> (pestaña Infusiones).</li><li>Antes de extubar: monitorización cuantitativa en el aductor del pulgar y TOF ≥ 0,9 (ASA 2023; ESAIC 2023). Sin monitor cuantitativo no se puede descartar bloqueo residual.</li></ul>`);
+ h+=step('+5 min','Post-intubación',`<ul class="t">${vent(p).map(condLi).join('')}<li><b>Iniciar analgosedación sin demora</b> (pestaña Infusiones).</li><li>Antes de extubar: monitorización cuantitativa en el aductor del pulgar y TOF ≥ 0,9 (ASA 2023; ESAIC 2023). Sin monitor cuantitativo no se puede descartar bloqueo residual.</li></ul>`);
  const sg=roundDose(16*p.w),sp=bprep('suga',sg);
- h+=step('Rescate','Vía aérea fallida',`<ul class="t"><li>Sugammadex 16 mg/kg (peso real): <b>${r(sg)} mg = ${r(sg/sp.conc,'mL')} mL</b>. ${sp.txt} <b>Ficha técnica: reversión inmediata solo tras rocuronio</b> (≈3 min después de una dosis única de 1,2 mg/kg). Tras vecuronio no está establecida. Si el plan usa rocuronio, ten el sugammadex calculado y a mano antes de inducir. Para reversión no urgente, ASA 2023 y ESAIC 2023 recomiendan sugammadex sobre neostigmina en bloqueo profundo, moderado o superficial por rocuronio o vecuronio, guiado por TOF. No sustituye el plan quirúrgico.${n1.id==='vec'?' <b>Este plan usa vecuronio: no cuentes con sugammadex para una reversión inmediata.</b>':''}${p.erc?' Ficha técnica: no recomendado con ClCr &lt; 30 mL/min.':''}${ruleTag('R-01')}</li><li>Dispositivo supraglótico → si no se puede intubar ni oxigenar: cricotiroidotomía.</li></ul>`);
+ h+=step('Rescate','Vía aérea fallida',`<ul class="t"><li>Sugammadex 16 mg/kg (peso real): <b>${r(sg)} mg = ${r(sg/sp.conc,'mL')} mL</b>. ${sp.txt} <b>Ficha técnica: reversión inmediata solo tras rocuronio</b> (≈3 min después de una dosis única de 1,2 mg/kg). Tras vecuronio no está establecida. Si el plan usa rocuronio, ten el sugammadex calculado y a mano antes de inducir. Para reversión no urgente, ASA 2023 y ESAIC 2023 recomiendan sugammadex sobre neostigmina en bloqueo profundo, moderado o superficial por rocuronio o vecuronio, guiado por TOF. No sustituye el plan quirúrgico.${n1&&n1.id==='vec'?' <b>Este plan usa vecuronio: no cuentes con sugammadex para una reversión inmediata.</b>':''}${(drugPrec(p).suga||[]).map(t=>warn(['prec',t])).join('')}${ruleTag('R-01')}</li><li>Dispositivo supraglótico → si no se puede intubar ni oxigenar: cricotiroidotomía.</li></ul>`);
  h+=`</div><button class="cta" id="toInf">Infusiones de mantenimiento</button>`;
  $('plan').innerHTML=h;
  $('toInf').addEventListener('click',()=>show('v-inf'));
@@ -89,7 +109,7 @@ function renderPlan(){
 /* ================= infusiones ================= */
 function defaults(p){
  const ind=inductors(p).find(x=>x[1]==='first')[0];
- const nmb=nmbList(p).L.find(x=>x.role==='first').id;
+ const f=nmbList(p).L.find(x=>x.role==='first'),nmb=f?f.id:'vec';
  let sed='prop';
  if(p.state==='shock')sed='mida';
  else if(p.state==='riesgo')sed=p.esc==='epoc'?'keta':'mida';
@@ -114,10 +134,12 @@ function renderMaint(){
  <p class="lead">Preparar para</p>
  <div class="seg" id="mH">${[6,8,10,12].map(x=>`<button data-h="${x}" class="${x===M.H?'on':''}">${x} h</button>`).join('')}</div>`;
 
- if(M.nmb==='roc')h+=`<div class="alert">Rocuronio dura 45–70 min y el inductor solo minutos: inicia la analgosedación <b>ya</b> (riesgo de despertar paralizado).</div>`;
- else if(M.nmb==='vec')h+=`<div class="alert">Vecuronio a dosis de SIR dura 60–90 min o más: inicia la analgosedación <b>ya</b>.</div>`;
- else h+=`<div class="alert i">Succinilcolina: se recupera en 8–10 min. Para parálisis continua, primero un bolo de BNM no despolarizante.</div>`;
- if(M.ind==='etom')h+=`<div class="alert w">Etomidato: dosis única, efecto de 3–5 min. No repetir ni infundir.</div>`;
+ const CI=contraind(p),prc=id=>(drugPrec(p)[id]||[]).map(t=>warn(['prec',t])).join('');
+ [M.ind,M.nmb].forEach(id=>{if(CI[id])h+=warn(['ci',`<b>${NAMES[id]}</b> figura como administrado pero está contraindicado. Verifica el registro y vigila sus efectos adversos.`,CI[id].join('; ')]);});
+ if(M.nmb==='roc')h+=warn(['prec','Rocuronio dura 45–70 min y el inductor solo minutos: inicia la analgosedación <b>ya</b> (riesgo de despertar paralizado).','rocuronio administrado']);
+ else if(M.nmb==='vec')h+=warn(['prec','Vecuronio a dosis de SIR dura 60–90 min o más: inicia la analgosedación <b>ya</b>.','vecuronio administrado']);
+ else h+=warn(['info','Succinilcolina: se recupera en 8–10 min. Para parálisis continua, primero un bolo de BNM no despolarizante.','succinilcolina administrada']);
+ if(M.ind==='etom')h+=warn(['info','Etomidato: dosis única, efecto de 3–5 min. No repetir ni infundir.','etomidato administrado']);
 
  h+=`<div class="sec"><h3>Infusiones</h3>`;
  if(M.anal==='fent'){const st=low?0.5:1,bW=wt('abw',p).w;
@@ -129,16 +151,17 @@ function renderMaint(){
  if(M.sed==='mida'){const st=(old||p.erc||p.hepa)?0.02:0.03;
   h+=infCard('mida','Midazolam · sedación',st,'mg/kg/h',0.02,0.1,'abw',`${p.esc==='sepsis'?'<b>Sepsis: evitar benzodiacepinas; solo si no hay alternativa.</b> ':''}Por estabilidad hemodinámica. Cambiar a propofol o dexmedetomidina cuando la PA lo permita (acumulación, delirium).${p.erc?' <b>ERC: acumula metabolitos activos.</b>':''}${p.hepa?' <b>Hepatopatía: aclaramiento reducido.</b>':''}`);}
  if(M.sed==='dex'){const st=low?0.2:0.4;
-  h+=infCard('dex','Dexmedetomidina · sedación ligera',st,'mcg/kg/h',0.2,1.5,'abw','De elección para sedación ligera (PADIS 2025). Sin bolo de carga. Bradicardia e hipotensión. <b>No para sedación profunda ni con BNM continuo.</b>'+(p.esc==='raqui'?' Cuidado con la bradicardia medular.':''));}
+  h+=infCard('dex','Dexmedetomidina · sedación ligera',st,'mcg/kg/h',0.2,1.5,'abw',prc('dex')+'De elección para sedación ligera (PADIS 2025). Sin bolo de carga. Bradicardia e hipotensión. <b>No para sedación profunda ni con BNM continuo.</b>'+(p.esc==='raqui'?' Cuidado con la bradicardia medular.':''));}
  if(M.sed==='keta')h+=infCard('keta','Ketamina · analgosedación',0.2,'mg/kg/h',0.1,0.5,'abw','<b>Sedante único fuera de guía</b> (PADIS sin recomendación): rango limitado a 0,1–0,5 mg/kg/h; asocia otro sedante si no alcanzas la meta. Mantiene el tono simpático; broncodilatadora. Hipertensión y taquicardia posibles; en falla cardiaca vigila la depresión miocárdica.');
- if(M.sed==='none')h+=`<div class="alert">Sin sedación: solo si está tranquilo con analgesia. Nunca con BNM.</div>`;
+ if(M.sed==='none')h+=warn(['prec','Sin sedación: solo si está tranquilo con analgesia. Nunca con BNM.','sedación: ninguna']);
  if(M.bnm!=='none'){
-  h+=`<div class="alert w">BNM continuo solo con indicación: SDRA grave temprano (ATS 2024, recomendación condicional; PaO₂/FiO₂ &lt; 150 en ensayos previos y &lt; 100 en la guía 2024), HIC refractaria, asincronía grave o escalofríos. Requiere RASS −5 y TOF (meta 1–2/4).${M.bnm!=='cis'?' <b>Aminoesteroide (rocuronio, vecuronio) con corticoides: riesgo de miopatía; prefiere cisatracurio y la menor duración posible.</b>':''}</div>`;
-  if(M.sed==='dex'||M.sed==='none')h+=`<div class="alert"><b>Incompatible:</b> con BNM continuo la sedación debe ser profunda.</div>`;
+  h+=warn(['prec',`BNM continuo solo con indicación: SDRA grave temprano (ATS 2024, recomendación condicional; PaO₂/FiO₂ &lt; 150 en ensayos previos y &lt; 100 en la guía 2024), HIC refractaria, asincronía grave o escalofríos. Requiere RASS −5 y TOF (meta 1–2/4).${M.bnm!=='cis'?' <b>Aminoesteroide (rocuronio, vecuronio) con corticoides: riesgo de miopatía; prefiere cisatracurio y la menor duración posible.</b>':''}`,'bloqueo neuromuscular continuo']);
+  if(M.sed==='dex'||M.sed==='none')h+=warn(['ci','Combinación incompatible: con BNM continuo la sedación debe ser profunda (propofol, midazolam o ketamina).',`BNM continuo + ${M.sed==='dex'?'dexmedetomidina':'sin sedación'}`]);
   const wN=wt('ibw',p).w;
-  if(M.bnm==='roc')h+=infCard('roc','Rocuronio',8,'mcg/kg/min',8,12,'ibw',(M.nmb==='succ'?`Tras succinilcolina, bolo de 0.6 mg/kg (${r(0.6*wN)} mg). `:'')+(p.hepa?'<b>Hepatopatía: prefiere cisatracurio.</b>':''));
-  if(M.bnm==='cis')h+=infCard('cis','Cisatracurio',3,'mcg/kg/min',0.5,10,'ibw',`Ficha técnica: 3 mcg/kg/min en UCI (0,5–10,2), titular por TOF. Bolo 0.15 mg/kg (${r(0.15*wN)} mg) si no hay BNM activo. Eliminación de Hofmann: de elección en ERC o hepatopatía. Ampollas refrigeradas.`);
-  if(M.bnm==='vec')h+=infCard('vec','Vecuronio',1,'mcg/kg/min',0.8,1.7,'ibw',`${M.nmb==='vec'?'Iniciar cuando reaparezca respuesta en el TOF. ':`Bolo 0.1 mg/kg (${r(0.1*wN)} mg) si no hay BNM activo. `}Reconstituir con agua estéril; usar en 24 h. Se acumula en ERC y hepatopatía.`+(p.erc||p.hepa?' <b>Prefiere cisatracurio.</b>':''));
+  if(CI[M.bnm])h+=bolus(M.bnm,0,'','ci','Contraindicado por '+CI[M.bnm].join('; ')+'.');
+  else if(M.bnm==='roc')h+=infCard('roc','Rocuronio',8,'mcg/kg/min',8,12,'ibw',prc('roc')+(M.nmb==='succ'?`Tras succinilcolina, bolo de 0.6 mg/kg (${r(0.6*wN)} mg). `:'')+(p.hepa?'<b>Hepatopatía: prefiere cisatracurio.</b>':''));
+  if(M.bnm==='cis')h+=infCard('cis','Cisatracurio',3,'mcg/kg/min',0.5,10,'ibw',prc('cis')+`Ficha técnica: 3 mcg/kg/min en UCI (0,5–10,2), titular por TOF. Bolo 0.15 mg/kg (${r(0.15*wN)} mg) si no hay BNM activo. Eliminación de Hofmann: de elección en ERC o hepatopatía. Ampollas refrigeradas.`);
+  if(M.bnm==='vec')h+=infCard('vec','Vecuronio',1,'mcg/kg/min',0.8,1.7,'ibw',prc('vec')+`${M.nmb==='vec'?'Iniciar cuando reaparezca respuesta en el TOF. ':`Bolo 0.1 mg/kg (${r(0.1*wN)} mg) si no hay BNM activo. `}Reconstituir con agua estéril; usar en 24 h. Se acumula en ERC y hepatopatía.`+(p.erc||p.hepa?' <b>Prefiere cisatracurio.</b>':''));
  }
  h+=`</div>`;
  let rass='RASS −1 a 0 una vez estabilizado.';
@@ -157,9 +180,10 @@ function renderMaint(){
 function copySummary(){
  if(!P){toast('Primero calcula con datos válidos');return}
  const p=P,L=[];
- L.push(`SIR — ${ESC[p.esc]}${p.tce?' + TCE':''}`);
+ L.push(`SIR — ${escTitle(p)}`);
+ const CI=contraind(p);Object.keys(CI).forEach(id=>L.push(`CONTRAINDICADO: ${NAMES[id]} (${CI[id].join('; ')}).`));
  L.push(`${p.sexo==='M'?'H':'M'}, ${p.edad} a, ${p.w} kg, ${p.h} cm (IMC ${p.bmi.toFixed(1)}). PA ${p.pas}/${p.pad} (PAM ${Math.round(p.pam)})${p.fc?', FC '+p.fc+', IS '+p.si.toFixed(2):''}${p.spo2?', SpO2 '+p.spo2+'%':''}.`);
- document.querySelectorAll('#plan .syr .row').forEach(rw=>L.push('• '+rw.querySelector('.k').textContent+': '+rw.querySelector('.n').textContent.trim()+' '+rw.querySelector('.v').childNodes[0].textContent.trim()+' ('+rw.querySelector('.v small').textContent+')'));
+ document.querySelectorAll('#plan .syr .row').forEach(rw=>{const sm=rw.querySelector('.v small');L.push('• '+rw.querySelector('.k').textContent+': '+rw.querySelector('.n').textContent.trim()+' '+rw.querySelector('.v').childNodes[0].textContent.trim()+(sm?' ('+sm.textContent+')':''));});
  L.push(`Administrado: ${NAMES[M.ind]} + ${NAMES[M.nmb]}. Infusiones para ${M.H} h:`);
  document.querySelectorAll('#maint .inf').forEach(c=>L.push('• '+c.querySelector('.nm').textContent+': '+c.querySelector('.rate').textContent+'. '+c.querySelector('.prep').textContent.replace(/\s+/g,' ').trim()));
  const txt=L.join('\n');
@@ -236,7 +260,7 @@ document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',
 }));
 $('calc').addEventListener('click',()=>{if(compute())show('v-plan');else window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})});
 function renderExtra(){
- const x={poli:[['tce','TCE asociado']],raqui:[['tce','TCE asociado'],['sci72','Más de 48 h desde la lesión']],sangra:[['trauma','Origen traumático']],isq:[['trombo','Candidato a trombólisis o trombectomía']],sepsis:[['vaso','Con vasopresor en curso']],iam:[['vd','Compromiso de ventrículo derecho']]}[S.esc]||[];
+ const x={poli:[['hemo','Hemorragia activa significativa'],['tce','TCE asociado']],raqui:[['tce','TCE asociado'],['sci72','Más de 48 h desde la lesión']],sangra:[['trauma','Origen traumático']],isq:[['trombo','Candidato a trombólisis o trombectomía']],sepsis:[['vaso','Con vasopresor en curso']],iam:[['vd','Compromiso de ventrículo derecho']]}[S.esc]||[];
  $('extra').innerHTML=x.map(a=>`<label><input type="checkbox" id="${a[0]}">${a[1]}</label>`).join('');
 }
 document.querySelectorAll('#esc button').forEach(b=>b.addEventListener('click',()=>{S.esc=b.dataset.v;document.querySelectorAll('#esc button').forEach(x=>x.classList.toggle('on',x===b));renderExtra();invalidate();}));
@@ -253,7 +277,7 @@ document.addEventListener('keydown',e=>{
 /* ================= ajustes ================= */
 function initSettings(){
  [['s-etom','etomOk'],['s-roc','rocOk'],['s-succ','succOk']].forEach(([id,k])=>{$(id).checked=ST[k];$(id).addEventListener('change',e=>{ST[k]=e.target.checked;save();M.ind=null;if(P)compute(true);})});
- ['prop','mida'].forEach(k=>{const s=$('s-'+k);s.innerHTML=PRES[k].map((x,i)=>`<option value="${i}"${i===ST[k]?' selected':''}>${x.l}</option>`).join('');s.addEventListener('change',e=>{ST[k]=SEL[k]=+e.target.value;save();if(P)compute(true);})});
+ renderPresList();
  const hs=()=>document.querySelectorAll('#s-h button').forEach(b=>b.classList.toggle('on',+b.dataset.h===ST.H));hs();
  document.querySelectorAll('#s-h button').forEach(b=>b.addEventListener('click',()=>{ST.H=M.H=+b.dataset.h;save();hs();if(P){renderPlan();renderMaint();}}));
  $('showDisc').addEventListener('click',()=>$('disc').classList.remove('hide'));
@@ -264,6 +288,34 @@ function initSettings(){
  $('algv').textContent=`SirDoc ${ALG.version} · algoritmo v${ALG.version} (${ALG.fecha}) · ${ALG.estado}`;
 }
 initSettings();
+
+/* Presentaciones: un selector por fármaco + opción "Otra" validada. */
+function renderPresList(){
+ const ORDER=['etom','keta','prop','fent','mida','dex','roc','succ','vec','cis','suga','nore'];
+ $('presList').innerHTML=ORDER.map(k=>{
+  const opts=PRES[k].map((x,i)=>`<option value="${i}"${SEL[k]===i?' selected':''}>${x.l}${x.src==='mvnd'?' · vital no disponible (importación)':''}</option>`).join('')+(PRES_LIM[k]&&!PRES[k][0].powder?`<option value="-1"${SEL[k]===-1?' selected':''}>Otra presentación…</option>`:'');
+  const c=CUSTOM[k]||{},u=PRES[k][0].u;
+  return `<div class="pres" data-k="${k}"><label><span>${NAMES[k]}</span><select id="ps-${k}" aria-label="Presentación de ${NAMES[k]}">${opts}</select></label>
+  <div class="custom${SEL[k]===-1?'':' hide'}" id="pc-${k}"><input id="pa-${k}" type="text" inputmode="decimal" placeholder="${u}" value="${c.amt||''}" aria-label="Cantidad en ${u}"><span>${u} en</span><input id="pv-${k}" type="text" inputmode="decimal" placeholder="mL" value="${c.vol||''}" aria-label="Volumen en mL"><span>mL</span><button type="button" class="mini" id="pb-${k}">Usar</button></div>
+  <div class="perr hide" id="pe-${k}" role="alert"></div></div>`;
+ }).join('');
+ ORDER.forEach(k=>{
+  const sel=$('ps-'+k);if(!sel)return;
+  sel.addEventListener('change',e=>{
+   const v=+e.target.value;
+   if(v===-1){$('pc-'+k).classList.remove('hide');return;}   // se aplica al pulsar "Usar"
+   $('pc-'+k).classList.add('hide');$('pe-'+k).classList.add('hide');
+   SEL[k]=v;delete CUSTOM[k];ST.pres[k]=v;save();if(P)compute(true);
+  });
+  const b=$('pb-'+k);if(b)b.addEventListener('click',()=>{
+   const a=parseNum($('pa-'+k).value),v=parseNum($('pv-'+k).value),e=$('pe-'+k);
+   const err=(!a.ok||!v.ok)?'Formato no válido: escribe solo números.':customErr(k,a.value,v.value);
+   if(err){e.textContent=err;e.classList.remove('hide');return;}
+   e.classList.add('hide');SEL[k]=-1;CUSTOM[k]={amt:a.value,vol:v.value};ST.pres[k]=-1;ST.custom[k]={amt:a.value,vol:v.value};save();
+   toast(`${NAMES[k]}: ${a.value} ${PRES[k][0].u}/${v.value} mL en uso`);if(P)compute(true);
+  });
+ });
+}
 
 /* ================= nativo (Capacitor) ================= */
 (function native(){

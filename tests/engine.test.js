@@ -52,8 +52,8 @@ test('estado hemodinámico: umbrales', () => {
 
 test('preparación de bolos: concentración y número de ampollas', () => {
   E.setP(pat({}));
-  const k = bprep('keta', 75); assert.equal(k.conc, 10); assert.match(k.txt, /Cargar 2 mL \(100 mg\).*\+ 8 mL.*= 10 mL/);
-  assert.equal(bprep('succ', 120).conc, 10); assert.match(bprep('succ', 120).txt, /^2 ampollas/);
+  const k = bprep('keta', 75); assert.equal(k.conc, 10); assert.match(k.txt, /Cargar 2\.0 mL \(100 mg\).*\+ 8\.0 mL.*= 10 mL/);
+  assert.equal(bprep('succ', 120).conc, 10); assert.match(bprep('succ', 120).txt, /Cargar 3\.0 mL \(150 mg\).*= 15 mL a 10 mg\/mL \(2 ampollas\)/);
   assert.equal(bprep('vec', 10.5).conc, 1); assert.match(bprep('vec', 10.5).txt, /^2 viales/);
   assert.equal(bprep('roc', 96).conc, 10); assert.match(bprep('roc', 96).txt, /^2 ampollas/);
   assert.equal(bprep('etom', 21).conc, 2); assert.equal(bprep('fent', 140).conc, 50); assert.equal(bprep('suga', 1120).conc, 100);

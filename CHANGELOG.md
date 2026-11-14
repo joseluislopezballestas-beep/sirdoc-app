@@ -2,6 +2,18 @@
 
 Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) o **clínico** (requiere aprobación de especialista).
 
+## 1.4.0 — 2026-11-14 · Rediseño de seguridad, presentaciones y verificación
+**Diseño y seguridad (técnico):**
+- Cinco tipos de aviso con icono, etiqueta, color y borde propios: **Contraindicación** (rojo sólido, bloquea el fármaco: sin dosis, nunca 1.ª elección, se muestra antes que todo), **Precaución**, **Evidencia insuficiente**, **No disponible** e **Información**. Cada aviso, meta y paso muestra la condición clínica que lo activa.
+- Fármacos contraindicados o no disponibles aparecen como tarjetas propias (no desaparecen); si ningún bloqueante es utilizable, se avisa de forma explícita.
+- Botones de 48–56 px, cifras de dosis de 30 px, paleta de alto contraste (texto secundario ≥ 7:1 en claro), tarjetas opacas sobre la marca de agua. Corregido: los campos numéricos no tenían estilo desde v1.2.0 y desbordaban en móvil.
+- El resumen copiado incluye las contraindicaciones.
+**Clínico (pendiente de aprobación):**
+- Politrauma **con** y **sin hemorragia activa significativa**: hipotensión permisiva, hemoderivados, ácido tranexámico y dosis reducidas solo con hemorragia; sin hemorragia, PAM ≥ 65 y búsqueda de sangrado oculto; con TCE nunca hipotensión permisiva.
+- Motor de contraindicaciones e interacciones (R-19): hipertermia maligna separada de enfermedad neuromuscular; alergia a aminoesteroides; miastenia gravis; magnesio/aminoglucósidos; betabloqueador o bradicardia (atropina); anticonceptivo hormonal y anticoagulación con sugammadex.
+**Presentaciones:** todas seleccionables en Ajustes (fentanilo 0,1 mg/2 mL, dexmedetomidina premezclada, succinilcolina 1 g/10 mL y 20 mg/mL, sugammadex 500 mg) con fuentes INVIMA/MinSalud; opción "Otra presentación" con concentración limitada por fármaco. Preparación de bolos genérica para cualquier presentación.
+**Verificación:** 49 pruebas. Recalculo independiente de 544 tarjetas de bolo y 2.176 de infusión (todas las presentaciones, 6–12 h, 7 perfiles de paciente, 9 escenarios); 600 combinaciones aleatorias de datos incompletos, extremos o erróneos sin ninguna dosis inválida.
+
 ## 1.3.7 — 2026-11-14 · Presentación de las reglas (técnico)
 - En pantalla (plan, infusiones y Ajustes) cada regla muestra solo el estado de la fuente y la fecha de revisión. La aprobación clínica sigue documentada en la matriz científica y en este registro.
 

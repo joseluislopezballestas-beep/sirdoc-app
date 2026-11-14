@@ -82,7 +82,7 @@ test('valores extremos posibles exigen confirmación antes de mostrar dosis', as
 test('cambiar la presentación después de calcular actualiza la preparación', async () => {
   const a = await app(); a.fill('sangra', { ...OK, pas: 85, pad: 55, fc: 120 }); a.calc();   // shock → midazolam
   const before = a.text('maint'); assert.match(before, /Midazolam 50 mg\/10 mL/);
-  const s = a.$('s-mida'); s.value = '2'; s.dispatchEvent(new a.w.Event('change'));
+  const s = a.$('ps-mida'); s.value = '2'; s.dispatchEvent(new a.w.Event('change'));
   const after = a.text('maint'); assert.match(after, /Midazolam 5 mg\/5 mL/); assert.notEqual(before, after);
 });
 
@@ -113,12 +113,12 @@ test('[matriz] cada dosis muestra su regla, estado de fuente y aprobación', asy
   assert.match(t, /R-04 · Fuente pendiente de verificar/); assert.match(t, /R-09 ·/); assert.match(t, /R-10 ·/);
   assert.match(t, /R-01 · Fuente verificada · Revisión 14\/11\/2026/);                       // sugammadex
   assert.match(a.text('maint'), /R-12 ·/);
-  const rules = a.d.querySelectorAll('#rules li'); assert.equal(rules.length, 18);
+  const rules = a.d.querySelectorAll('#rules li'); assert.equal(rules.length, 19);
 });
 
 test('[H-07] las alertas llevan etiqueta de texto (no solo color)', async () => {
   const a = await app(); a.fill('sangra', { ...OK, pas: 85, pad: 55, fc: 120 }); a.calc();
-  assert.match(a.text('plan'), /Riesgo alto: Shock/);
+  assert.match(a.text('plan'), /⚠Precaución.*Riesgo alto de colapso.*Condición: shock: PAS < 90/);
 });
 
 test('[H-17] talla baja: se avisa del peso ideal mínimo de 35 kg', async () => {
@@ -140,7 +140,7 @@ test('[H-18] el cronómetro se guarda, se restaura tras recargar y se detiene', 
 test('[v1.3.0] rocuronio 1,2 mg/kg también en shock (se retiró 1,6 mg/kg)', async () => {
   const a = await app(); a.fill('sangra', { ...OK, pas: 85, pad: 55, fc: 120 }); a.calc();
   const t = a.text('plan');
-  assert.match(t, /Rocuronio1\.ª elección 84 mg/); assert.doesNotMatch(t, /1\.6 mg\/kg/);
+  assert.match(t, /Rocuronio✓ 1\.ª elección 84 mg/); assert.doesNotMatch(t, /1\.6 mg\/kg/);
 });
 
 test('[v1.3.0] contraindicación de succinilcolina desde 48 h y BNM en infusión según ficha', async () => {
@@ -174,16 +174,16 @@ test('[v1.3.3] TOF ≥ 0,9 antes de extubar y guías ESAIC/ASA enlazadas', async
 test('[v1.3.4] succinilcolina 1 mg/kg por peso real (ESAIC 2023)', async () => {
   const a = await app(); a.fill('poli', OK); a.calc();
   const t = a.text('plan');
-  assert.match(t, /Succinilcolina ?Alternativa 70 mg · 7(\.0)? mL de 10 mg\/mL 1 mg\/kg × 70 kg \(peso real\) · rango 0\.3–1\.1/);
+  assert.match(t, /SuccinilcolinaAlternativa 70 mg7(\.0)? mL · 10 mg\/mL 1 mg\/kg × 70 kg \(peso real\) · rango 0\.3–1\.1/);
 });
 
 test('[v1.3.5] sepsis: etomidato de elección, metas SSC 2026 y vasopresor en curso = shock', async () => {
   const a = await app(); a.fill('sepsis', { ...OK, edad: 70 }); a.calc();
   let t = a.text('plan');
-  assert.match(t, /Sepsis \/ choque séptico/); assert.match(t, /PAM inicial 60–65 mmHg en ≥ 65 años/);
-  assert.match(t, /Etomidato1\.ª elección/); assert.match(t, /R-17 ·/); assert.match(t, /Dosis de inductor reducidas por sepsis/);
+  assert.match(t, /Sepsis \/ choque séptico/); assert.match(t, /PAM inicial 60–65 mmHg \(SSC 2026\)\.Condición: sepsis · edad ≥ 65 años/);
+  assert.match(t, /Etomidato✓ 1\.ª elección/); assert.match(t, /R-17 ·/); assert.match(t, /Dosis de inductor reducidas aunque la PA sea normal\.Condición: sepsis/);
   a.fill('sepsis', { ...OK }); a.$('vaso').checked = true; a.$('vaso').dispatchEvent(new a.w.Event('change', { bubbles: true })); a.calc();
-  t = a.text('plan'); assert.match(t, /Shock \(PAS/); assert.match(t, /Norepinefrina 0\.05 mcg\/kg\/min/);
+  t = a.text('plan'); assert.match(t, /Riesgo alto de colapso.*Condición: shock: vasopresor en curso/); assert.match(t, /Norepinefrina 0\.05 mcg\/kg\/min/);
   assert.deepEqual(a.errors, []);
 });
 

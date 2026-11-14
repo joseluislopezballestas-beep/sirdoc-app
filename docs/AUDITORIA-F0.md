@@ -98,3 +98,19 @@ Verificado contra el código de `main` (commit b68df88) y la integración contin
 Resumen: 14 corregidos, 5 parciales o mitigados (H-03, H-05, H-07, H-17, H-26), 9 pendientes (H-04, H-06, H-19, H-20, H-22, H-23, H-24, H-27, H-28).
 Fases: F0 completada; F0-b avanzada (reglas con fuente y aprobación del autor; falta revisión independiente por especialista); F1 a F4 sin iniciar.
 Añadido después de la auditoría: escenarios Sepsis (R-17) e IAM (R-18), guías ESAIC 2023 y ASA 2022/2023, succinilcolina 1 mg/kg.
+
+## Actualización v1.4.0 (2026-11-14) — rediseño de seguridad y verificación
+| ID | Estado | Cambio |
+|---|---|---|
+| H-07 | **Corregido** | Cinco tipos de aviso (contraindicación, precaución, evidencia insuficiente, no disponible, información) con icono, etiqueta y color; la contraindicación bloquea el fármaco y se muestra primero; cada aviso muestra su condición |
+| H-06 | Parcial | Las opciones siguen ordenadas por escenario, pero cada dosis muestra la condición clínica que la determina y los fármacos contraindicados o no disponibles se ven y se explican |
+| H-20 | Mitigado | Tarjetas de dosis opacas sobre la marca de agua; paleta de alto contraste |
+| H-26 | Parcial | Presentaciones colombianas con fuente INVIMA/MinSalud y seleccionables; fichas INVIMA de dosis aún no contrastadas |
+| Nuevo H-29 | **Corregido** | Los campos de datos del paciente (type=text desde v1.2.0) no tenían estilo y desbordaban en móvil |
+| Nuevo H-30 | **Corregido** | Politrauma sin hemorragia recibía hipotensión permisiva y ácido tranexámico por defecto |
+
+Verificación de cálculo (pruebas `tests/verify.test.js` y `tests/safety.test.js`, 49/49):
+- Recalculo independiente (fórmulas escritas aparte) de 544 tarjetas de bolo y 2.176 tarjetas de infusión: dosis = mg/kg × peso del criterio, volumen = dosis/concentración, dilución (mL cargados + SSN = volumen final; cantidad/volumen = concentración), mg/h, mL/h, rangos, volumen final y duración ≥ horas solicitadas. Todas las presentaciones, 6/8/10/12 h, 7 perfiles (incluye obesidad extrema, talla baja y shock), 9 escenarios. Sin discrepancias.
+- 600 combinaciones aleatorias de datos incompletos, extremos o erróneos y comorbilidades: ningún NaN/Infinity, ninguna dosis ≤ 0 ni fuera del rango declarado; 399 casos bloqueados por datos inválidos y 201 calculados.
+- Contraindicaciones (hiperK, hipertermia maligna, enf. neuromuscular, quemadura, lesión medular > 48 h, alergia a aminoesteroides), ningún bloqueante utilizable, fármacos no disponibles, interacciones y presentaciones "otra" con validación: verificados por prueba.
+Límites: las pruebas verifican que la app hace lo que sus reglas dicen; la corrección clínica de las reglas depende de la matriz científica y de la revisión por especialistas.

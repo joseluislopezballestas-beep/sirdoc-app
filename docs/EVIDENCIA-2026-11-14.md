@@ -138,6 +138,20 @@ Hallazgos que confirman la app: etomidato de elección en sepsis (ensayo RSI; An
 
 Referencias añadidas: Srivilaithon, Sci Rep 2023 (https://doi.org/10.1038/s41598-023-33679-x); Seymour, JAMA 2026 (https://jamanetwork.com/journals/jama/fullarticle/10.1001/jama.2026.3793); Meyer & Prescott, NEJM 2024 (https://doi.org/10.1056/nejmra2403213); Dubech, Crit Care 2026 (https://doi.org/10.1186/s13054-026-06109-3); Jentzer, Crit Care Med 2023 (https://pubmed.ncbi.nlm.nih.gov/37184336); Kothari, J Cardiothorac Vasc Anesth 2026 (https://pubmed.ncbi.nlm.nih.gov/41807238).
 
+### Presentaciones disponibles en Colombia (v1.4.0)
+| Fármaco | Presentaciones en la app | Fuente |
+|---|---|---|
+| Rocuronio | 50 mg/5 mL | INVIMA 2024M-0021311 (https://webservice.invima.gov.co/registros/pdf/16500728_2024005848.pdf) |
+| Vecuronio | 10 mg polvo | INVIMA 2024M-0021267 (https://webservice.invima.gov.co/registros/pdf/16508906_2024003846.pdf) |
+| Midazolam | 50 mg/10 mL, 15 mg/3 mL, 5 mg/5 mL | MinSalud 2025, inyectables de UCI (https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/VS/MET/20250826-mesa-trabajo-medicamentos-inyectables-uci.pdf) |
+| Fentanilo | 0,5 mg/10 mL; 0,1 mg/2 mL | MinSalud 2025; registros INVIMA (Fentanex) |
+| Cisatracurio | 10 mg/5 mL | MinSalud 2025 (Vitalis) |
+| Succinilcolina | 100 mg/2 mL; 1 g/10 mL; 20 mg/mL (vital no disponible) | MinSalud 2025; INVIMA, vitales no disponibles (https://www.invima.gov.co/biblioteca/preview/122790) |
+| Dexmedetomidina | 200 mcg/2 mL; premezclas 200 mcg/50 mL y 400 mcg/100 mL | Documento local Precedex Colombia (https://labeling.pfizer.com/ShowLabeling.aspx?id=11927) |
+| Sugammadex | 200 mg/2 mL; 500 mg/5 mL | Ficha de producto (2 y 5 mL a 100 mg/mL) |
+| Etomidato, ketamina, propofol, norepinefrina | Sin cambios | MinSalud 2025 (etomidato desabastecido) |
+Cada fármaco admite "Otra presentación" dentro de un rango de concentración plausible; fuera de él la app la rechaza.
+
 ## 4. Pendiente
 - R-04 (vecuronio SIR), R-08 (fentanilo de pretratamiento) y R-14 (vasopresores): sin fuente primaria localizada.
 - Lectura completa de los textos marcados "fuente identificada".
