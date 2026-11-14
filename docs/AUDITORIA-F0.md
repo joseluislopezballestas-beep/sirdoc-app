@@ -68,3 +68,33 @@ coherencia dosis/volumen, resumen sin firma).
 | F2 | Flujo Paciente → Escenario → Riesgos → Plan → Preparación → Infusiones → Referencias; modo consulta rápida; cronómetro robusto; clasificación de mensajes | F1 | Pruebas de usabilidad con profesionales |
 | F3 | Publicación condicionada a pruebas, aviso de actualización, fuente única de código, política de datos, historial de versiones | F1 | Offline y online consistentes y verificables |
 | F4 | Evaluación INVIMA y Apple; iOS Capacitor, TestFlight | F0-b, F3 | Evaluación regulatoria documentada |
+
+## Actualización v1.3.7 (2026-11-14) — verificación del estado de cada hallazgo
+Verificado contra el código de `main` (commit b68df88) y la integración continua: 36/36 pruebas superadas en GitHub Actions.
+
+| ID | Estado en v1.3.7 | Evidencia |
+|---|---|---|
+| H-01 | **Corregido** | Sugammadex 16 mg/kg solo tras rocuronio; aviso explícito si el plan usa vecuronio (R-01, verificada) |
+| H-02 | **Corregido** | Rocuronio 1,6 mg/kg retirado; 1,2 mg/kg en todos los estados (v1.3.0, P-01) |
+| H-03 | **Parcial** | Fuentes identificadas (ensayo RSI, metaanálisis); las dosis reducidas quedan rotuladas como práctica clínica sin ensayo (R-05 a R-07) |
+| H-04 | Pendiente | Vecuronio SIR 0,15 mg/kg sin fuente primaria (R-04) |
+| H-05 | **Parcial** | R-11 verificada en parte (Erstad & Barletta 2021); diferencia con la ficha de rocuronio (peso real) documentada y avisada |
+| H-06 | Pendiente | La interfaz sigue mostrando "1.ª elección" por escenario; cada opción tiene fundamento y referencia, pero no se rediseñó |
+| H-07 | Parcial | Etiquetas de texto en alertas; falta la clasificación clínica (contraindicación / precaución / recomendación) |
+| H-08 a H-16 | **Corregido** | Invalidación, validación, parseo estricto, barreras de dosis, redondeo, peso exacto, confirmación de extremos, aviso de versión; 36 pruebas y CI |
+| H-17 | Mitigado | Aviso visible del mínimo de 35 kg; regla sin validar |
+| H-18 | **Corregido** | Cronómetro persistente y aclaración de alcance |
+| H-19 | Pendiente | La portada sigue durando 2,7 s en cada apertura (se puede tocar para saltar); requiere decisión del autor |
+| H-20 | Pendiente | Marca de agua de fondo (opacidad 3,5 %) sin evaluación de contraste WCAG |
+| H-21 | **Corregido** | Aviso de nueva versión y archivos versionados |
+| H-22 | Pendiente | Las pruebas corren en Actions, pero Pages publica desde la rama sin esperar a que pasen |
+| H-23 | Pendiente | `SIRDOC/www` y `sirdoc-app` se sincronizan a mano |
+| H-24 | Pendiente | `logic.js` todavía genera HTML |
+| H-25 | **Corregido** | Sección de privacidad y aviso al copiar |
+| H-26 | **Parcial** | Contrastadas fichas FDA (rocuronio, succinilcolina, cisatracurio, sugammadex); ficha INVIMA no contrastada |
+| H-27 | Pendiente | Directriz de Apple sin evaluar |
+| H-28 | Pendiente | Epinefrina en bolo 10–20 mcg sin fuente primaria (R-14) |
+
+Resumen: 14 corregidos, 5 parciales o mitigados (H-03, H-05, H-07, H-17, H-26), 9 pendientes (H-04, H-06, H-19, H-20, H-22, H-23, H-24, H-27, H-28).
+Fases: F0 completada; F0-b avanzada (reglas con fuente y aprobación del autor; falta revisión independiente por especialista); F1 a F4 sin iniciar.
+Añadido después de la auditoría: escenarios Sepsis (R-17) e IAM (R-18), guías ESAIC 2023 y ASA 2022/2023, succinilcolina 1 mg/kg.
