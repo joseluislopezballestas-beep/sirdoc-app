@@ -1,6 +1,6 @@
-# Matriz científica — reglas farmacológicas de SirDoc (algoritmo v1.3.6)
+# Matriz científica — reglas farmacológicas de SirDoc (algoritmo v1.3.7)
 
-**Estado global: experimental, sin validación clínica formal.** Reglas aprobadas por el autor: R-01, R-02, R-03, R-11, R-12 y R-13 (Md. Jose Luis Lopez Ballestas, médico, 2026-11-14). Se recomienda revisión independiente. El estado de cada regla y los enlaces a sus fuentes se muestran dentro de la app (Ajustes).
+**Estado global: experimental, sin validación clínica formal.** Reglas aprobadas por el autor: R-01, R-02, R-03, R-11, R-12 y R-13 (Md. Jose Luis Lopez Ballestas, médico, 2026-11-14). Se recomienda revisión independiente. Dentro de la app cada regla muestra el estado de su fuente, la fecha de revisión y los enlaces (Ajustes); la aprobación clínica se documenta solo en esta matriz.
 Estados: **Verificada** (texto pertinente contrastado) · **Parcial** · **Fuente identificada** (texto completo no revisado) · **Pendiente**. No se inventan referencias. Detalle y enlaces: `EVIDENCIA-2026-11-14.md`.
 
 | ID | Regla en la app | Fuente | Verificación | Aprobación clínica |

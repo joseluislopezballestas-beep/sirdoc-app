@@ -240,7 +240,8 @@ function calcErr(title){
 /* Etiqueta de trazabilidad: regla de la matriz científica, su estado y su aprobación (texto, no solo color). */
 function ruleTag(id){
  const x=RULES[id];if(!x)return '';
- const ver=x.v==='verificada'?'Fuente verificada':x.v==='parcial'?'Fuente verificada en parte':x.v==='secundaria'?'Fuente identificada; texto completo no revisado':'Fuente pendiente de verificar';
- const cls=x.v==='verificada'&&/^Aprobada/.test(x.a)?'ok':'pend';
- return `<div class="rule ${cls}"><b>${id}</b> · ${ver} · ${/^Aprobada/.test(x.a)?x.a:'Aprobación clínica pendiente'}</div>`;
+ return `<div class="rule ${x.v==='verificada'?'ok':'pend'}"><b>${id}</b> · ${ruleSrc(x)} · Revisión ${ruleDate(x)}</div>`;
 }
+/* Estado de la fuente (texto) y fecha de revisión de la regla. La aprobación clínica se documenta en la matriz, no en pantalla. */
+function ruleSrc(x){return x.v==='verificada'?'Fuente verificada':x.v==='parcial'?'Fuente verificada en parte':x.v==='secundaria'?'Fuente identificada; texto completo no revisado':'Fuente pendiente de verificar';}
+function ruleDate(x){const m=/(\d{4})-(\d{2})-(\d{2})/.exec(x.r||x.a||'')||/(\d{4})-(\d{2})-(\d{2})/.exec(ALG.fecha);return `${m[3]}/${m[2]}/${m[1]}`;}

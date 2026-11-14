@@ -2,6 +2,9 @@
 
 Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) o **clínico** (requiere aprobación de especialista).
 
+## 1.3.7 — 2026-11-14 · Presentación de las reglas (técnico)
+- En pantalla (plan, infusiones y Ajustes) cada regla muestra solo el estado de la fuente y la fecha de revisión. La aprobación clínica sigue documentada en la matriz científica y en este registro.
+
 ## 1.3.6 — 2026-11-14 · Sepsis e IAM revisados y aprobados (clínico)
 Aprobado por Md. Jose Luis Lopez Ballestas (autor, médico) el 2026-11-14 por instrucción escrita, tras revisión de evidencia.
 - Sepsis: sedación por defecto fentanilo + propofol a dosis baja (sin midazolam); líquidos ≥ 30 mL/kg en 3 h si hay hipoperfusión; hidrocortisona 200 mg/día; vasopresina con norepinefrina 0,25–0,5 mcg/kg/min.

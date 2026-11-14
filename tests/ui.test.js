@@ -109,9 +109,9 @@ test('[clínico] sugammadex 16 mg/kg solo como reversión inmediata tras rocuron
 test('[matriz] cada dosis muestra su regla, estado de fuente y aprobación', async () => {
   const a = await app(); a.fill('poli', OK); a.calc();
   const t = a.text('plan');
-  assert.match(t, /R-05 · Fuente identificada; texto completo no revisado · Aprobación clínica pendiente/);   // etomidato
+  assert.match(t, /R-05 · Fuente identificada; texto completo no revisado · Revisión 14\/11\/2026/);   // etomidato
   assert.match(t, /R-04 · Fuente pendiente de verificar/); assert.match(t, /R-09 ·/); assert.match(t, /R-10 ·/);
-  assert.match(t, /R-01 · Fuente verificada · Aprobada por Md\. Jose Luis Lopez Ballestas/);                       // sugammadex
+  assert.match(t, /R-01 · Fuente verificada · Revisión 14\/11\/2026/);                       // sugammadex
   assert.match(a.text('maint'), /R-12 ·/);
   const rules = a.d.querySelectorAll('#rules li'); assert.equal(rules.length, 18);
 });
@@ -201,11 +201,18 @@ test('[v1.3.6] sepsis: sedación sin midazolam por defecto, hidrocortisona y lí
   const a = await app(); a.fill('sepsis', { ...OK, pas: 85, pad: 50, fc: 120 }); a.calc();
   const t = a.text('plan');
   assert.match(t, /hidrocortisona 200 mg\/día/); assert.match(t, /30 mL\/kg en las primeras 3 h/); assert.match(t, /0,25–0,5 mcg\/kg\/min/);
-  assert.match(t, /R-17 · .*Aprobada por Md\. Jose Luis Lopez Ballestas/);
+  assert.match(t, /R-17 · Fuente identificada; texto completo no revisado · Revisión 14\/11\/2026/);
   const m = a.text('maint'); assert.match(m, /Propofol · sedación/); assert.doesNotMatch(m, /Midazolam · sedación/);
   const b = await app(); b.fill('iam', { ...OK, pas: 135, pad: 85, fc: 105 }); b.calc();
   const u = b.text('plan');
   assert.match(u, /Fentanilo/); assert.match(u, /rango 1–3/); assert.match(u, /SpO₂ 92–96 %/); assert.match(u, /No usar betabloqueadores ni esmolol/);
-  assert.match(u, /No intubar de forma profiláctica/); assert.match(u, /R-18 · .*Aprobada/);
+  assert.match(u, /No intubar de forma profiláctica/); assert.match(u, /R-18 · .*Revisión 14\/11\/2026/);
   assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []);
+});
+
+test('[v1.3.7] en pantalla solo estado de la fuente y fecha de revisión (sin aprobación)', async () => {
+  const a = await app(); a.fill('poli', OK); a.calc();
+  const all = a.text('plan') + a.text('maint') + [...a.d.querySelectorAll('#rules li')].map(x => x.textContent).join(' ');
+  assert.doesNotMatch(all, /Aprobada|Aprobación|Md\. Jose Luis/);
+  assert.match(a.d.querySelector('#rules li').textContent, /Fuente verificada · Revisión 14\/11\/2026/);
 });

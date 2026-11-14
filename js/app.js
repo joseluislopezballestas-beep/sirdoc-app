@@ -259,7 +259,7 @@ function initSettings(){
  $('showDisc').addEventListener('click',()=>$('disc').classList.remove('hide'));
  $('okDisc').addEventListener('click',()=>{ST.disc=true;save();$('disc').classList.add('hide')});
  if(!ST.disc)$('disc').classList.remove('hide');
- const est=x=>(x.v==='verificada'?'Fuente verificada':x.v==='parcial'?'Fuente verificada en parte':x.v==='secundaria'?'Fuente identificada; texto completo no revisado':'Fuente pendiente de verificar')+' · '+x.a;
+ const est=x=>ruleSrc(x)+' · Revisión '+ruleDate(x);
  $('rules').innerHTML=Object.keys(RULES).map(k=>`<li><b>${k}</b>${RULES[k].t}<small>${RULES[k].f}</small><small>${est(RULES[k])}</small>${(RULES[k].u||[]).map(([n,l])=>`<a href="${l}" target="_blank" rel="noopener">${n}</a>`).join('')}</li>`).join('');
  $('algv').textContent=`SirDoc ${ALG.version} · algoritmo v${ALG.version} (${ALG.fecha}) · ${ALG.estado}`;
 }
