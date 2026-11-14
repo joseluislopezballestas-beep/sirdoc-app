@@ -100,6 +100,27 @@ Resultado: R-10 pasa a "verificada en parte" (ictus isquémico contrastado; HIC,
 | S.C.A.R.E. "adopta y armoniza explícitamente" ASA/ESAIC 2022–2026 | **No verificable**: no se encontró documento que lo afirme | No se incluye |
 | Dosis de succinilcolina | ESAIC cita 1 mg/kg (contexto perioperatorio); ficha FDA 0,3–1,1 mg/kg; la app usaba 1,5 mg/kg | **Cambiado en v1.3.4 a 1 mg/kg por peso real** (rango mostrado 0,3–1,1), aprobado por Md. Jose Luis Lopez Ballestas (autor, médico) el 2026-11-14 |
 
+### Escenarios nuevos: sepsis e infarto agudo de miocardio (v1.3.5)
+Reglas nuevas R-17 y R-18, con **aprobación clínica pendiente**.
+
+**Sepsis / choque séptico (R-17).** Fuentes: Surviving Sepsis Campaign 2026 (Prescott et al., Crit Care Med 2026; https://doi.org/10.1097/CCM.0000000000007089; https://www.sccm.org/survivingsepsiscampaign/guidelines/adult-patients) y ensayo RSI (Casey et al., NEJM).
+| Elemento | Evidencia | En la app |
+|---|---|---|
+| Meta de PA | PAM inicial 65 mmHg (fuerte, certeza moderada), margen de ± 5 mmHg; 60–65 mmHg en ≥ 65 años (condicional, baja) | Igual, según la edad |
+| Vasopresores | Norepinefrina de primera línea; inicio periférico sin esperar el catéter central; añadir vasopresina y luego epinefrina | Igual; norepinefrina antes de inducir si hay inestabilidad |
+| Corticoides | IV sugeridos en choque séptico (condicional, baja) | Mencionado |
+| Inductor | Ensayo RSI, subgrupo sepsis: colapso 30,6 % con ketamina vs 20,9 % con etomidato; mortalidad similar (38,8 % vs 38,2 %) | Etomidato de elección; ketamina alternativa a dosis reducida; propofol a evitar |
+| Dosis | — | Mínimo nivel "riesgo" (dosis reducidas) aunque la PA sea normal; "Con vasopresor en curso" = shock |
+| Ventilación | — | 6 mL/kg y meseta < 30 si hay SDRA |
+
+**Infarto agudo de miocardio (R-18).** Fuente: 2025 ACC/AHA/ACEP/NAEMSP/SCAI Guideline for the Management of Patients With Acute Coronary Syndromes (Rao et al., Circulation 2025; https://doi.org/10.1161/CIR.0000000000001309; JACC https://doi.org/10.1016/j.jacc.2024.11.009).
+| Elemento | Evidencia | En la app |
+|---|---|---|
+| Oxígeno | Solo con SpO₂ < 90 % | Titular FiO₂ a SpO₂ ≥ 90 % evitando hiperoxia |
+| Shock cardiogénico | Revascularización urgente de la culpable; bomba de flujo microaxial en casos seleccionados | Mencionado; la intubación no debe retrasar la reperfusión |
+| Inductor, PEEP, fentanilo 0,5–1 mcg/kg si PAS ≥ 140 | Sin ensayo específico en IAM: fisiología y práctica clínica | Etomidato reducido; ketamina solo a dosis baja; propofol a evitar; opción "Compromiso de VD" (PEEP baja, sin nitratos) |
+| Preparación | Práctica clínica | Parches de desfibrilación, antitrombóticos en curso (evitar vía nasal), coordinación con hemodinamia |
+
 ## 4. Pendiente
 - R-04 (vecuronio SIR), R-08 (fentanilo de pretratamiento) y R-14 (vasopresores): sin fuente primaria localizada.
 - Lectura completa de los textos marcados "fuente identificada".

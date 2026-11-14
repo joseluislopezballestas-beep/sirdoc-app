@@ -113,7 +113,7 @@ test('[matriz] cada dosis muestra su regla, estado de fuente y aprobación', asy
   assert.match(t, /R-04 · Fuente pendiente de verificar/); assert.match(t, /R-09 ·/); assert.match(t, /R-10 ·/);
   assert.match(t, /R-01 · Fuente verificada · Aprobada por Md\. Jose Luis Lopez Ballestas/);                       // sugammadex
   assert.match(a.text('maint'), /R-12 ·/);
-  const rules = a.d.querySelectorAll('#rules li'); assert.equal(rules.length, 16);
+  const rules = a.d.querySelectorAll('#rules li'); assert.equal(rules.length, 18);
 });
 
 test('[H-07] las alertas llevan etiqueta de texto (no solo color)', async () => {
@@ -175,4 +175,24 @@ test('[v1.3.4] succinilcolina 1 mg/kg por peso real (ESAIC 2023)', async () => {
   const a = await app(); a.fill('poli', OK); a.calc();
   const t = a.text('plan');
   assert.match(t, /Succinilcolina ?Alternativa 70 mg · 7(\.0)? mL de 10 mg\/mL 1 mg\/kg × 70 kg \(peso real\) · rango 0\.3–1\.1/);
+});
+
+test('[v1.3.5] sepsis: etomidato de elección, metas SSC 2026 y vasopresor en curso = shock', async () => {
+  const a = await app(); a.fill('sepsis', { ...OK, edad: 70 }); a.calc();
+  let t = a.text('plan');
+  assert.match(t, /Sepsis \/ choque séptico/); assert.match(t, /PAM inicial 60–65 mmHg en ≥ 65 años/);
+  assert.match(t, /Etomidato1\.ª elección/); assert.match(t, /R-17 ·/); assert.match(t, /Dosis de inductor reducidas por sepsis/);
+  a.fill('sepsis', { ...OK }); a.$('vaso').checked = true; a.$('vaso').dispatchEvent(new a.w.Event('change', { bubbles: true })); a.calc();
+  t = a.text('plan'); assert.match(t, /Shock \(PAS/); assert.match(t, /Norepinefrina 0\.05 mcg\/kg\/min/);
+  assert.deepEqual(a.errors, []);
+});
+
+test('[v1.3.5] IAM: oxígeno según ACC/AHA 2025, fentanilo si PA alta y VD', async () => {
+  const a = await app(); a.fill('iam', { ...OK, pas: 160, pad: 95 }); a.calc();
+  let t = a.text('plan');
+  assert.match(t, /Infarto agudo de miocardio/); assert.match(t, /SpO₂ < 90 % \(ACC\/AHA 2025\)/);
+  assert.match(t, /Parches de desfibrilación/); assert.match(t, /consumo miocárdico de O₂/); assert.match(t, /R-18 ·/);
+  a.$('vd').checked = true; a.$('vd').dispatchEvent(new a.w.Event('change', { bubbles: true })); a.calc();
+  assert.match(a.text('plan'), /Compromiso de VD/);
+  assert.deepEqual(a.errors, []);
 });

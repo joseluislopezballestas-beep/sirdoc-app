@@ -7,7 +7,7 @@ function read(){
  p._fmt=fmt;
  ['hta','dm','erc','hepa','hiperK','neuro','quem','via','acid'].forEach(k=>p[k]=$(k).checked);
  p.etomOk=ST.etomOk;p.rocOk=ST.rocOk;p.succOk=ST.succOk;
- ['tce','sci72','trombo','trauma'].forEach(k=>{const e=$(k);p[k]=e?e.checked:false});
+ ['tce','sci72','trombo','trauma','vaso','vd'].forEach(k=>{const e=$(k);p[k]=e?e.checked:false});
  return p;
 }
 function derive(p){
@@ -23,8 +23,9 @@ function derive(p){
  let s='estable';
  if(p.pas<90||p.pam<65||(p.si&&p.si>=1))s='shock';
  else if(p.pas<100||(p.si&&p.si>=0.8))s='riesgo';
+ if(p.esc==='sepsis'&&p.vaso)s='shock';
  p.state=s;
- let d=s; if(d==='estable'&&(p.esc==='ic'||p.esc==='sangra'||p.edad>=75))d='riesgo';
+ let d=s; if(d==='estable'&&(p.esc==='ic'||p.esc==='sangra'||p.esc==='sepsis'||p.esc==='iam'||p.edad>=75))d='riesgo';
  p.doseState=d;
  return p;
 }
@@ -79,6 +80,8 @@ function inductorsBase(p){
   case 'isq':L.push(['etom','first','Preserva la PA: la penumbra isquémica depende de la presión de perfusión.'],['keta','alt','Alternativa; vigila la hipertensión si es candidato a trombólisis (< 185/110).'],['prop','avoid','La hipotensión empeora la penumbra isquémica.']);break;
   case 'ic':L.push(['etom','first','Mínima depresión miocárdica; usar dosis reducida.'],['keta','alt','Dosis baja; con catecolaminas agotadas puede actuar como depresor miocárdico directo.'],['prop','avoid','Vasodilatación e inotropismo negativo: alto riesgo de colapso.']);break;
   case 'sangra':L.push(['etom','first','Menos hipotensión peri-intubación que la ketamina (ensayo RSI, NEJM 2026).'],['keta','alt','Dosis reducida; preserva el tono simpático.'],['prop','avoid','Colapso cardiovascular en hipovolemia.']);break;
+  case 'sepsis':L.push(['etom','first','En sepsis, el ensayo RSI mostró menos colapso cardiovascular que con ketamina (20,9 % vs 30,6 %) sin diferencia de mortalidad. Dosis reducida.'],['keta','alt','Mortalidad similar, pero más colapso en sepsis: dosis reducida y vasopresor en curso.'],['prop','avoid','Vasoplejía y depresión miocárdica en el choque séptico.']);break;
+  case 'iam':L.push(['etom','first','Mínima depresión miocárdica y sin taquicardia: preserva la perfusión coronaria. Dosis reducida.'],['keta','alt','Eleva la FC y el consumo miocárdico de O₂; en shock cardiogénico puede deprimir el miocardio. Solo a dosis baja.'],['prop','avoid','La hipotensión reduce la presión de perfusión coronaria.']);break;
   case 'raqui':L.push(['etom','first','Estabilidad hemodinámica ante el riesgo de shock neurogénico.'],['keta','alt','Alternativa con dosis según hemodinamia.'],['prop','avoid','Potencia la vasoplejía del shock neurogénico.']);break;
   default:L.push(['etom','first','Menos hipotensión peri-intubación que la ketamina (ensayo RSI, NEJM 2026).'],['keta','alt',p.tce?'Aceptable en TCE: no eleva la PIC de forma clínicamente relevante.':'Alternativa válida; reducir dosis si hay shock.'],['prop','avoid','Hipotensión en trauma con pérdida sanguínea oculta.']);
  }
@@ -109,6 +112,7 @@ function pretreat(p){
  if(p.state!=='estable')return null;
  if(p.esc==='ich'&&p.pas>=140)return {k:2,r:'1–3',why:'Atenúa la respuesta simpática (pico de PA y PIC) a la laringoscopia. Administrar lento, 3 min antes del inductor.'};
  if(p.esc==='poli'&&p.tce&&p.pas>=140)return {k:1,r:'1–2',why:'TCE con PA alta: atenúa el pico hipertensivo. Omitir si hay sospecha de sangrado oculto.'};
+ if(p.esc==='iam'&&p.pas>=140)return {k:1,r:'0.5–1',why:'Atenúa la taquicardia y la hipertensión de la laringoscopia, que aumentan el consumo miocárdico de O₂. Omitir si hay signos de bajo gasto.'};
  if(p.esc==='isq'&&p.trombo&&p.pas>=185)return {k:1,r:'0.5–1',why:'Candidato a reperfusión con PA ≥ 185/110: ayuda a no superar el umbral durante la laringoscopia.'};
  return null;
 }
@@ -128,6 +132,8 @@ function targets(p){
    else t.push('Sin reperfusión: con PA < 220/120 mmHg, bajarla en las primeras 48–72 h no mejora el pronóstico; con ≥ 220/120 o comorbilidad que lo exija (falla cardiaca aguda, disección aórtica), reducción inicial ≈ 15 % (AHA/ASA 2026).');
    t.push('Evitar hipotensión durante la inducción.');break;
   case 'ic':t.push('PAM ≥ 65 mmHg. Evitar hipoxemia e hipercapnia (empeoran la falla del VD).');break;
+  case 'sepsis':t.push(p.edad>=65?'PAM inicial 60–65 mmHg en ≥ 65 años (SSC 2026).':'PAM inicial 65 mmHg, con un margen de ± 5 mmHg (SSC 2026).');t.push('Norepinefrina de primera línea; puede iniciarse por vía periférica sin esperar el catéter central. Si la PAM no se alcanza, añadir vasopresina y luego epinefrina (SSC 2026).');t.push('Corticoides IV sugeridos en choque séptico. Antimicrobianos sin demora (idealmente en la primera hora) y control del foco (SSC 2026).');break;
+  case 'iam':t.push('PAM ≥ 65 mmHg: evitar la hipotensión (perfusión coronaria) y también la taquicardia y la hipertensión (consumo de O₂).');t.push('Tras intubar, titular la FiO₂ a SpO₂ ≥ 90 % evitando la hiperoxia: el oxígeno solo está indicado con SpO₂ < 90 % (ACC/AHA 2025).');t.push('Shock cardiogénico: revascularización urgente de la arteria culpable; asistencia circulatoria mecánica en casos seleccionados (ACC/AHA 2025). La intubación no debe retrasar la reperfusión.');if(p.vd)t.push('Compromiso de VD: dependiente de precarga; evitar nitratos y PEEP alta.');break;
  }
  return t;
 }
@@ -187,6 +193,8 @@ function prep(p){
  if(p.esc==='poli'||p.esc==='sangra')a.push('Hemoderivados en curso. Si es trauma de < 3 h: ácido tranexámico 1 g IV en 10 min + 1 g en 8 h.');
  if(p.esc==='raqui')a.push('Atropina 0.5–1 mg cargada (ampolla 1 mg/1 mL, sin diluir): bradicardia vagal por laringoscopia o aspiración'+(p.fc&&p.fc<60?' — <b>ya hay bradicardia</b>.':'.'));
  if(p.esc==='ic')a.push('Si PAS < 100: iniciar norepinefrina antes de inducir; considerar dobutamina si hay bajo gasto. En edema pulmonar hipertensivo, nitroglicerina antes (no después) de intubar.');
+ if(p.esc==='sepsis')a.push('Cristaloides de primera línea si hay hipoperfusión, guiados por la respuesta a volumen (SSC 2026). Antimicrobianos y control del foco sin retrasarlos por la intubación.');
+ if(p.esc==='iam')a.push('Parches de desfibrilación colocados (arritmias ventriculares en la inducción). Antitrombóticos en curso: laringoscopia cuidadosa y evitar la vía nasal. Coordinar con hemodinamia.');
  if(p.esc==='ich'||p.esc==='isq')a.push('Antihipertensivo titulable preparado (labetalol 100 mg/20 mL o nicardipino si lo hay) y vasopresor: el objetivo es evitar picos y caídas.');
  if(p.dm)a.push('DM: posible gastroparesia → mayor riesgo de aspiración; considerar SNG antes de la inducción. Glucemia capilar.');
  if(p.hta)a.push('HTA: respuesta hipertensiva exagerada a la laringoscopia y vasoplejía post-inducción (sobre todo con IECA/ARA-II).');
@@ -197,7 +205,7 @@ function alerts(p){
  if(p.state==='shock')a.push(['bad',`Shock (PAS ${p.pas}, PAM ${Math.round(p.pam)}${p.si?', IS '+p.si.toFixed(2):''}): riesgo alto de paro peri-intubación. Dosis de inductor reducidas.`]);
  else if(p.state==='riesgo')a.push(['w','Riesgo de hipotensión post-intubación (PAS < 100 o IS ≥ 0.8). Dosis reducidas.']);
  if(p.doseState!==p.state&&p.state==='estable'){
-  const why=p.esc==='ic'?'falla cardiaca':p.esc==='sangra'?'hemorragia (la PA puede ser engañosamente normal)':'edad ≥ 75 años';
+  const why=p.esc==='ic'?'falla cardiaca':p.esc==='sepsis'?'sepsis (colapso frecuente aunque la PA sea normal)':p.esc==='iam'?'infarto agudo de miocardio':p.esc==='sangra'?'hemorragia (la PA puede ser engañosamente normal)':'edad ≥ 75 años';
   a.push(['w',`Dosis de inductor reducidas por ${why}.`]);
  }
  if(!p.fc)a.push(['i','Sin FC no se calcula el índice de shock: el riesgo hemodinámico puede estar subestimado.']);
@@ -216,6 +224,8 @@ function vent(p){
  switch(p.esc){
   case 'epoc':a.push('FR 10–12, I:E 1:4–1:5, flujo inspiratorio alto, PEEP baja. Medir auto-PEEP y presión meseta (< 30).','Hipotensión tras intubar: desconectar del ventilador 20–30 s (hiperinsuflación) y reevaluar.');break;
   case 'ich':case 'isq':a.push('Normocapnia (PaCO₂ 35–45 mmHg); hiperventilación solo como puente en herniación.');break;
+  case 'sepsis':a.push('Si hay SDRA asociado: 6 mL/kg de peso ideal y presión meseta < 30 cmH₂O.');break;
+  case 'iam':a.push(p.vd?'Compromiso de VD: PEEP baja; la presión positiva puede desplomar el gasto. Volumen si hay hipotensión.':'PEEP 5–8 cmH₂O (reduce la poscarga del VI); vigilar la caída de la precarga.');break;
   case 'ic':a.push('PEEP 5–8 cmH₂O (reduce la poscarga del VI); vigilar la caída de la precarga y la falla del VD.');break;
   case 'poli':if(p.tce)a.push('Normocapnia (PaCO₂ 35–45 mmHg).');break;
  }

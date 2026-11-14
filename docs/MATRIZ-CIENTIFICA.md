@@ -1,4 +1,4 @@
-# Matriz científica — reglas farmacológicas de SirDoc (algoritmo v1.3.4)
+# Matriz científica — reglas farmacológicas de SirDoc (algoritmo v1.3.5)
 
 **Estado global: experimental, sin validación clínica formal.** Reglas aprobadas por el autor: R-01, R-02, R-03, R-11, R-12 y R-13 (Md. Jose Luis Lopez Ballestas, médico, 2026-11-14). Se recomienda revisión independiente. El estado de cada regla y los enlaces a sus fuentes se muestran dentro de la app (Ajustes).
 Estados: **Verificada** (texto pertinente contrastado) · **Parcial** · **Fuente identificada** (texto completo no revisado) · **Pendiente**. No se inventan referencias. Detalle y enlaces: `EVIDENCIA-2026-11-14.md`.
@@ -20,4 +20,6 @@ Estados: **Verificada** (texto pertinente contrastado) · **Parcial** · **Fuent
 | R-13 | Rocuronio 8–12 mcg/kg/min; cisatracurio 3 (0,5–10) mcg/kg/min; vecuronio 0,8–1,7 mcg/kg/min; indicación SDRA grave temprano; precaución con corticoides | [Ficha cisatracurio](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=23daa1f8-2a07-449d-97a6-11efdb0b9836); [ATS 2024](https://doi.org/10.1164/rccm.202311-2011ST) | Parcial | Aprobada (autor) 2026-11-14 |
 | R-14 | Norepinefrina 0,05–0,5 mcg/kg/min; epinefrina en bolo 10–20 mcg | Práctica estándar | Pendiente | Pendiente |
 | R-15 | Ácido tranexámico 1 g en 10 min + 1 g en 8 h (trauma < 3 h) | [CRASH-2](https://doi.org/10.1016/S0140-6736(10)60835-5); [Guía europea 2019](https://doi.org/10.1186/s13054-019-2347-3); [PATCH-Trauma](https://doi.org/10.1056/NEJMoa2215457) | Fuente identificada | Pendiente |
+| R-17 | Sepsis / choque séptico: PAM 65 (60–65 en ≥ 65 a); norepinefrina 1.ª línea, periférica; vasopresina y epinefrina; corticoides; etomidato de elección; dosis mínimo "riesgo" | [SSC 2026](https://doi.org/10.1097/CCM.0000000000007089); [Ensayo RSI](https://www.nejm.org/doi/10.1056/NEJMoa2511420) | Fuente identificada | Pendiente |
+| R-18 | IAM: O₂ solo si SpO₂ < 90 %; PAM ≥ 65 sin taquicardia ni hipertensión; etomidato reducido; fentanilo si PAS ≥ 140; VD con PEEP baja | [ACC/AHA 2025](https://doi.org/10.1161/CIR.0000000000001309) | Fuente identificada (inductor por práctica) | Pendiente |
 | R-16 | Presentaciones colombianas | INVIMA; MinSalud 2025 | Parcial | No aplica |

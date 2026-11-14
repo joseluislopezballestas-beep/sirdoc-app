@@ -68,7 +68,7 @@ function renderPlan(){
  </div>`;
  const LBL={bad:'Riesgo alto',w:'Precaución',i:'Información'};
  alerts(p).forEach(a=>h+=`<div class="alert ${a[0]==='bad'?'':a[0]}"><b class="lbl">${LBL[a[0]]}:</b> ${a[1]}</div>`);
- h+=`<div class="sec"><h3>Metas</h3><ul class="t">${targets(p).map(x=>`<li>${x}</li>`).join('')}</ul>${ruleTag('R-10')}</div>`;
+ h+=`<div class="sec"><h3>Metas</h3><ul class="t">${targets(p).map(x=>`<li>${x}</li>`).join('')}</ul>${ruleTag(p.esc==='sepsis'?'R-17':p.esc==='iam'?'R-18':'R-10')}</div>`;
 
  const step=(tm,title,body,open)=>`<details class="step"${open?' open':''}><summary><span class="tm">${tm}</span>${title}</summary><div class="body">${body}</div></details>`;
  h+=`<div class="sec"><h3>Secuencia</h3>`;
@@ -235,7 +235,7 @@ document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',
 }));
 $('calc').addEventListener('click',()=>{if(compute())show('v-plan');else window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})});
 function renderExtra(){
- const x={poli:[['tce','TCE asociado']],raqui:[['tce','TCE asociado'],['sci72','Más de 48 h desde la lesión']],sangra:[['trauma','Origen traumático']],isq:[['trombo','Candidato a trombólisis o trombectomía']]}[S.esc]||[];
+ const x={poli:[['tce','TCE asociado']],raqui:[['tce','TCE asociado'],['sci72','Más de 48 h desde la lesión']],sangra:[['trauma','Origen traumático']],isq:[['trombo','Candidato a trombólisis o trombectomía']],sepsis:[['vaso','Con vasopresor en curso']],iam:[['vd','Compromiso de ventrículo derecho']]}[S.esc]||[];
  $('extra').innerHTML=x.map(a=>`<label><input type="checkbox" id="${a[0]}">${a[1]}</label>`).join('');
 }
 document.querySelectorAll('#esc button').forEach(b=>b.addEventListener('click',()=>{S.esc=b.dataset.v;document.querySelectorAll('#esc button').forEach(x=>x.classList.toggle('on',x===b));renderExtra();invalidate();}));

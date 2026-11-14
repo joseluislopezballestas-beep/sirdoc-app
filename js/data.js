@@ -1,6 +1,6 @@
 'use strict';
 /* Versión del algoritmo clínico y estado de validación (se muestra en la app). */
-const ALG={version:'1.3.4',fecha:'2026-11-14',estado:'Experimental · sin validación clínica formal'};
+const ALG={version:'1.3.5',fecha:'2026-11-14',estado:'Experimental · sin validación clínica formal'};
 /* Matriz científica (docs/MATRIZ-CIENTIFICA.md). Estado de verificación y aprobación de cada regla.
    No se inventan fuentes: "pendiente" significa que aún no se contrastó con la fuente primaria. */
 const RULES={
@@ -19,6 +19,8 @@ const RULES={
  'R-13':{t:'Bloqueo neuromuscular en infusión (rocuronio 8–12 mcg/kg/min; cisatracurio 3 mcg/kg/min, 0,5–10)',f:'Ficha FDA de cisatracurio: 3 mcg/kg/min (0,5–10,2) en UCI. ATS 2024: BNM en SDRA grave temprano (condicional). Precaución: aminoesteroides con corticoides (miopatía). Antes de extubar: TOF ≥ 0,9 con monitorización cuantitativa (ASA 2023)',v:'parcial',a:'Aprobada por Md. Jose Luis Lopez Ballestas (autor, médico) 2026-11-14',u:[['Cisatracurio, ficha FDA (DailyMed)','https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=23daa1f8-2a07-449d-97a6-11efdb0b9836'],['ATS 2024. Guía de SDRA','https://doi.org/10.1164/rccm.202311-2011ST'],['ASA 2023. Monitorización y reversión del BNM (Anesthesiology)','https://doi.org/10.1097/ALN.0000000000004379']]},
  'R-14':{t:'Norepinefrina 0,05–0,5 mcg/kg/min; epinefrina en bolo 10–20 mcg',f:'Práctica estándar; sin fuente primaria localizada',v:'pendiente',a:'Pendiente'},
  'R-15':{t:'Ácido tranexámico en trauma < 3 h',f:'CRASH-2 (1 g en 10 min + 1 g en 8 h); guía europea 2019; PATCH-Trauma 2023 (menor mortalidad a 24 h y 28 días, sin cambio en el desenlace funcional)',v:'secundaria',a:'Pendiente',u:[['CRASH-2. Lancet 2010','https://doi.org/10.1016/S0140-6736(10)60835-5'],['Guía europea de hemorragia en trauma 2019','https://doi.org/10.1186/s13054-019-2347-3'],['PATCH-Trauma. NEJM 2023','https://doi.org/10.1056/NEJMoa2215457']]},
+ 'R-17':{t:'Sepsis y choque séptico: inductor, metas y vasopresores',f:'SSC 2026 (Prescott et al., Crit Care Med 2026): PAM inicial 65 mmHg (fuerte, certeza moderada) y 60–65 en ≥ 65 años; norepinefrina de primera línea, periférica si hace falta; vasopresina y luego epinefrina; corticoides IV sugeridos. Ensayo RSI: en sepsis, colapso 30,6 % con ketamina vs 20,9 % con etomidato, mortalidad similar. Dosis reducidas por práctica clínica',v:'secundaria',a:'Pendiente',u:[['SSC 2026. Guía de sepsis (SCCM)','https://www.sccm.org/survivingsepsiscampaign/guidelines/adult-patients'],['SSC 2026. Resumen ejecutivo (Crit Care Med)','https://doi.org/10.1097/CCM.0000000000007089'],['Casey et al. Ensayo RSI. NEJM','https://www.nejm.org/doi/10.1056/NEJMoa2511420']]},
+ 'R-18':{t:'Infarto agudo de miocardio: inductor, oxígeno y metas',f:'ACC/AHA/ACEP/NAEMSP/SCAI 2025 (Rao et al.): oxígeno solo con SpO₂ < 90 %; shock cardiogénico con revascularización urgente y asistencia mecánica seleccionada. Elección de inductor, PEEP y pretratamiento con fentanilo por fisiología y práctica clínica (sin ensayo específico en IAM)',v:'secundaria',a:'Pendiente',u:[['ACC/AHA 2025. Síndromes coronarios agudos (Circulation)','https://doi.org/10.1161/CIR.0000000000001309'],['ACC/AHA 2025. Síndromes coronarios agudos (JACC)','https://doi.org/10.1016/j.jacc.2024.11.009']]},
  'R-16':{t:'Presentaciones disponibles en Colombia',f:'INVIMA (vecuronio verificado); MinSalud 2025',v:'parcial',a:'No aplica'}
 };
 const RULE_BOLUS={etom:'R-05',keta:'R-06',prop:'R-07',fent:'R-08',roc:'R-02',succ:'R-03',vec:'R-04',suga:'R-01'};
@@ -53,5 +55,5 @@ const INF={
  nore:{dil:'DAD 5 % o SSN 0,9 %',minRate:5}
 };
 var NAMES={etom:'Etomidato',keta:'Ketamina',prop:'Propofol',fent:'Fentanilo',roc:'Rocuronio',succ:'Succinilcolina',suga:'Sugammadex',mida:'Midazolam',dex:'Dexmedetomidina',cis:'Cisatracurio',vec:'Vecuronio',nore:'Norepinefrina'};
-const ESC={poli:'Politraumatizado',raqui:'Trauma raquimedular',sangra:'Paciente sangrando',epoc:'EPOC',ich:'Ictus hemorrágico',isq:'Ictus isquémico',ic:'Falla cardiaca'};
+const ESC={poli:'Politraumatizado',raqui:'Trauma raquimedular',sangra:'Paciente sangrando',epoc:'EPOC',ich:'Ictus hemorrágico',isq:'Ictus isquémico',ic:'Falla cardiaca',sepsis:'Sepsis / choque séptico',iam:'Infarto agudo de miocardio'};
 

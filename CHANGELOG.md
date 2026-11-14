@@ -2,6 +2,11 @@
 
 Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) o **clínico** (requiere aprobación de especialista).
 
+## 1.3.5 — 2026-11-14 · Escenarios Sepsis e IAM (clínico, aprobación pendiente)
+- Nuevo escenario **Sepsis / choque séptico** (R-17): metas SSC 2026, norepinefrina periférica, vasopresina/epinefrina, corticoides, etomidato de elección (ensayo RSI, subgrupo sepsis), dosis reducidas; opción "Con vasopresor en curso".
+- Nuevo escenario **Infarto agudo de miocardio** (R-18): oxígeno según ACC/AHA 2025, perfusión coronaria y consumo de O₂, etomidato reducido, fentanilo si PAS ≥ 140, parches de desfibrilación; opción "Compromiso de ventrículo derecho".
+- Pruebas: 34/34.
+
 ## 1.3.4 — 2026-11-14 · Succinilcolina 1 mg/kg (clínico, aprobado)
 - Succinilcolina en SIR: 1 mg/kg por peso real (antes 1,5 mg/kg); rango mostrado 0,3–1,1 mg/kg de la ficha técnica. Fundamento: ESAIC 2023 (R3, 1B) y ficha FDA. Aprobado por Md. Jose Luis Lopez Ballestas (autor, médico) el 2026-11-14 por instrucción escrita.
 
