@@ -93,10 +93,10 @@ function inductors(p){
 function nmbList(p){
  const ci=succCI(p),shock=p.state==='shock',L=[];
  const succUse=p.succOk&&!ci.length;
- if(p.rocOk)L.push({id:'roc',role:'first',k:shock?1.6:1.2,r:shock?'1.2–1.6':'1–1.2',basis:'abw',why:(shock?'Dosis alta (1.6 mg/kg) en shock: el gasto bajo retrasa el inicio de acción. ':'')+'Sin riesgo de hiperkalemia, más tiempo de apnea segura y reversible con sugammadex. SCCM 2023: sin diferencia de éxito frente a la succinilcolina.'});
+ if(p.rocOk)L.push({id:'roc',role:'first',k:shock?1.6:1.2,r:shock?'1.2–1.6':'1–1.2',basis:'abw',why:(shock?'Dosis alta (1.6 mg/kg) en shock: el gasto bajo retrasa el inicio de acción. <b>La reversión inmediata con sugammadex 16 mg/kg se estudió tras 1,2 mg/kg; tras 1,6 mg/kg no está establecida en ficha técnica.</b> ':'')+'Sin riesgo de hiperkalemia y más tiempo de apnea segura. Reversible con sugammadex. SCCM 2023: sin diferencia de éxito frente a la succinilcolina.'});
  if(succUse)L.push({id:'succ',role:p.rocOk?'alt':'first',k:1.5,r:'1–1.5',basis:'tbw',max:200,why:(p.esc==='raqui'?'Segura en las primeras 48–72 h de la lesión medular. ':'')+(p.erc?'<b>ERC: úsala solo con potasio normal reciente.</b> ':'')+'Inicio 45 s, duración 8–10 min.'});
  const vecFirst=!p.rocOk&&!succUse;
- L.push({id:'vec',role:vecFirst?'first':'alt',k:0.15,r:'0.1–0.2',basis:'ibw',why:(vecFirst?'<b>Sin rocuronio ni succinilcolina utilizables.</b> ':'Respaldo ante desabastecimiento. ')+'Inicio lento (90–150 s con 0,15–0,2 mg/kg): ventila con presión positiva suave mientras tanto. Duración 60–90 min o más; el sugammadex también lo revierte.'});
+ L.push({id:'vec',role:vecFirst?'first':'alt',k:0.15,r:'0.1–0.2',basis:'ibw',why:(vecFirst?'<b>Sin rocuronio ni succinilcolina utilizables.</b> ':'Respaldo ante desabastecimiento. ')+'Inicio lento (90–150 s con 0,15–0,2 mg/kg): ventila con presión positiva suave mientras tanto. Duración 60–90 min o más. <b>Sugammadex solo está establecido para reversión de rutina guiada por TOF (2–4 mg/kg); la reversión inmediata con 16 mg/kg tras vecuronio no está establecida en ficha técnica.</b>'});
  const notes=[];
  if(ci.length)notes.push(`Succinilcolina <b>contraindicada</b> por ${ci.join('; ')}.`);
  else if(!p.succOk)notes.push('Succinilcolina no disponible en tu servicio.');
