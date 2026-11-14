@@ -109,8 +109,8 @@ test('[clínico] sugammadex 16 mg/kg solo como reversión inmediata tras rocuron
 test('[matriz] cada dosis muestra su regla, estado de fuente y aprobación', async () => {
   const a = await app(); a.fill('poli', OK); a.calc();
   const t = a.text('plan');
-  assert.match(t, /R-05 · Fuente pendiente de verificar · Aprobación clínica pendiente/);   // etomidato
-  assert.match(t, /R-02 ·/); assert.match(t, /R-09 ·/); assert.match(t, /R-10 ·/);
+  assert.match(t, /R-05 · Contrastada con fuente secundaria \(OpenEvidence\) · Aprobación clínica pendiente/);   // etomidato
+  assert.match(t, /R-04 · Fuente pendiente de verificar/); assert.match(t, /R-09 ·/); assert.match(t, /R-10 ·/);
   assert.match(t, /R-01 · Fuente verificada · Aprobada por el autor/);                       // sugammadex
   assert.match(a.text('maint'), /R-12 ·/);
   const rules = a.d.querySelectorAll('#rules li'); assert.equal(rules.length, 16);

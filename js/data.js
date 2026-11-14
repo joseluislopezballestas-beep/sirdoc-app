@@ -1,24 +1,24 @@
 'use strict';
 /* Versión del algoritmo clínico y estado de validación (se muestra en la app). */
-const ALG={version:'1.2.0',fecha:'2026-11-14',estado:'Experimental · sin validación clínica formal'};
+const ALG={version:'1.2.1',fecha:'2026-11-14',estado:'Experimental · sin validación clínica formal'};
 /* Matriz científica (docs/MATRIZ-CIENTIFICA.md). Estado de verificación y aprobación de cada regla.
    No se inventan fuentes: "pendiente" significa que aún no se contrastó con la fuente primaria. */
 const RULES={
  'R-01':{t:'Sugammadex 16 mg/kg: reversión inmediata solo tras rocuronio',f:'Ficha técnica Bridion (FDA rev. 11/2022; EMA)',v:'verificada',a:'Aprobada por el autor (médico) 2026-11-14'},
- 'R-02':{t:'Rocuronio 1,2 mg/kg; 1,6 mg/kg en shock',f:'Ficha técnica pendiente de contrastar (INVIMA); 1,6 mg/kg sin fuente',v:'pendiente',a:'Pendiente'},
- 'R-03':{t:'Succinilcolina 1,5 mg/kg (máx. 200 mg) y contraindicaciones',f:'Ficha técnica pendiente de contrastar',v:'pendiente',a:'Pendiente'},
- 'R-04':{t:'Vecuronio SIR 0,15 mg/kg (peso ideal)',f:'Sin fuente citada',v:'pendiente',a:'Pendiente'},
- 'R-05':{t:'Etomidato 0,3 / 0,2 / 0,15 mg/kg según estado',f:'Ensayo RSI (NEJM 2025) para la elección; dosis reducidas sin fuente',v:'pendiente',a:'Pendiente'},
- 'R-06':{t:'Ketamina 1,5 / 1 / 0,5 mg/kg según estado',f:'Sin fuente citada',v:'pendiente',a:'Pendiente'},
- 'R-07':{t:'Propofol 1,5 / 1 / 0,5 mg/kg',f:'Sin fuente citada',v:'pendiente',a:'Pendiente'},
- 'R-08':{t:'Fentanilo de pretratamiento 1–3 mcg/kg',f:'Sin fuente citada',v:'pendiente',a:'Pendiente'},
- 'R-09':{t:'Elección del inductor por escenario y hemodinamia',f:'SCCM 2023, ensayo RSI 2025, ATLS 11 (citados de forma general)',v:'pendiente',a:'Pendiente'},
- 'R-10':{t:'Metas de PA por escenario',f:'AHA/ASA 2022 (HIC), AHA/ASA 2026 (ictus isquémico), AO Spine/Praxis 2024 (lesión medular)',v:'parcial',a:'Pendiente'},
- 'R-11':{t:'Pesos de dosificación en obesidad (IMC ≥ 30)',f:'Sugammadex por peso real (ficha FDA); resto sin fuente',v:'parcial',a:'Pendiente'},
- 'R-12':{t:'Rangos de analgesia y sedación en infusión',f:'PADIS 2018 (citada de forma general)',v:'pendiente',a:'Pendiente'},
- 'R-13':{t:'Bloqueo neuromuscular en infusión',f:'Sin fuente citada',v:'pendiente',a:'Pendiente'},
- 'R-14':{t:'Norepinefrina 0,05–0,5 mcg/kg/min; epinefrina en bolo 10–20 mcg',f:'Sin fuente citada',v:'pendiente',a:'Pendiente'},
- 'R-15':{t:'Ácido tranexámico en trauma < 3 h',f:'ATLS 11 (citado de forma general)',v:'pendiente',a:'Pendiente'},
+ 'R-02':{t:'Rocuronio 1,2 mg/kg; 1,6 mg/kg en shock',f:'Fichas FDA rocuronio 2025–2026 (vía OpenEvidence): 0,6–1,2 mg/kg; 1,6 mg/kg sin respaldo (propuesta P-01)',v:'secundaria',a:'Pendiente'},
+ 'R-03':{t:'Succinilcolina 1,5 mg/kg (máx. 200 mg) y contraindicaciones',f:'Fichas FDA succinilcolina 2024–2026 (vía OpenEvidence); Erstad & Barletta 2021; tope y ventana en revisión (P-03, P-04)',v:'secundaria',a:'Pendiente'},
+ 'R-04':{t:'Vecuronio SIR 0,15 mg/kg (peso ideal)',f:'Práctica fuera de ficha; OpenEvidence 2026-11-14 sin fuente recuperada',v:'pendiente',a:'Pendiente'},
+ 'R-05':{t:'Etomidato 0,3 / 0,2 / 0,15 mg/kg según estado',f:'Casey et al. NEJM (ensayo RSI); Greer 2025; McDougall 2026; dosis reducidas por práctica clínica',v:'secundaria',a:'Pendiente'},
+ 'R-06':{t:'Ketamina 1,5 / 1 / 0,5 mg/kg según estado',f:'Casey et al. NEJM; Greer 2025; McDougall 2026; dosis reducidas por práctica clínica',v:'secundaria',a:'Pendiente'},
+ 'R-07':{t:'Propofol 1,5 / 1 / 0,5 mg/kg',f:'Kotani & Russotto 2025; dosis por práctica clínica',v:'secundaria',a:'Pendiente'},
+ 'R-08':{t:'Fentanilo de pretratamiento 1–3 mcg/kg',f:'Ko & Celmins 2024; Kareemi et al. 2023 (evidencia fisiológica y de expertos)',v:'secundaria',a:'Pendiente'},
+ 'R-09':{t:'Elección del inductor por escenario y hemodinamia',f:'Casey et al. NEJM; Greer 2025; McDougall 2026; Kotani & Russotto 2025; SCCM 2023',v:'secundaria',a:'Pendiente'},
+ 'R-10':{t:'Metas de PA por escenario',f:'AHA/ASA 2022 y 2026; BTF 4.ª ed.; AO Spine/Praxis 2024; consensos ESICM/SIBICC (textos primarios pendientes)',v:'secundaria',a:'Pendiente'},
+ 'R-11':{t:'Pesos de dosificación en obesidad (IMC ≥ 30)',f:'Erstad & Barletta 2021; ficha de rocuronio indica peso real (conflicto con la app, P-02)',v:'secundaria',a:'Pendiente'},
+ 'R-12':{t:'Rangos de analgesia y sedación en infusión',f:'PADIS 2018 y actualización 2025; Northam & Phillips 2024 (propuestas P-05 a P-07)',v:'secundaria',a:'Pendiente'},
+ 'R-13':{t:'Bloqueo neuromuscular en infusión',f:'Fichas FDA cisatracurio; Chang et al. 2020; guías de SDRA 2019/2024 (P-08 a P-10)',v:'secundaria',a:'Pendiente'},
+ 'R-14':{t:'Norepinefrina 0,05–0,5 mcg/kg/min; epinefrina en bolo 10–20 mcg',f:'Práctica estándar (OpenEvidence 2026-11-14, sin cita primaria)',v:'pendiente',a:'Pendiente'},
+ 'R-15':{t:'Ácido tranexámico en trauma < 3 h',f:'CRASH-2; guía europea de hemorragia 2019; PATCH-Trauma 2023',v:'secundaria',a:'Pendiente'},
  'R-16':{t:'Presentaciones disponibles en Colombia',f:'INVIMA (vecuronio verificado); MinSalud 2025',v:'parcial',a:'No aplica'}
 };
 const RULE_BOLUS={etom:'R-05',keta:'R-06',prop:'R-07',fent:'R-08',roc:'R-02',succ:'R-03',vec:'R-04',suga:'R-01'};

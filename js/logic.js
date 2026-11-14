@@ -230,7 +230,7 @@ function calcErr(title){
 /* Etiqueta de trazabilidad: regla de la matriz científica, su estado y su aprobación (texto, no solo color). */
 function ruleTag(id){
  const x=RULES[id];if(!x)return '';
- const ver=x.v==='verificada'?'Fuente verificada':x.v==='parcial'?'Fuente verificada en parte':'Fuente pendiente de verificar';
+ const ver=x.v==='verificada'?'Fuente verificada':x.v==='parcial'?'Fuente verificada en parte':x.v==='secundaria'?'Contrastada con fuente secundaria (OpenEvidence)':'Fuente pendiente de verificar';
  const cls=x.v==='verificada'&&/^Aprobada/.test(x.a)?'ok':'pend';
  return `<div class="rule ${cls}"><b>${id}</b> · ${ver} · ${/^Aprobada/.test(x.a)?x.a:'Aprobación clínica pendiente'}</div>`;
 }

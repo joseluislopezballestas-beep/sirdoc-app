@@ -1,4 +1,4 @@
-# Matriz científica — reglas farmacológicas de SirDoc (algoritmo v1.2.0)
+# Matriz científica — reglas farmacológicas de SirDoc (algoritmo v1.2.1)
 
 **Estado global: solo R-01 está verificada y aprobada (por el autor). El resto no cuenta con aprobación clínica formal.** El estado de cada regla se muestra también dentro de la app.
 Columna "Verificación": solo se marca "verificada" cuando se contrastó el texto con la fuente primaria en esta auditoría.
@@ -24,3 +24,9 @@ No se inventan referencias: donde la app cita una guía sin versión exacta cont
 | R-16 | Presentaciones colombianas | Registros INVIMA (vecuronio 10 mg verificado); MinSalud 2025 (abastecimiento) | — | Parcial | No aplica |
 
 Responsable de aprobación: R-01 — Md. Jose Luis Lopez Ballestas (2026-11-14). Resto: _pendiente de designar_.
+
+## Contraste con OpenEvidence (2026-11-14)
+Ver `EVIDENCIA-OPENEVIDENCE-2026-11-14.md`. Estado nuevo **"contrastada con fuente secundaria"**: OpenEvidence citó fichas, ensayos o guías, pero esos textos primarios no se leyeron completos.
+- Coinciden con la evidencia citada: R-05, R-06, R-07, R-08, R-09, R-10, R-15 y los rangos principales de R-12.
+- Difieren (propuestas P-01 a P-10, sin aplicar): R-02 (1,6 mg/kg en shock), R-11 (rocuronio en obesidad), R-03 (tope y ventana de 72 h), R-12 (sedante por defecto, ketamina), R-13 (rangos, indicación, precaución con corticoides).
+- Sin evidencia recuperada: R-04 (vecuronio SIR), R-14 (práctica estándar).

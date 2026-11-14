@@ -2,6 +2,10 @@
 
 Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) o **clínico** (requiere aprobación de especialista).
 
+## 1.2.1 — 2026-11-14 · Contraste con OpenEvidence (técnico, sin cambios de dosis)
+- Fuentes de la matriz científica actualizadas con lo citado por OpenEvidence; nuevo estado "contrastada con fuente secundaria".
+- Informe `docs/EVIDENCIA-OPENEVIDENCE-2026-11-14.md` con 10 propuestas de cambio clínico (P-01 a P-10) **pendientes de aprobación**.
+
 ## 1.2.0 — 2026-11-14 · Aplicación de la auditoría y la matriz científica
 **Clínico (aprobado):** textos de sugammadex y rocuronio en shock (ver 1.1.3). Aprobado por Md. Jose Luis Lopez Ballestas (autor, médico) el 2026-11-14 por instrucción escrita.
 **Técnico:**
