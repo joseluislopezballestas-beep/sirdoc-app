@@ -121,22 +121,22 @@ function renderMaint(){
  h+=`<div class="sec"><h3>Infusiones</h3>`;
  if(M.anal==='fent'){const st=low?0.5:1,bW=wt('abw',p).w;
   h+=infCard('fent','Fentanilo · analgesia',st,'mcg/kg/h',0.5,3,'abw',`Rescate 0.5–1 mcg/kg (${r(0.5*bW)}–${r(bW)} mcg). Meta CPOT &lt; 3 o BPS &lt; 5.${p.hepa?' Hepatopatía: límite bajo.':''}`);}
- if(M.adj&&M.sed!=='keta')h+=infCard('keta','Ketamina · coadyuvante',0.2,'mg/kg/h',0.1,0.3,'abw','Ahorra opioide. La ampolla de 500 mg se usa en fracción.'+(p.esc==='epoc'?' Broncodilatadora.':''));
+ if(M.adj&&M.sed!=='keta')h+=infCard('keta','Ketamina · coadyuvante',1,'mcg/kg/min',1,2,'abw','Ahorra opioide (PADIS 2018: bolo opcional de 0,5 mg/kg, omitir si se indujo con ketamina; luego 1–2 mcg/kg/min). La ampolla de 500 mg se usa en fracción.'+(p.esc==='epoc'?' Broncodilatadora.':''));
  const neuro=p.esc==='ich'||p.esc==='isq'||(p.esc==='poli'&&p.tce);
  if(M.sed==='prop'){const st=(low||p.esc==='ic')?5:10;
-  h+=infCard('prop','Propofol · sedación',st,'mcg/kg/min',5,50,'abw',`Puro, sin diluir. Desechar frasco y equipo a las 12 h (6 h si se pasa a jeringa). Titular de 5 en 5 mcg/kg/min.${neuro?' Preferido en neurocrítico.':''} Más de 4 mg/kg/h o 48 h: triglicéridos, CK y lactato.`+(p.state!=='estable'?' <b>Inestable: considera midazolam o ketamina.</b>':''));}
+  h+=infCard('prop','Propofol · sedación',st,'mcg/kg/min',5,50,'abw',`Puro, sin diluir. Desechar frasco y equipo a las 12 h (6 h si se pasa a jeringa). Titular de 5 en 5 mcg/kg/min.${neuro?' Preferido en neurocrítico.':''} Más de 4 mg/kg/h o 48 h: triglicéridos, CK y lactato.${M.bnm==='none'?' Al pasar a sedación ligera, PADIS 2025 sugiere dexmedetomidina antes que propofol.':''}`+(p.state!=='estable'?' <b>Inestable: considera midazolam o ketamina.</b>':''));}
  if(M.sed==='mida'){const st=(old||p.erc||p.hepa)?0.02:0.03;
   h+=infCard('mida','Midazolam · sedación',st,'mg/kg/h',0.02,0.1,'abw',`Por estabilidad hemodinámica. Cambiar a propofol o dexmedetomidina cuando la PA lo permita (acumulación, delirium).${p.erc?' <b>ERC: acumula metabolitos activos.</b>':''}${p.hepa?' <b>Hepatopatía: aclaramiento reducido.</b>':''}`);}
  if(M.sed==='dex'){const st=low?0.2:0.4;
-  h+=infCard('dex','Dexmedetomidina · sedación ligera',st,'mcg/kg/h',0.2,1.5,'abw','Sin bolo de carga. Bradicardia e hipotensión. <b>No para sedación profunda ni con BNM continuo.</b>'+(p.esc==='raqui'?' Cuidado con la bradicardia medular.':''));}
- if(M.sed==='keta')h+=infCard('keta','Ketamina · analgosedación',0.5,'mg/kg/h',0.25,1.5,'abw','Mantiene el tono simpático; broncodilatadora. Hipertensión y taquicardia posibles; en falla cardiaca vigila la depresión miocárdica.');
+  h+=infCard('dex','Dexmedetomidina · sedación ligera',st,'mcg/kg/h',0.2,1.5,'abw','De elección para sedación ligera (PADIS 2025). Sin bolo de carga. Bradicardia e hipotensión. <b>No para sedación profunda ni con BNM continuo.</b>'+(p.esc==='raqui'?' Cuidado con la bradicardia medular.':''));}
+ if(M.sed==='keta')h+=infCard('keta','Ketamina · analgosedación',0.2,'mg/kg/h',0.1,0.5,'abw','<b>Sedante único fuera de guía</b> (PADIS sin recomendación): rango limitado a 0,1–0,5 mg/kg/h; asocia otro sedante si no alcanzas la meta. Mantiene el tono simpático; broncodilatadora. Hipertensión y taquicardia posibles; en falla cardiaca vigila la depresión miocárdica.');
  if(M.sed==='none')h+=`<div class="alert">Sin sedación: solo si está tranquilo con analgesia. Nunca con BNM.</div>`;
  if(M.bnm!=='none'){
-  h+=`<div class="alert w">BNM continuo solo con indicación (SDRA con PaO₂/FiO₂ &lt; 150, HIC refractaria, asincronía grave, escalofríos). Requiere RASS −5 y TOF (meta 1–2/4).</div>`;
+  h+=`<div class="alert w">BNM continuo solo con indicación: SDRA grave temprano (ATS 2024, recomendación condicional; PaO₂/FiO₂ &lt; 150 en ensayos previos y &lt; 100 en la guía 2024), HIC refractaria, asincronía grave o escalofríos. Requiere RASS −5 y TOF (meta 1–2/4).${M.bnm!=='cis'?' <b>Aminoesteroide (rocuronio, vecuronio) con corticoides: riesgo de miopatía; prefiere cisatracurio y la menor duración posible.</b>':''}</div>`;
   if(M.sed==='dex'||M.sed==='none')h+=`<div class="alert"><b>Incompatible:</b> con BNM continuo la sedación debe ser profunda.</div>`;
   const wN=wt('ibw',p).w;
-  if(M.bnm==='roc')h+=infCard('roc','Rocuronio',0.5,'mg/kg/h',0.3,0.7,'ibw',(M.nmb==='succ'?`Tras succinilcolina, bolo de 0.6 mg/kg (${r(0.6*wN)} mg). `:'')+(p.hepa?'<b>Hepatopatía: prefiere cisatracurio.</b>':''));
-  if(M.bnm==='cis')h+=infCard('cis','Cisatracurio',2,'mcg/kg/min',1,5,'ibw',`Bolo 0.15 mg/kg (${r(0.15*wN)} mg) si no hay BNM activo. Eliminación de Hofmann: de elección en ERC o hepatopatía. Ampollas refrigeradas.`);
+  if(M.bnm==='roc')h+=infCard('roc','Rocuronio',8,'mcg/kg/min',8,12,'ibw',(M.nmb==='succ'?`Tras succinilcolina, bolo de 0.6 mg/kg (${r(0.6*wN)} mg). `:'')+(p.hepa?'<b>Hepatopatía: prefiere cisatracurio.</b>':''));
+  if(M.bnm==='cis')h+=infCard('cis','Cisatracurio',3,'mcg/kg/min',0.5,10,'ibw',`Ficha técnica: 3 mcg/kg/min en UCI (0,5–10,2), titular por TOF. Bolo 0.15 mg/kg (${r(0.15*wN)} mg) si no hay BNM activo. Eliminación de Hofmann: de elección en ERC o hepatopatía. Ampollas refrigeradas.`);
   if(M.bnm==='vec')h+=infCard('vec','Vecuronio',1,'mcg/kg/min',0.8,1.7,'ibw',`${M.nmb==='vec'?'Iniciar cuando reaparezca respuesta en el TOF. ':`Bolo 0.1 mg/kg (${r(0.1*wN)} mg) si no hay BNM activo. `}Reconstituir con agua estéril; usar en 24 h. Se acumula en ERC y hepatopatía.`+(p.erc||p.hepa?' <b>Prefiere cisatracurio.</b>':''));
  }
  h+=`</div>`;
@@ -235,7 +235,7 @@ document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',
 }));
 $('calc').addEventListener('click',()=>{if(compute())show('v-plan');else window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})});
 function renderExtra(){
- const x={poli:[['tce','TCE asociado']],raqui:[['tce','TCE asociado'],['sci72','Más de 72 h desde la lesión']],sangra:[['trauma','Origen traumático']],isq:[['trombo','Candidato a trombólisis o trombectomía']]}[S.esc]||[];
+ const x={poli:[['tce','TCE asociado']],raqui:[['tce','TCE asociado'],['sci72','Más de 48 h desde la lesión']],sangra:[['trauma','Origen traumático']],isq:[['trombo','Candidato a trombólisis o trombectomía']]}[S.esc]||[];
  $('extra').innerHTML=x.map(a=>`<label><input type="checkbox" id="${a[0]}">${a[1]}</label>`).join('');
 }
 document.querySelectorAll('#esc button').forEach(b=>b.addEventListener('click',()=>{S.esc=b.dataset.v;document.querySelectorAll('#esc button').forEach(x=>x.classList.toggle('on',x===b));renderExtra();invalidate();}));
@@ -258,8 +258,8 @@ function initSettings(){
  $('showDisc').addEventListener('click',()=>$('disc').classList.remove('hide'));
  $('okDisc').addEventListener('click',()=>{ST.disc=true;save();$('disc').classList.add('hide')});
  if(!ST.disc)$('disc').classList.remove('hide');
- const est=x=>(x.v==='verificada'?'Fuente verificada':x.v==='parcial'?'Fuente verificada en parte':x.v==='secundaria'?'Contrastada con fuente secundaria (OpenEvidence)':'Fuente pendiente de verificar')+' · '+x.a;
- $('rules').innerHTML=Object.keys(RULES).map(k=>`<li><b>${k}</b>${RULES[k].t}<small>${RULES[k].f}</small><small>${est(RULES[k])}</small></li>`).join('');
+ const est=x=>(x.v==='verificada'?'Fuente verificada':x.v==='parcial'?'Fuente verificada en parte':x.v==='secundaria'?'Fuente identificada; texto completo no revisado':'Fuente pendiente de verificar')+' · '+x.a;
+ $('rules').innerHTML=Object.keys(RULES).map(k=>`<li><b>${k}</b>${RULES[k].t}<small>${RULES[k].f}</small><small>${est(RULES[k])}</small>${(RULES[k].u||[]).map(([n,l])=>`<a href="${l}" target="_blank" rel="noopener">${n}</a>`).join('')}</li>`).join('');
  $('algv').textContent=`SirDoc ${ALG.version} · algoritmo v${ALG.version} (${ALG.fecha}) · ${ALG.estado}`;
 }
 initSettings();

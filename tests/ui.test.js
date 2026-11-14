@@ -109,9 +109,9 @@ test('[clínico] sugammadex 16 mg/kg solo como reversión inmediata tras rocuron
 test('[matriz] cada dosis muestra su regla, estado de fuente y aprobación', async () => {
   const a = await app(); a.fill('poli', OK); a.calc();
   const t = a.text('plan');
-  assert.match(t, /R-05 · Contrastada con fuente secundaria \(OpenEvidence\) · Aprobación clínica pendiente/);   // etomidato
+  assert.match(t, /R-05 · Fuente identificada; texto completo no revisado · Aprobación clínica pendiente/);   // etomidato
   assert.match(t, /R-04 · Fuente pendiente de verificar/); assert.match(t, /R-09 ·/); assert.match(t, /R-10 ·/);
-  assert.match(t, /R-01 · Fuente verificada · Aprobada por el autor/);                       // sugammadex
+  assert.match(t, /R-01 · Fuente verificada · Aprobada por Md\. Jose Luis Lopez Ballestas/);                       // sugammadex
   assert.match(a.text('maint'), /R-12 ·/);
   const rules = a.d.querySelectorAll('#rules li'); assert.equal(rules.length, 16);
 });
@@ -135,4 +135,29 @@ test('[H-18] el cronómetro se guarda, se restaura tras recargar y se detiene', 
   try { assert.match(b.$('timer').textContent, /BNM \+2:0[5-6]/); } finally { b.$('timer').click(); }
   const c = await app({ 'sirdoc.t0': String(Date.now() - 7 * 3600e3) });      // > 6 h: no se restaura
   assert.match(c.$('timer').textContent, /Marcar BNM/);
+});
+
+test('[v1.3.0] rocuronio 1,2 mg/kg también en shock (se retiró 1,6 mg/kg)', async () => {
+  const a = await app(); a.fill('sangra', { ...OK, pas: 85, pad: 55, fc: 120 }); a.calc();
+  const t = a.text('plan');
+  assert.match(t, /Rocuronio1\.ª elección 84 mg/); assert.doesNotMatch(t, /1\.6 mg\/kg/);
+});
+
+test('[v1.3.0] contraindicación de succinilcolina desde 48 h y BNM en infusión según ficha', async () => {
+  const a = await app();
+  assert.match(a.d.querySelector('label:has(#quem)').textContent, /> 48 h/);
+  a.fill('poli', OK); a.calc();
+  const sel = a.$('mBnm'); sel.value = 'cis'; sel.dispatchEvent(new a.w.Event('change', { bubbles: true }));
+  assert.match(a.text('maint'), /Inicio 3 mcg\/kg\/min/); assert.match(a.text('maint'), /Rango 0\.5–10 mcg\/kg\/min/);
+  const s2 = a.$('mBnm'); s2.value = 'roc'; s2.dispatchEvent(new a.w.Event('change', { bubbles: true }));
+  const m = a.text('maint');
+  assert.match(m, /Inicio 8 mcg\/kg\/min/); assert.match(m, /Rango 8–12 mcg\/kg\/min/); assert.match(m, /corticoides: riesgo de miopatía/);
+});
+
+test('[v1.3.0] la matriz enlaza los estudios y no cita conversaciones de herramientas', async () => {
+  const a = await app();
+  const links = [...a.d.querySelectorAll('#rules a, .refs a')].map(x => x.href);
+  assert.ok(links.length >= 20); assert.ok(links.every(h => /^https:\/\//.test(h)));
+  assert.ok(links.some(h => h.includes('10.1164/rccm.202311-2011ST')));
+  assert.doesNotMatch(a.d.body.textContent, new RegExp(['open', 'evidence'].join(''), 'i'));   // sin citas a conversaciones de herramientas
 });

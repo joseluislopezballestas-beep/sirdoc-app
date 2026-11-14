@@ -2,9 +2,20 @@
 
 Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) o **clínico** (requiere aprobación de especialista).
 
-## 1.2.1 — 2026-11-14 · Contraste con OpenEvidence (técnico, sin cambios de dosis)
-- Fuentes de la matriz científica actualizadas con lo citado por OpenEvidence; nuevo estado "contrastada con fuente secundaria".
-- Informe `docs/EVIDENCIA-OPENEVIDENCE-2026-11-14.md` con 10 propuestas de cambio clínico (P-01 a P-10) **pendientes de aprobación**.
+## 1.3.0 — 2026-11-14 · Hallazgos de la evidencia aplicados
+**Clínico (aprobado por Md. Jose Luis Lopez Ballestas, autor, médico, 2026-11-14, por instrucción escrita):**
+- P-01 Rocuronio 1,2 mg/kg también en shock (se retira 1,6 mg/kg).
+- P-02 Aviso de peso en obesidad para rocuronio (ficha: real; app: ajustado). P-03 Tope de 200 mg de succinilcolina rotulado como límite de la app.
+- P-04 Contraindicación de succinilcolina desde 48 h (antes 72 h).
+- P-05 Dexmedetomidina sugerida para sedación ligera (PADIS 2025).
+- P-06 Ketamina coadyuvante 1–2 mcg/kg/min. P-07 Ketamina sedante 0,1–0,5 mg/kg/h, rotulada fuera de guía.
+- P-08 Rocuronio en infusión 8–12 mcg/kg/min; cisatracurio 3 mcg/kg/min (0,5–10).
+- P-09 Indicación de BNM continuo según ATS 2024. P-10 Precaución aminoesteroide + corticoides.
+- Nota del ECA de Sajdeya 2025 en lesión medular (meta de PAM sin cambio).
+**Técnico:** enlaces a estudios y fichas en Ajustes y en Referencias; nuevo rótulo "Fuente identificada; texto completo no revisado"; informe `docs/EVIDENCIA-2026-11-14.md`. Pruebas: 30/30.
+
+## 1.2.1 — 2026-11-14 · Contraste de la matriz con fuentes secundarias (técnico, sin cambios de dosis)
+- Fuentes de la matriz científica actualizadas; 10 propuestas de cambio clínico (P-01 a P-10), aplicadas en 1.3.0.
 
 ## 1.2.0 — 2026-11-14 · Aplicación de la auditoría y la matriz científica
 **Clínico (aprobado):** textos de sugammadex y rocuronio en shock (ver 1.1.3). Aprobado por Md. Jose Luis Lopez Ballestas (autor, médico) el 2026-11-14 por instrucción escrita.

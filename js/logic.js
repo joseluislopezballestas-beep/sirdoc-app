@@ -52,8 +52,8 @@ function succCI(p){
  const c=[];
  if(p.hiperK)c.push('hiperkalemia conocida');
  if(p.neuro)c.push('enfermedad neuromuscular / hipertermia maligna');
- if(p.quem)c.push('quemadura, aplastamiento, inmovilización o denervación > 72 h');
- if(p.esc==='raqui'&&p.sci72)c.push('lesión medular > 72 h');
+ if(p.quem)c.push('quemadura, aplastamiento, inmovilización o denervación > 48 h');
+ if(p.esc==='raqui'&&p.sci72)c.push('lesión medular > 48 h');
  return c;
 }
 function indDose(id,p){
@@ -95,8 +95,8 @@ function inductors(p){
 function nmbList(p){
  const ci=succCI(p),shock=p.state==='shock',L=[];
  const succUse=p.succOk&&!ci.length;
- if(p.rocOk)L.push({id:'roc',role:'first',k:shock?1.6:1.2,r:shock?'1.2–1.6':'1–1.2',basis:'abw',why:(shock?'Dosis alta (1.6 mg/kg) en shock: el gasto bajo retrasa el inicio de acción. <b>La reversión inmediata con sugammadex 16 mg/kg se estudió tras 1,2 mg/kg; tras 1,6 mg/kg no está establecida en ficha técnica.</b> ':'')+'Sin riesgo de hiperkalemia y más tiempo de apnea segura. Reversible con sugammadex. SCCM 2023: sin diferencia de éxito frente a la succinilcolina.'});
- if(succUse)L.push({id:'succ',role:p.rocOk?'alt':'first',k:1.5,r:'1–1.5',basis:'tbw',max:200,why:(p.esc==='raqui'?'Segura en las primeras 48–72 h de la lesión medular. ':'')+(p.erc?'<b>ERC: úsala solo con potasio normal reciente.</b> ':'')+'Inicio 45 s, duración 8–10 min.'});
+ if(p.rocOk)L.push({id:'roc',role:'first',k:1.2,r:'1–1.2',basis:'abw',why:(shock?'En shock se mantiene 1,2 mg/kg (techo de la ficha técnica): el gasto bajo retrasa el inicio, espera 60–90 s antes de la laringoscopia. ':'')+'Sin riesgo de hiperkalemia y más tiempo de apnea segura. Reversible con sugammadex 16 mg/kg (estudiado tras 1,2 mg/kg). SCCM 2023: sin diferencia de éxito frente a la succinilcolina.'+(p.obese?' Obesidad: la ficha indica peso real; la app usa peso ajustado (Erstad & Barletta 2021).':'')});
+ if(succUse)L.push({id:'succ',role:p.rocOk?'alt':'first',k:1.5,r:'1–1.5',basis:'tbw',max:200,why:(p.esc==='raqui'?'Segura en las primeras 48 h de la lesión medular. ':'')+(p.erc?'<b>ERC: úsala solo con potasio normal reciente.</b> ':'')+'Inicio 45 s, duración 8–10 min.'+(p.obese?' Peso real; tope de seguridad de la app 200 mg (la ficha no fija máximo).':'')});
  const vecFirst=!p.rocOk&&!succUse;
  L.push({id:'vec',role:vecFirst?'first':'alt',k:0.15,r:'0.1–0.2',basis:'ibw',why:(vecFirst?'<b>Sin rocuronio ni succinilcolina utilizables.</b> ':'Respaldo ante desabastecimiento. ')+'Inicio lento (90–150 s con 0,15–0,2 mg/kg): ventila con presión positiva suave mientras tanto. Duración 60–90 min o más. <b>Sugammadex solo está establecido para reversión de rutina guiada por TOF (2–4 mg/kg); la reversión inmediata con 16 mg/kg tras vecuronio no está establecida en ficha técnica.</b>'});
  const notes=[];
@@ -119,7 +119,7 @@ function targets(p){
    if(p.tce){const lim=(p.edad>=50&&p.edad<=69)?100:110;t.push(`TCE: PAS ≥ ${lim} mmHg; evitar SpO₂ < 90 % y PaCO₂ fuera de 35–45 mmHg.`);}
    else t.push('Sin TCE: hipotensión permisiva (PAS 80–90 mmHg) hasta el control del sangrado.');
    t.push('Hemoderivados en proporción 1:1:1 / sangre total en lugar de cristaloides (ATLS 11).');break;
-  case 'raqui':t.push('PAM de al menos 75–80 mmHg, sin aumentarla activamente por encima de 90–95 mmHg, durante 3–7 días (AO Spine/Praxis 2024).');if(p.tce)t.push('TCE asociado: PAS ≥ 110 mmHg.');break;
+  case 'raqui':t.push('PAM de al menos 75–80 mmHg, sin aumentarla activamente por encima de 90–95 mmHg, durante 3–7 días (AO Spine/Praxis 2024). Un ECA de 2025 (Sajdeya) no encontró mejor recuperación neurológica al elevar la PAM por encima de 85–90 y sí más complicaciones: evita la hipotensión sin forzar la PA.');if(p.tce)t.push('TCE asociado: PAS ≥ 110 mmHg.');break;
   case 'sangra':t.push(p.trauma?'Hemorragia traumática sin TCE: PAS 80–90 mmHg hasta el control quirúrgico/endoscópico.':'Hemorragia no traumática: PAM ≥ 65 mmHg.');t.push('Reanimar con hemoderivados antes de inducir siempre que sea posible.');break;
   case 'epoc':t.push('SpO₂ objetivo 88–92 %. Evitar hiperinsuflación dinámica (auto-PEEP).');break;
   case 'ich':t.push('PAS objetivo 140 mmHg (rango 130–150). Evitar descensos < 130 mmHg (AHA/ASA 2022).');t.push('PaCO₂ 35–45 mmHg; cabecera a 30°.');break;
@@ -230,7 +230,7 @@ function calcErr(title){
 /* Etiqueta de trazabilidad: regla de la matriz científica, su estado y su aprobación (texto, no solo color). */
 function ruleTag(id){
  const x=RULES[id];if(!x)return '';
- const ver=x.v==='verificada'?'Fuente verificada':x.v==='parcial'?'Fuente verificada en parte':x.v==='secundaria'?'Contrastada con fuente secundaria (OpenEvidence)':'Fuente pendiente de verificar';
+ const ver=x.v==='verificada'?'Fuente verificada':x.v==='parcial'?'Fuente verificada en parte':x.v==='secundaria'?'Fuente identificada; texto completo no revisado':'Fuente pendiente de verificar';
  const cls=x.v==='verificada'&&/^Aprobada/.test(x.a)?'ok':'pend';
  return `<div class="rule ${cls}"><b>${id}</b> · ${ver} · ${/^Aprobada/.test(x.a)?x.a:'Aprobación clínica pendiente'}</div>`;
 }

@@ -1,32 +1,23 @@
-# Matriz científica — reglas farmacológicas de SirDoc (algoritmo v1.2.1)
+# Matriz científica — reglas farmacológicas de SirDoc (algoritmo v1.3.0)
 
-**Estado global: solo R-01 está verificada y aprobada (por el autor). El resto no cuenta con aprobación clínica formal.** El estado de cada regla se muestra también dentro de la app.
-Columna "Verificación": solo se marca "verificada" cuando se contrastó el texto con la fuente primaria en esta auditoría.
-No se inventan referencias: donde la app cita una guía sin versión exacta contrastada, se indica "pendiente de contrastar".
+**Estado global: experimental, sin validación clínica formal.** Reglas aprobadas por el autor: R-01, R-02, R-03, R-11, R-12 y R-13 (Md. Jose Luis Lopez Ballestas, médico, 2026-11-14). Se recomienda revisión independiente. El estado de cada regla y los enlaces a sus fuentes se muestran dentro de la app (Ajustes).
+Estados: **Verificada** (texto pertinente contrastado) · **Parcial** · **Fuente identificada** (texto completo no revisado) · **Pendiente**. No se inventan referencias. Detalle y enlaces: `EVIDENCIA-2026-11-14.md`.
 
-| ID | Regla en la app | Fuente citada / consultada | Población | Verificación | Aprobación clínica |
-|---|---|---|---|---|---|
-| R-01 | Sugammadex 16 mg/kg (peso real) para reversión inmediata | Ficha técnica Bridion (FDA, rev. 11/2022; EMA): 16 mg/kg **solo tras rocuronio**, ~3 min después de una dosis única de 1,2 mg/kg; eficacia tras vecuronio no estudiada / sin datos | Adultos | **Verificada** · la app se corrigió en v1.2.0 (H-01) | Aprobada por Md. Jose Luis Lopez Ballestas (autor, médico), 2026-11-14 · revisión independiente recomendada |
-| R-02 | Rocuronio SIR 1,2 mg/kg; 1,6 mg/kg en shock | Ficha técnica rocuronio (pendiente de contrastar versión INVIMA); 1,6 mg/kg sin fuente citada | Adultos | Pendiente | Pendiente |
-| R-03 | Succinilcolina 1,5 mg/kg peso real, máx. 200 mg; contraindicaciones (hiperK, enf. neuromuscular, HM, quemadura/aplastamiento/denervación > 72 h, lesión medular > 72 h) | Pendiente de contrastar ficha técnica | Adultos | Pendiente | Pendiente |
-| R-04 | Vecuronio SIR 0,15 mg/kg (rango 0,1–0,2) peso ideal | Pendiente (dosis superior a la habitual de intubación de ficha) | Adultos | Pendiente | Pendiente |
-| R-05 | Etomidato 0,3 / 0,2 / 0,15 mg/kg según estado | Ensayo RSI (NEJM 2025) citado para elección; dosis reducidas sin fuente citada | Adultos críticos | Pendiente | Pendiente |
-| R-06 | Ketamina 1,5 / 1 / 0,5 mg/kg según estado | Sin fuente citada para la escala | Adultos | Pendiente | Pendiente |
-| R-07 | Propofol 1,5 / 1 (≥ 65 a) / 0,5 mg/kg | Sin fuente citada | Adultos | Pendiente | Pendiente |
-| R-08 | Fentanilo pretratamiento 1–3 mcg/kg (ICH, TCE, ictus con trombólisis) | Sin fuente citada | Adultos | Pendiente | Pendiente |
-| R-09 | Reglas de elección de inductor por escenario | SCCM 2023 (SIR), ensayo RSI 2025, ATLS 11 citados de forma general | Adultos críticos | Pendiente | Pendiente |
-| R-10 | Metas de PA por escenario (ICH 130–150; ictus isquémico < 185/110 y < 180/105; lesión medular PAM 75–80 a 90–95 por 3–7 d) | AHA/ASA 2022 (ICH), AHA/ASA 2026 (ictus isquémico), AO Spine/Praxis 2024 (lesión medular) | Adultos | Citadas en conversación previa; pendiente contrastar texto completo | Pendiente |
-| R-11 | Pesos de dosificación en obesidad (IMC ≥ 30): inductores/fentanilo peso magro; rocuronio e infusiones peso ajustado; vecuronio/cisatracurio peso ideal; succinilcolina y sugammadex peso real | Sugammadex: peso real (ficha FDA, verificada). Resto sin fuente citada | Adultos | Parcial | Pendiente |
-| R-12 | Infusiones: fentanilo 0,5–3 mcg/kg/h; propofol 5–50 mcg/kg/min; midazolam 0,02–0,1 mg/kg/h; dexmedetomidina 0,2–1,5 mcg/kg/h; ketamina 0,25–1,5 (sedación) y 0,1–0,3 mg/kg/h (coadyuvante) | PADIS 2018 citada de forma general | Adultos UCI | Pendiente | Pendiente |
-| R-13 | BNM en infusión: rocuronio 0,3–0,7 mg/kg/h; cisatracurio 1–5 mcg/kg/min; vecuronio 0,8–1,7 mcg/kg/min | Sin fuente citada | Adultos UCI | Pendiente | Pendiente |
-| R-14 | Norepinefrina 0,05–0,5 mcg/kg/min; epinefrina en bolo 10–20 mcg (10 mcg/mL) | Sin fuente citada | Adultos | Pendiente | Pendiente |
-| R-15 | Ácido tranexámico 1 g en 10 min + 1 g en 8 h (trauma < 3 h) | ATLS 11 citado de forma general | Adultos trauma | Pendiente | Pendiente |
-| R-16 | Presentaciones colombianas | Registros INVIMA (vecuronio 10 mg verificado); MinSalud 2025 (abastecimiento) | — | Parcial | No aplica |
-
-Responsable de aprobación: R-01 — Md. Jose Luis Lopez Ballestas (2026-11-14). Resto: _pendiente de designar_.
-
-## Contraste con OpenEvidence (2026-11-14)
-Ver `EVIDENCIA-OPENEVIDENCE-2026-11-14.md`. Estado nuevo **"contrastada con fuente secundaria"**: OpenEvidence citó fichas, ensayos o guías, pero esos textos primarios no se leyeron completos.
-- Coinciden con la evidencia citada: R-05, R-06, R-07, R-08, R-09, R-10, R-15 y los rangos principales de R-12.
-- Difieren (propuestas P-01 a P-10, sin aplicar): R-02 (1,6 mg/kg en shock), R-11 (rocuronio en obesidad), R-03 (tope y ventana de 72 h), R-12 (sedante por defecto, ketamina), R-13 (rangos, indicación, precaución con corticoides).
-- Sin evidencia recuperada: R-04 (vecuronio SIR), R-14 (práctica estándar).
+| ID | Regla en la app | Fuente | Verificación | Aprobación clínica |
+|---|---|---|---|---|
+| R-01 | Sugammadex 16 mg/kg (peso real), reversión inmediata solo tras rocuronio | [Ficha Bridion FDA 2022](https://www.accessdata.fda.gov/drugsatfda_docs/label/2022/022225Orig1s012lbl.pdf) | Verificada | Aprobada (autor) 2026-11-14 |
+| R-02 | Rocuronio SIR 1,2 mg/kg en todos los estados; peso ajustado si IMC ≥ 30 | [Ficha rocuronio](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=116385ea-69fc-4f44-b463-6210291032df); [Erstad & Barletta 2021](https://doi.org/10.1177/0310057x20968573) | Parcial (ficha usa peso real) | Aprobada (autor) 2026-11-14 |
+| R-03 | Succinilcolina 1,5 mg/kg peso real, tope de la app 200 mg; contraindicada > 48 h tras quemadura, aplastamiento, denervación o lesión medular | [Ficha succinilcolina](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=1d4302db-a0d5-d0e8-e063-6294a90a22f8); Erstad & Barletta 2021 | Parcial (ficha sin máximo ni umbral horario) | Aprobada (autor) 2026-11-14 |
+| R-04 | Vecuronio SIR 0,15 mg/kg peso ideal | Sin fuente primaria (fuera de ficha) | Pendiente | Pendiente |
+| R-05 | Etomidato 0,3 / 0,2 / 0,15 mg/kg | [Ensayo RSI, NEJM](https://www.nejm.org/doi/10.1056/NEJMoa2511420); [Greer 2025](https://pubmed.ncbi.nlm.nih.gov/39570063/); [Koroki 2024](https://doi.org/10.1186/s13054-024-04831-4) | Fuente identificada | Pendiente |
+| R-06 | Ketamina 1,5 / 1 / 0,5 mg/kg | Igual que R-05 | Fuente identificada | Pendiente |
+| R-07 | Propofol 1,5 / 1 / 0,5 mg/kg | Kotani & Russotto, Crit Care Med 2025 | Fuente identificada | Pendiente |
+| R-08 | Fentanilo pretratamiento 1–3 mcg/kg | Evidencia fisiológica y de expertos | Pendiente | Pendiente |
+| R-09 | Elección del inductor por escenario | Ensayo RSI; Greer 2025; SCCM 2023 | Fuente identificada | Pendiente |
+| R-10 | Metas de PA por escenario | [AHA/ASA 2022](https://doi.org/10.1161/STR.0000000000000407); [AHA/ASA 2026](https://doi.org/10.1161/STR.0000000000000513); [BTF 4.ª ed.](https://doi.org/10.1227/NEU.0000000000001432); [AO Spine 2024](https://doi.org/10.1177/21925682231202348); [Sajdeya 2025](https://doi.org/10.1001/jamanetworkopen.2025.25364) | Fuente identificada | Pendiente |
+| R-11 | Pesos en obesidad: inductores/fentanilo magro; rocuronio e infusiones ajustado; vecuronio/cisatracurio ideal; succinilcolina y sugammadex real | Erstad & Barletta 2021; fichas | Parcial | Aprobada (autor) 2026-11-14 |
+| R-12 | Fentanilo 0,5–3 mcg/kg/h; propofol 5–50 mcg/kg/min; midazolam 0,02–0,1 mg/kg/h; dexmedetomidina 0,2–1,5 mcg/kg/h (sedación ligera); ketamina coadyuvante 1–2 mcg/kg/min; ketamina sedante 0,1–0,5 mg/kg/h (fuera de guía) | [PADIS 2018](https://doi.org/10.1097/CCM.0000000000003299); [PADIS 2025](https://doi.org/10.1097/CCM.0000000000006574) | Fuente identificada | Aprobada (autor) 2026-11-14 |
+| R-13 | Rocuronio 8–12 mcg/kg/min; cisatracurio 3 (0,5–10) mcg/kg/min; vecuronio 0,8–1,7 mcg/kg/min; indicación SDRA grave temprano; precaución con corticoides | [Ficha cisatracurio](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=23daa1f8-2a07-449d-97a6-11efdb0b9836); [ATS 2024](https://doi.org/10.1164/rccm.202311-2011ST) | Parcial | Aprobada (autor) 2026-11-14 |
+| R-14 | Norepinefrina 0,05–0,5 mcg/kg/min; epinefrina en bolo 10–20 mcg | Práctica estándar | Pendiente | Pendiente |
+| R-15 | Ácido tranexámico 1 g en 10 min + 1 g en 8 h (trauma < 3 h) | [CRASH-2](https://doi.org/10.1016/S0140-6736(10)60835-5); [Guía europea 2019](https://doi.org/10.1186/s13054-019-2347-3); [PATCH-Trauma](https://doi.org/10.1056/NEJMoa2215457) | Fuente identificada | Pendiente |
+| R-16 | Presentaciones colombianas | INVIMA; MinSalud 2025 | Parcial | No aplica |

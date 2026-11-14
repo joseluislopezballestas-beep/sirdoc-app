@@ -219,3 +219,6 @@ main{position:relative;z-index:1}
 .rules small{display:block;color:var(--mut)}
 #upd{position:fixed;left:12px;right:12px;top:calc(62px + var(--safe-t));z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:12px;background:var(--tx);color:var(--bg);font-size:14px;max-width:616px;margin:0 auto}
 #upd button{border:0;border-radius:8px;padding:7px 12px;background:var(--acc);color:#fff;font-weight:700}
+.refs a,.rules a{color:var(--tx);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:2px}
+.rules a{display:block;font-size:12px;margin-top:3px;word-break:break-word}
+.rules a::before{content:"↗ "}
