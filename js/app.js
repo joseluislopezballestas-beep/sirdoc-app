@@ -159,7 +159,6 @@ function copySummary(){
  document.querySelectorAll('#plan .syr .row').forEach(rw=>L.push('• '+rw.querySelector('.k').textContent+': '+rw.querySelector('.n').textContent.trim()+' '+rw.querySelector('.v').childNodes[0].textContent.trim()+' ('+rw.querySelector('.v small').textContent+')'));
  L.push(`Administrado: ${NAMES[M.ind]} + ${NAMES[M.nmb]}. Infusiones para ${M.H} h:`);
  document.querySelectorAll('#maint .inf').forEach(c=>L.push('• '+c.querySelector('.nm').textContent+': '+c.querySelector('.rate').textContent+'. '+c.querySelector('.prep').textContent.replace(/\s+/g,' ').trim()));
- L.push('— SirDoc · Md. Jose Luis Lopez Ballestas');
  const txt=L.join('\n');
  const done=()=>toast('Resumen copiado'),fail=()=>toast('No se pudo copiar');
  if(window.SirDocNative&&window.SirDocNative.copy){try{window.SirDocNative.copy(txt);done()}catch(e){fail()}return}

@@ -177,7 +177,7 @@ details.step[open] summary::after{transform:rotate(-135deg)}
 .i-bar{width:min(220px,60vw);height:2px;background:rgba(46,230,208,.15);border-radius:2px;overflow:hidden}
 .i-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2ee6d0,#7cf7ff);box-shadow:0 0 10px #2ee6d0;animation:load 2.2s cubic-bezier(.4,0,.2,1) forwards .2s}
 @keyframes load{to{width:100%}}
-.i-by{position:absolute;bottom:calc(28px + var(--safe-b));text-align:center;font-size:13px;font-weight:600;color:rgba(216,255,250,.85);letter-spacing:.04em;animation:fadein 1s both .9s}
+.i-by{position:absolute;bottom:calc(28px + var(--safe-b));display:flex;align-items:center;gap:10px;text-align:left;font-size:13px;font-weight:600;color:rgba(216,255,250,.85);letter-spacing:.04em;animation:fadein 1s both .9s}
 .i-by span{display:block;font-size:10px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:rgba(46,230,208,.8);margin-bottom:4px}
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){#intro *{animation-duration:.01s!important;animation-delay:0s!important}}
@@ -187,5 +187,14 @@ details.step[open] summary::after{transform:rotate(-135deg)}
  font-weight:800;font-size:clamp(22px,6.2vw,64px);letter-spacing:.02em;color:var(--tx);opacity:.035}
 main{position:relative;z-index:1}
 @media (min-width:900px){#wm{left:calc(50% + 110px)}}
-.credit{text-align:center;font-size:13px;color:var(--mut);margin:24px 0 4px}
+.credit{display:flex;justify-content:center;align-items:center;gap:10px;text-align:left;font-size:13px;color:var(--mut);margin:24px 0 4px}
 .credit b{color:var(--tx)}
+
+/* vara de Esculapio */
+.asc{width:26px;height:26px;flex:none;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.asc .st{stroke:currentColor;stroke-width:1.7}
+.asc .sn{stroke:var(--acc);stroke-width:1.7}
+.asc .hd{fill:var(--acc)}
+.i-by .asc{width:30px;height:30px;color:#d8fffa;filter:drop-shadow(0 0 4px rgba(46,230,208,.6))}
+.i-by .asc .sn{stroke:#2ee6d0}.i-by .asc .hd{fill:#2ee6d0}
+.credit .asc{color:var(--tx)}
