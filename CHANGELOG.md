@@ -11,7 +11,8 @@ Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) 
 - Cronómetro de BNM persistente (bloqueo, cambio de app, recarga; máx. 6 h) y aclaración de que no confirma el bloqueo. (H-18)
 - Aviso de nueva versión con recarga. (H-21)
 - Sección de privacidad y aviso al copiar el resumen. (H-25)
-- Pruebas: 26/26. **Sin cambios de dosis.**
+- Archivos versionados (?v=) y precarga sin caché HTTP en el service worker: impide mezclar archivos de versiones distintas tras publicar. (H-21)
+- Pruebas: 27/27. **Sin cambios de dosis.**
 
 ## 1.1.3 — cambios clínicos (fusionados en 1.2.0)
 Rama `clinico/f0-pendiente-aprobacion`. Fuente: ficha técnica de sugammadex (FDA rev. 11/2022; EMA).
