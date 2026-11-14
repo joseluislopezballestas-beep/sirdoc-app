@@ -79,7 +79,7 @@ function renderPlan(){
  h+=step('+45 s','Laringoscopia e intubación','<div class="note">Videolaringoscopio de primera intención. Rocuronio: 45–60 s; succinilcolina: al terminar las fasciculaciones; vecuronio: 90–150 s. Confirmar con capnografía de onda.</div>');
  h+=step('+5 min','Post-intubación',`<ul class="t">${vent(p).map(x=>`<li>${x}</li>`).join('')}<li><b>Iniciar analgosedación sin demora</b> (pestaña Infusiones).</li></ul>`);
  const sg=roundDose(16*p.w),sp=bprep('suga',sg);
- h+=step('Rescate','Vía aérea fallida',`<ul class="t"><li>Sugammadex 16 mg/kg (peso real): <b>${r(sg)} mg = ${r(sg/sp.conc,'mL')} mL</b>. ${sp.txt} Revierte rocuronio o vecuronio; no sustituye el plan quirúrgico.${p.erc?' En ERC grave no es de rutina, pero en un rescate prima la vida.':''}</li><li>Dispositivo supraglótico → si no se puede intubar ni oxigenar: cricotiroidotomía.</li></ul>`);
+ h+=step('Rescate','Vía aérea fallida',`<ul class="t"><li>Sugammadex 16 mg/kg (peso real): <b>${r(sg)} mg = ${r(sg/sp.conc,'mL')} mL</b>. ${sp.txt} <b>Ficha técnica: reversión inmediata solo tras rocuronio</b> (≈3 min después de una dosis única de 1,2 mg/kg). Tras vecuronio no está establecida. No sustituye el plan quirúrgico.${n1.id==='vec'?' <b>Este plan usa vecuronio: no cuentes con sugammadex para una reversión inmediata.</b>':''}${p.erc?' Ficha técnica: no recomendado con ClCr &lt; 30 mL/min.':''}</li><li>Dispositivo supraglótico → si no se puede intubar ni oxigenar: cricotiroidotomía.</li></ul>`);
  h+=`</div><button class="cta" id="toInf">Infusiones de mantenimiento</button>`;
  $('plan').innerHTML=h;
  $('toInf').addEventListener('click',()=>show('v-inf'));

@@ -91,3 +91,10 @@ test('la dosis mostrada y el volumen mostrado son coherentes (volumen = dosis re
   const m = a.text('plan').match(/Inducción · T 0 ?([\d.]+) mg ?([\d.]+) mL Etomidato/);
   assert.ok(m, 'fila de inducción'); assert.equal(Number(m[2]), Math.round(Number(m[1]) / 2 * 10) / 10);   // etomidato 2 mg/mL
 });
+
+test('[clínico] sugammadex 16 mg/kg solo como reversión inmediata tras rocuronio (ficha técnica)', async () => {
+  const a = await app(); a.fill('poli', OK); a.calc();
+  const t = a.text('plan');
+  assert.match(t, /reversión inmediata solo tras rocuronio/); assert.doesNotMatch(t, /Revierte rocuronio o vecuronio/);
+  assert.doesNotMatch(t, /el sugammadex también lo revierte/);
+});
