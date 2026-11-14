@@ -8,7 +8,7 @@ Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) 
 - Fármacos contraindicados o no disponibles aparecen como tarjetas propias (no desaparecen); si ningún bloqueante es utilizable, se avisa de forma explícita.
 - Botones de 48–56 px, cifras de dosis de 30 px, paleta de alto contraste (texto secundario ≥ 7:1 en claro), tarjetas opacas sobre la marca de agua. Corregido: los campos numéricos no tenían estilo desde v1.2.0 y desbordaban en móvil.
 - El resumen copiado incluye las contraindicaciones.
-**Clínico (pendiente de aprobación):**
+**Clínico (aprobado por Md. Jose Luis Lopez Ballestas, autor, médico, el 2026-11-14 por instrucción escrita):**
 - Politrauma **con** y **sin hemorragia activa significativa**: hipotensión permisiva, hemoderivados, ácido tranexámico y dosis reducidas solo con hemorragia; sin hemorragia, PAM ≥ 65 y búsqueda de sangrado oculto; con TCE nunca hipotensión permisiva.
 - Motor de contraindicaciones e interacciones (R-19): hipertermia maligna separada de enfermedad neuromuscular; alergia a aminoesteroides; miastenia gravis; magnesio/aminoglucósidos; betabloqueador o bradicardia (atropina); anticonceptivo hormonal y anticoagulación con sugammadex.
 **Presentaciones:** todas seleccionables en Ajustes (fentanilo 0,1 mg/2 mL, dexmedetomidina premezclada, succinilcolina 1 g/10 mL y 20 mg/mL, sugammadex 500 mg) con fuentes INVIMA/MinSalud; opción "Otra presentación" con concentración limitada por fármaco. Preparación de bolos genérica para cualquier presentación.
