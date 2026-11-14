@@ -87,6 +87,19 @@ Fuente: 2026 Guideline for the Early Management of Patients With Acute Ischemic 
 | Hipotensión | Asociada a peor desenlace | Evitarla | Sin cambio |
 Resultado: R-10 pasa a "verificada en parte" (ictus isquémico contrastado; HIC, TCE y lesión medular siguen identificados). Sin cambios de dosis.
 
+### Verificación de guías de anestesiología aportadas por el autor (v1.3.3)
+| Dato aportado | Verificación | Acción |
+|---|---|---|
+| ESAIC 2023 (Fuchs-Buder et al., Eur J Anaesthesiol 2023;40(2):82–94; https://doi.org/10.1097/EJA.0000000000001769) — R3: bloqueante rápido para SIR, succinilcolina 1 mg/kg o rocuronio 0,9–1,2 mg/kg (1B) | **Confirmado** (resumen publicado). También R1 relajante para intubar (1A), R2 menos lesión faríngea/laríngea (1C), R6 monitorización cuantitativa en aductor del pulgar (1B), R7 sugammadex para bloqueo por rocuronio/vecuronio (1A) | Citado en R-01, R-02 y R-03. Rocuronio 1,2 mg/kg dentro del rango |
+| ESAIC: "disponibilidad inmediata de sugammadex en rescate CICO" | **No encontrado** en el resumen | No se atribuye a la guía; se añadió como práctica: tener sugammadex calculado y a mano |
+| ESAIC: TOF ≥ 0,9 antes de extubar (1B) | **Parcial**: el umbral > 0,9 aparece en la recomendación sobre neostigmina (1C); 1B corresponde a la monitorización cuantitativa | Citado junto con ASA 2023 |
+| ASA 2023 (Thilen et al., Anesthesiology 2023;138:13–41; https://doi.org/10.1097/ALN.0000000000004379) — monitorización cuantitativa sobre cualitativa, TOF ≥ 0,9 antes de extubar, sugammadex sobre neostigmina en bloqueo profundo, moderado y superficial por rocuronio/vecuronio | **Confirmado** (recomendaciones fuertes, evidencia moderada); neostigmina como alternativa razonable en bloqueo mínimo | Nota de extubación en Post-intubación; R-01 y R-13 |
+| ASA 2022 vía aérea difícil (Apfelbaum et al., Anesthesiology 2022;136:31–81; https://doi.org/10.1097/ALN.0000000000004002) — oxígeno antes y durante todo el manejo, incluida la extubación; videolaringoscopio en vía aérea difícil prevista | **Confirmado** | La app ya lo hacía; se citó en R-09 y en la laringoscopia |
+| ASA 2022: presión cricoidea no rutinaria / liberar si dificulta | **No contrastado** con el texto | Sin cambios en la app |
+| S.C.A.R.E.: "Rincón-Valenzuela DA, et al. Entubación con inducción de secuencia rápida. Rev Colomb Anestesiol 2017;45(3):239–250" | **Referencia incorrecta**: ese volumen y esas páginas corresponden a Rubiano-Pinzón et al., currículo para sedación fuera del quirófano (https://doi.org/10.1016/j.rca.2017.02.006) | No se incluye |
+| S.C.A.R.E. "adopta y armoniza explícitamente" ASA/ESAIC 2022–2026 | **No verificable**: no se encontró documento que lo afirme | No se incluye |
+| Dosis de succinilcolina | ESAIC cita 1 mg/kg (contexto perioperatorio); ficha FDA 0,3–1,1 mg/kg; la app usa 1,5 mg/kg (práctica de urgencias) | **Pendiente de decisión del autor**; sin cambio |
+
 ## 4. Pendiente
 - R-04 (vecuronio SIR), R-08 (fentanilo de pretratamiento) y R-14 (vasopresores): sin fuente primaria localizada.
 - Lectura completa de los textos marcados "fuente identificada".

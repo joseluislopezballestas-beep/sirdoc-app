@@ -2,6 +2,12 @@
 
 Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) o **clínico** (requiere aprobación de especialista).
 
+## 1.3.3 — 2026-11-14 · Guías ESAIC 2023, ASA 2022 y ASA 2023 verificadas (sin cambios de dosis)
+- Post-intubación: TOF ≥ 0,9 con monitorización cuantitativa antes de extubar (ASA 2023; ESAIC 2023).
+- Rescate: tener sugammadex calculado y a mano si se usa rocuronio; sugammadex sobre neostigmina para reversión no urgente.
+- Laringoscopia: videolaringoscopio de elección en vía aérea difícil prevista (ASA 2022).
+- Referencia S.C.A.R.E. aportada descartada por cita incorrecta. Dosis de succinilcolina (1,5 vs 1 mg/kg) pendiente de decisión.
+
 ## 1.3.2 — 2026-11-14 · Ictus isquémico contrastado con AHA/ASA 2026 (sin cambios de dosis)
 - Texto de metas de PA alineado con la sección 4.3: < 185/110 también antes de trombectomía; PAS < 140 sin beneficio tras trombólisis y perjudicial 72 h tras trombectomía exitosa; sin reperfusión, reducción inicial ≈ 15 % solo con ≥ 220/120 o comorbilidad.
 - R-10 pasa a "verificada en parte".

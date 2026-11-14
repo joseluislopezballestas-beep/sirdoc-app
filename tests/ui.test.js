@@ -161,3 +161,12 @@ test('[v1.3.0] la matriz enlaza los estudios y no cita conversaciones de herrami
   assert.ok(links.some(h => h.includes('10.1164/rccm.202311-2011ST')));
   assert.doesNotMatch(a.d.body.textContent, new RegExp(['open', 'evidence'].join(''), 'i'));   // sin citas a conversaciones de herramientas
 });
+
+test('[v1.3.3] TOF ≥ 0,9 antes de extubar y guías ESAIC/ASA enlazadas', async () => {
+  const a = await app(); a.fill('poli', OK); a.calc();
+  const t = a.text('plan');
+  assert.match(t, /TOF ≥ 0,9/); assert.match(t, /sugammadex calculado y a mano/);
+  const links = [...a.d.querySelectorAll('#rules a')].map(x => x.href);
+  for (const d of ['10.1097/EJA.0000000000001769', '10.1097/ALN.0000000000004379', '10.1097/ALN.0000000000004002'])
+    assert.ok(links.some(h => h.includes(d)), d);
+});
