@@ -2,6 +2,9 @@
 
 Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) o **clínico** (requiere aprobación de especialista).
 
+## 1.3.4 — 2026-11-14 · Succinilcolina 1 mg/kg (clínico, aprobado)
+- Succinilcolina en SIR: 1 mg/kg por peso real (antes 1,5 mg/kg); rango mostrado 0,3–1,1 mg/kg de la ficha técnica. Fundamento: ESAIC 2023 (R3, 1B) y ficha FDA. Aprobado por Md. Jose Luis Lopez Ballestas (autor, médico) el 2026-11-14 por instrucción escrita.
+
 ## 1.3.3 — 2026-11-14 · Guías ESAIC 2023, ASA 2022 y ASA 2023 verificadas (sin cambios de dosis)
 - Post-intubación: TOF ≥ 0,9 con monitorización cuantitativa antes de extubar (ASA 2023; ESAIC 2023).
 - Rescate: tener sugammadex calculado y a mano si se usa rocuronio; sugammadex sobre neostigmina para reversión no urgente.

@@ -98,7 +98,7 @@ Resultado: R-10 pasa a "verificada en parte" (ictus isquémico contrastado; HIC,
 | ASA 2022: presión cricoidea no rutinaria / liberar si dificulta | **No contrastado** con el texto | Sin cambios en la app |
 | S.C.A.R.E.: "Rincón-Valenzuela DA, et al. Entubación con inducción de secuencia rápida. Rev Colomb Anestesiol 2017;45(3):239–250" | **Referencia incorrecta**: ese volumen y esas páginas corresponden a Rubiano-Pinzón et al., currículo para sedación fuera del quirófano (https://doi.org/10.1016/j.rca.2017.02.006) | No se incluye |
 | S.C.A.R.E. "adopta y armoniza explícitamente" ASA/ESAIC 2022–2026 | **No verificable**: no se encontró documento que lo afirme | No se incluye |
-| Dosis de succinilcolina | ESAIC cita 1 mg/kg (contexto perioperatorio); ficha FDA 0,3–1,1 mg/kg; la app usa 1,5 mg/kg (práctica de urgencias) | **Pendiente de decisión del autor**; sin cambio |
+| Dosis de succinilcolina | ESAIC cita 1 mg/kg (contexto perioperatorio); ficha FDA 0,3–1,1 mg/kg; la app usaba 1,5 mg/kg | **Cambiado en v1.3.4 a 1 mg/kg por peso real** (rango mostrado 0,3–1,1), aprobado por Md. Jose Luis Lopez Ballestas (autor, médico) el 2026-11-14 |
 
 ## 4. Pendiente
 - R-04 (vecuronio SIR), R-08 (fentanilo de pretratamiento) y R-14 (vasopresores): sin fuente primaria localizada.

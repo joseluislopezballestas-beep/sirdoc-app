@@ -170,3 +170,9 @@ test('[v1.3.3] TOF ≥ 0,9 antes de extubar y guías ESAIC/ASA enlazadas', async
   for (const d of ['10.1097/EJA.0000000000001769', '10.1097/ALN.0000000000004379', '10.1097/ALN.0000000000004002'])
     assert.ok(links.some(h => h.includes(d)), d);
 });
+
+test('[v1.3.4] succinilcolina 1 mg/kg por peso real (ESAIC 2023)', async () => {
+  const a = await app(); a.fill('poli', OK); a.calc();
+  const t = a.text('plan');
+  assert.match(t, /Succinilcolina ?Alternativa 70 mg · 7(\.0)? mL de 10 mg\/mL 1 mg\/kg × 70 kg \(peso real\) · rango 0\.3–1\.1/);
+});
