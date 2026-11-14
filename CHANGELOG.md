@@ -2,6 +2,10 @@
 
 Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) o **clínico** (requiere aprobación de especialista).
 
+## 1.3.2 — 2026-11-14 · Ictus isquémico contrastado con AHA/ASA 2026 (sin cambios de dosis)
+- Texto de metas de PA alineado con la sección 4.3: < 185/110 también antes de trombectomía; PAS < 140 sin beneficio tras trombólisis y perjudicial 72 h tras trombectomía exitosa; sin reperfusión, reducción inicial ≈ 15 % solo con ≥ 220/120 o comorbilidad.
+- R-10 pasa a "verificada en parte".
+
 ## 1.3.1 — 2026-11-14 · Referencias añadidas (técnico, sin cambios de dosis)
 - 12 referencias aportadas por el autor enlazadas en la matriz (R-02, R-03, R-05 a R-09) y en Referencias: DeMasi 2025, Miner 2025, Kotani & Russotto 2025, Russotto & Sorbello 2025, McDougall 2026, Zampieri 2026, Andriazzi 2026, Guihard 2019, Grillot 2023, Ko & Celmins 2024, Gottlieb 2026, Accilien 2024. URL sin parámetros de rastreo.
 - Nota informativa en rocuronio: no inferioridad no demostrada frente a succinilcolina en el ECA prehospitalario de Guihard 2019.

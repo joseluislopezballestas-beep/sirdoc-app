@@ -124,8 +124,8 @@ function targets(p){
   case 'epoc':t.push('SpO₂ objetivo 88–92 %. Evitar hiperinsuflación dinámica (auto-PEEP).');break;
   case 'ich':t.push('PAS objetivo 140 mmHg (rango 130–150). Evitar descensos < 130 mmHg (AHA/ASA 2022).');t.push('PaCO₂ 35–45 mmHg; cabecera a 30°.');break;
   case 'isq':
-   if(p.trombo)t.push('Reperfusión: PA < 185/110 antes de la trombólisis y < 180/105 durante 24 h. No bajar la PAS a < 140 mmHg tras la reperfusión (AHA/ASA 2026).');
-   else t.push('Sin reperfusión: no tratar la PA salvo ≥ 220/120 mmHg; si se trata, reducir ≈ 15 % en 24 h.');
+   if(p.trombo)t.push('Reperfusión: PA < 185/110 antes de la trombólisis o la trombectomía y < 180/105 al menos 24 h tras la trombólisis. No bajar la PAS a < 140 mmHg: sin beneficio tras trombólisis y perjudicial en las primeras 72 h tras trombectomía exitosa (AHA/ASA 2026, sección 4.3).');
+   else t.push('Sin reperfusión: con PA < 220/120 mmHg, bajarla en las primeras 48–72 h no mejora el pronóstico; con ≥ 220/120 o comorbilidad que lo exija (falla cardiaca aguda, disección aórtica), reducción inicial ≈ 15 % (AHA/ASA 2026).');
    t.push('Evitar hipotensión durante la inducción.');break;
   case 'ic':t.push('PAM ≥ 65 mmHg. Evitar hipoxemia e hipercapnia (empeoran la falla del VD).');break;
  }

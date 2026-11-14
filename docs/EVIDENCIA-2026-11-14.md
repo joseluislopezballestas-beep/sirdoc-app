@@ -76,6 +76,17 @@ Enlaces incorporados a la matriz; se retiraron los parámetros de rastreo de las
 
 Sin cambios de dosis en v1.3.1.
 
+### Contraste de la guía AHA/ASA 2026 de ictus isquémico (v1.3.2)
+Fuente: 2026 Guideline for the Early Management of Patients With Acute Ischemic Stroke. Stroke 2026;57(8):e316–e436 (publicada en línea el 26-01-2026; PubMed 41582814) — https://www.ahajournals.org/doi/10.1161/STR.0000000000000513. Se leyó la sección 4.3 (manejo de la PA), sus recomendaciones de clase 3 y el texto de apoyo.
+| Punto | Guía | App antes | App ahora |
+|---|---|---|---|
+| Antes de la reperfusión | < 185/110 antes de trombólisis (protocolos de los ensayos) y antes de trombectomía (razonable) | < 185/110 antes de la trombólisis | Añade "o la trombectomía" |
+| Tras trombólisis | < 180/105 (protocolos); PAS < 140 vs < 180: sin beneficio (COR 3, sin beneficio) | Coincide | Sin cambio de meta; se cita la clase |
+| Tras trombectomía exitosa (mTICI 2b–3) | PAS < 140 en las primeras 72 h: perjudicial (COR 3, daño) | "No bajar a < 140 tras reperfusión" | Precisa 72 h y perjuicio |
+| Sin reperfusión | PA < 220/120: bajarla en 48–72 h no mejora desenlaces; ≥ 220/120 o comorbilidad (falla cardiaca aguda, disección): reducción inicial del 15 % | "Reducir ≈ 15 % en 24 h" | Reducción inicial ≈ 15 %, con las comorbilidades |
+| Hipotensión | Asociada a peor desenlace | Evitarla | Sin cambio |
+Resultado: R-10 pasa a "verificada en parte" (ictus isquémico contrastado; HIC, TCE y lesión medular siguen identificados). Sin cambios de dosis.
+
 ## 4. Pendiente
 - R-04 (vecuronio SIR), R-08 (fentanilo de pretratamiento) y R-14 (vasopresores): sin fuente primaria localizada.
 - Lectura completa de los textos marcados "fuente identificada".
