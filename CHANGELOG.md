@@ -2,6 +2,15 @@
 
 Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) o **clínico** (requiere aprobación de especialista).
 
+## 1.5.0 — 2026-11-16 · Secuencia de uso, selección explícita y resumen fiel
+Correcciones solicitadas por el autor (sin cambios en cálculos, diluciones ni dosis, que se confirmaron correctos):
+- **Crítico — Copiar resumen:** el resumen incluía la opción *sugerida* de la fila superior (p. ej., etomidato) aunque el usuario hubiera elegido ketamina. Ahora todo sale de una **fuente única de selección**: botón *Seleccionar* en cada tarjeta de inducción, bloqueante y pretratamiento, sincronizado con "Administrado" en Infusiones. El resumen incluye solo lo seleccionado (si no hay selección: "sin seleccionar"), las infusiones configuradas y **no** incluye medicamentos de rescate. Las filas superiores del plan muestran lo seleccionado o "Sin seleccionar · sugerido: …".
+- **Advertencia roja** "Verifique antes de continuar" y nueva pestaña **Verificar** (disponibilidad, presentaciones y duración de infusiones) como primer paso; aviso rojo en Paciente hasta confirmar.
+- **Pestañas:** Portada → Verificar → Paciente → Plan SIR (escenario y esquema) → Infusiones → Info (reglas, privacidad, referencias, aviso de uso). El escenario se elige en Plan SIR.
+- **FC y SpO₂** obligatorias, sin la etiqueta "opcional".
+- **Epinefrina push-dose:** condición de administración explícita (solo rescate ante hipotensión peri-intubación; no protocolaria ni rutinaria); la fila superior la rotula como rescate.
+- Pruebas: 52/52 (incluye el caso Ketamina + Rocuronio que antes generaba Etomidato).
+
 ## 1.4.0 — 2026-11-14 · Rediseño de seguridad, presentaciones y verificación
 **Diseño y seguridad (técnico):**
 - Cinco tipos de aviso con icono, etiqueta, color y borde propios: **Contraindicación** (rojo sólido, bloquea el fármaco: sin dosis, nunca 1.ª elección, se muestra antes que todo), **Precaución**, **Evidencia insuficiente**, **No disponible** e **Información**. Cada aviso, meta y paso muestra la condición clínica que lo activa.

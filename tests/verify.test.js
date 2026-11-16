@@ -100,13 +100,13 @@ function checkInf(card, W, H, ctx) {
 }
 
 const PATIENTS = [
-  { sexo: 'M', edad: 45, peso: 70, talla: 175, pas: 125, pad: 80, fc: 85 },
-  { sexo: 'F', edad: 30, peso: 52, talla: 158, pas: 112, pad: 70, fc: 90 },
-  { sexo: 'M', edad: 68, peso: 135, talla: 172, pas: 150, pad: 95, fc: 78 },     // obesidad
-  { sexo: 'F', edad: 80, peso: 60, talla: 150, pas: 95, pad: 60, fc: 105 },       // riesgo
-  { sexo: 'M', edad: 50, peso: 90, talla: 180, pas: 80, pad: 50, fc: 125 },       // shock
-  { sexo: 'F', edad: 40, peso: 42, talla: 135, pas: 120, pad: 75, fc: 80 },       // talla baja (peso ideal mínimo)
-  { sexo: 'M', edad: 35, peso: 220, talla: 190, pas: 140, pad: 90, fc: 100 }      // obesidad extrema, tope de succinilcolina
+  { sexo: 'M', edad: 45, peso: 70, talla: 175, pas: 125, pad: 80, fc: 85, spo2: 96 },
+  { sexo: 'F', edad: 30, peso: 52, talla: 158, pas: 112, pad: 70, fc: 90, spo2: 96 },
+  { sexo: 'M', edad: 68, peso: 135, talla: 172, pas: 150, pad: 95, fc: 78, spo2: 96 },     // obesidad
+  { sexo: 'F', edad: 80, peso: 60, talla: 150, pas: 95, pad: 60, fc: 105, spo2: 96 },       // riesgo
+  { sexo: 'M', edad: 50, peso: 90, talla: 180, pas: 80, pad: 50, fc: 125, spo2: 96 },       // shock
+  { sexo: 'F', edad: 40, peso: 42, talla: 135, pas: 120, pad: 75, fc: 80, spo2: 96 },       // talla baja (peso ideal mínimo)
+  { sexo: 'M', edad: 35, peso: 220, talla: 190, pas: 140, pad: 90, fc: 100, spo2: 96 }      // obesidad extrema, tope de succinilcolina
 ];
 const ESCS = ['poli', 'raqui', 'sangra', 'epoc', 'ich', 'isq', 'ic', 'sepsis', 'iam'];
 

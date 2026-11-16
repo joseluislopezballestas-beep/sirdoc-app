@@ -24,9 +24,10 @@ async function app(seed) {
   const calc = () => $('calc').click();
   const text = id => $(id).textContent.replace(/\s+/g, ' ');
   const doses = () => d.querySelectorAll('#plan .dose, #plan .syr .v, #maint .rate').length;
-  return { w, d, $, set, fill, calc, text, doses, errors };
+  const pick = (cat, id) => { const b = d.querySelector(`#plan .selbtn[data-sel="${cat}"][data-id="${id}"]`); if (!b) throw new Error('sin botón ' + cat + ' ' + id); b.click(); };
+  return { w, d, $, set, fill, calc, text, doses, errors, pick };
 }
-const OK = { edad: 45, peso: 70, talla: 175, pas: 120, pad: 80, fc: 85 };
+const OK = { edad: 45, peso: 70, talla: 175, pas: 120, pad: 80, fc: 85, spo2: 97 };
 
 test('cálculo válido muestra dosis y el aviso de uso experimental', async () => {
   const a = await app(); a.fill('poli', OK); a.calc();
@@ -41,7 +42,7 @@ test('al cambiar un dato tras calcular, no quedan resultados antiguos visibles',
 });
 
 test('el cambio de peso recalcula todas las dosis dependientes', async () => {
-  const a = await app(); a.fill('poli', OK); a.calc();
+  const a = await app(); a.fill('poli', OK); a.calc(); a.pick('nmb', 'roc');
   const roc70 = a.text('plan').match(/Bloqueo NM · T 0 \+ ?(\d+) mg/)[1];
   a.set('peso', 90); a.calc();
   const roc90 = a.text('plan').match(/Bloqueo NM · T 0 \+ ?(\d+) mg/)[1];
@@ -94,7 +95,7 @@ test('el resumen copiado no incluye la firma del creador', async () => {
 });
 
 test('la dosis mostrada y el volumen mostrado son coherentes (volumen = dosis redondeada / concentración)', async () => {
-  const a = await app(); a.fill('poli', { ...OK, peso: '80,5' }); a.calc();
+  const a = await app(); a.fill('poli', { ...OK, peso: '80,5' }); a.calc(); a.pick('ind', 'etom');
   const m = a.text('plan').match(/Inducción · T 0 ?([\d.]+) mg ?([\d.]+) mL Etomidato/);
   assert.ok(m, 'fila de inducción'); assert.equal(Number(m[2]), Math.round(Number(m[1]) / 2 * 10) / 10);   // etomidato 2 mg/mL
 });
@@ -215,4 +216,50 @@ test('[v1.3.7] en pantalla solo estado de la fuente y fecha de revisión (sin ap
   const all = a.text('plan') + a.text('maint') + [...a.d.querySelectorAll('#rules li')].map(x => x.textContent).join(' ');
   assert.doesNotMatch(all, /Aprobada|Aprobación|Md\. Jose Luis/);
   assert.match(a.d.querySelector('#rules li').textContent, /Fuente verificada · Revisión 14\/11\/2026/);
+});
+
+test('[v1.5] resumen: SOLO lo seleccionado (ketamina + rocuronio no genera etomidato) y sin rescate', async () => {
+  const a = await app(); a.fill('ic', { edad: 76, peso: 72, talla: 165, pas: 198, pad: 112, fc: 95, spo2: 95 }); a.calc();
+  let sum = a.w.eval('summaryText()');
+  assert.match(sum, /Inducción · T 0: sin seleccionar\./); assert.match(sum, /Bloqueo NM · T 0 \+: sin seleccionar\./);
+  assert.match(sum, /Administrado: sin registrar\./); assert.doesNotMatch(sum, /Etomidato|Rocuronio|Epinefrina/);
+  assert.match(a.text('plan'), /Inducción · T 0—Sin seleccionar sugerido: Etomidato/);
+  a.pick('ind', 'keta'); a.pick('nmb', 'roc');
+  sum = a.w.eval('summaryText()');
+  assert.match(sum, /Inducción · T 0: Ketamina [\d.]+ mg\/kg [\d.]+ mg \([\d.]+ mL de 10 mg\/mL\)/);
+  assert.match(sum, /Bloqueo NM · T 0 \+: Rocuronio 1\.2 mg\/kg 86 mg \(8\.6 mL de 10 mg\/mL\)/);
+  assert.match(sum, /Administrado: Ketamina \+ Rocuronio\./);
+  assert.doesNotMatch(sum, /Etomidato/); assert.doesNotMatch(sum, /Epinefrina/);
+  // la selección del plan y el registro "Administrado" son el mismo dato
+  assert.equal(a.$('mInd').value, 'keta'); assert.equal(a.$('mNmb').value, 'roc');
+  a.$('mInd').value = 'etom'; a.$('mInd').dispatchEvent(new a.w.Event('change', { bubbles: true }));
+  assert.match(a.w.eval('summaryText()'), /Inducción · T 0: Etomidato/);
+  assert.match(a.d.querySelector('#plan .selbtn.on[data-sel="ind"]').dataset.id, /etom/);
+  assert.match(a.text('plan'), /Inducción · T 0 ?[\d.]+ mg ?[\d.]+ mL ?Etomidato/);
+  assert.deepEqual(a.errors, []);
+});
+
+test('[v1.5] pestañas en orden, advertencia roja de presentaciones, FC y SpO₂ obligatorias, epinefrina solo de rescate', async () => {
+  const a = await app();
+  assert.deepEqual([...a.d.querySelectorAll('.tabs button')].map(b => b.dataset.v), ['v-sel', 'v-pac', 'v-plan', 'v-inf', 'v-info']);
+  assert.ok(a.$('v-sel').classList.contains('on'));
+  assert.match(a.$('v-sel').querySelector('.wn-ci').textContent, /ADVERTENCIA|Advertencia: verifique antes de continuar/i);
+  assert.ok(a.$('v-sel').querySelector('#presList') && a.$('v-sel').querySelector('#s-h'));
+  assert.ok(a.$('v-plan').querySelector('#esc'), 'el escenario se elige en Plan SIR');
+  assert.doesNotMatch(a.$('v-pac').textContent, /opcional/i);
+  a.fill('poli', { ...OK, fc: '', spo2: '' }); a.calc();
+  assert.match(a.text('err'), /Faltan datos obligatorios: FC, SpO₂/); assert.equal(a.d.querySelectorAll('#plan .dose').length, 0);
+  a.fill('poli', OK); a.calc();
+  assert.match(a.text('plan'), /EPINEFRINA PUSH-DOSE: 10–20 mcg.*CONDICIÓN DE ADMINISTRACIÓN: administrar exclusivamente como medida de rescate ante hipotensión peri-intubación/);
+  assert.match(a.text('plan'), /Rescate · solo si hipotensión peri-intubación/);
+  a.$('selOk').click(); assert.ok(a.$('selWarn').classList.contains('hide'));
+});
+
+test('[v1.5] sin escenario: los datos se validan en Paciente y el plan pide elegir escenario', async () => {
+  const a = await app();
+  for (const k in OK) { a.$(k === 'peso' ? 'peso' : k).value = String(OK[k]); }
+  a.$('calc').click();
+  assert.ok(a.$('v-plan').classList.contains('on')); assert.match(a.text('plan'), /Selecciona el escenario clínico/);
+  a.d.querySelector('#esc button[data-v="sepsis"]').click();
+  assert.ok(a.d.querySelectorAll('#plan .dose').length > 0, 'al elegir el escenario se calcula el plan');
 });

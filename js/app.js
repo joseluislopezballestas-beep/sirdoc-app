@@ -13,7 +13,10 @@ const KEY='sirdoc.v1';
 const ST=Object.assign({etomOk:true,rocOk:true,succOk:true,H:8,disc:false,pres:{},custom:{}},load());
 if(ST.prop!=null&&ST.pres.prop==null)ST.pres.prop=ST.prop;   // ajustes de versiones anteriores
 if(ST.mida!=null&&ST.pres.mida==null)ST.pres.mida=ST.mida;
-let M={ind:null,nmb:null,anal:'fent',sed:null,adj:false,bnm:'none',H:ST.H};
+/* Fuente ÚNICA de la selección farmacológica: el plan (botón Seleccionar), el registro "Administrado" y el resumen leen y escriben M.
+   ind/nmb vacíos = sin seleccionar; nunca se rellenan con la opción sugerida. */
+let M={ind:'',nmb:'',pre:false,anal:'fent',sed:null,adj:false,bnm:'none',H:ST.H,init:false};
+let SEL_OK=false;   // presentaciones verificadas en esta sesión
 // Restaura presentaciones guardadas; una presentación "otra" inválida vuelve a la estándar.
 Object.keys(PRES).forEach(k=>{
  const c=ST.custom[k],v=ST.pres[k];
@@ -51,13 +54,16 @@ function bolus(id,k,range,role,why,opts={}){
  const c=bcalc(id,k,opts);
  if(!c.ok)return calcErr(NAMES[id]);
  const pr_=(drugPrec(P)[id]||[]).map(t=>warn(['prec',t])).join('');
- return `<div class="drug ${role}"><div class="hd"><span class="nm">${NAMES[id]}</span>${tag}</div>
+ const on=opts.sel&&(opts.sel==='pre'?M.pre:M[opts.sel]===id);
+ const sb=opts.sel?`<button type="button" class="selbtn${on?' on':''}" data-sel="${opts.sel}" data-id="${id}" aria-pressed="${on}">${on?'✓ Seleccionado':'Seleccionar '+NAMES[id]}</button>`:'';
+ return `<div class="drug ${role}${on?' sel':''}"><div class="hd"><span class="nm">${NAMES[id]}</span>${tag}</div>
  <div class="dose">${r(c.dose)} ${c.unit}<small>${r(c.vol,'mL')} mL · ${r(c.bp.conc)} ${c.bp.u}</small></div>
  <div class="calc">${k} ${c.unit}/kg × ${r(c.W.w)} kg (${c.W.l}) · rango ${range}${c.capped?` · máx. ${c.max} ${c.unit}`:''}${opts.cond?`<br>Dosis para: ${opts.cond}`:''}</div>
  <div class="prep">${c.bp.txt}</div>
- <div class="why">${why}</div>${pr_}${evNote(id)}${ruleTag(RULE_BOLUS[id])}</div>`;
+ <div class="why">${why}</div>${pr_}${evNote(id)}${ruleTag(RULE_BOLUS[id])}${sb}</div>`;
 }
-function syrRow(label,c){
+function syrRow(label,c,unsel){
+ if(unsel)return `<div class="row unsel"><div class="k">${label}</div><div class="v">—</div><div class="n"><span class="pill p-warn">Sin seleccionar</span> <span class="calc">${unsel}</span></div></div>`;
  if(c.none)return `<div class="row ci"><div class="k">${label}</div><div class="v">—</div><div class="n"><span class="pill p-ci">⛔ Sin bloqueante utilizable</span></div></div>`;
  if(!c.ok)return `<div class="row"><div class="k">${label}</div><div class="v">—</div><div class="n">${NAMES[c.id]} <span class="pill p-bad">No calculado</span></div></div>`;
  return `<div class="row"><div class="k">${label}</div><div class="v">${r(c.dose)} ${c.unit}<small>${r(c.vol,'mL')} mL</small></div>
@@ -69,8 +75,11 @@ function escTitle(p){return ESC[p.esc]+(p.esc==='poli'?(p.hemo?' con hemorragia 
 function renderPlan(){
  const p=P,pre=pretreat(p),ind=inductors(p),nm=nmbList(p);
  const st=p.state==='shock'?'<span class="pill p-bad">Shock</span>':p.state==='riesgo'?'<span class="pill p-warn">Riesgo de hipotensión</span>':'<span class="pill p-ok">Estable</span>';
- const i1=ind.find(x=>x[1]==='first'),d1=indDose(i1[0],p),n1=nm.L.find(x=>x.role==='first')||null;
- const cI=bcalc(i1[0],d1.k),cN=n1?bcalc(n1.id,n1.k,{basis:n1.basis,max:n1.max}):{none:true};
+ const i1=ind.find(x=>x[1]==='first'),n1=nm.L.find(x=>x.role==='first')||null;
+ // Filas superiores: solo lo SELECCIONADO; si no hay selección se indica, con la opción sugerida como referencia.
+ const iSel=M.ind,nSel=nm.L.find(x=>x.id===M.nmb);
+ const cI=iSel?bcalc(iSel,indDose(iSel,p).k):null;
+ const cN=nSel?(nSel.role==='ci'||nSel.role==='nd'?{ok:false,id:nSel.id}:bcalc(nSel.id,nSel.k,{basis:nSel.basis,max:nSel.max})):(n1?null:{none:true});
  let h=expBanner()+`<div class="title"><h2>${escTitle(p)}</h2>${st}</div>
  <div class="strip">
   <div class="chip"><b>${p.w}</b>kg real</div><div class="chip"><b>${r(p.ibw)}</b>kg ideal</div>
@@ -79,10 +88,10 @@ function renderPlan(){
   <div class="chip"><b>${p.si?p.si.toFixed(2):'–'}</b>Índ. shock</div>
  </div>
  <div class="syr">
-  ${pre?syrRow('Pretratamiento · T −3 min',bcalc('fent',pre.k)):''}
-  ${syrRow('Inducción · T 0',cI)}
-  ${syrRow('Bloqueo NM · T 0 +',cN)}
-  <div class="row"><div class="k">Vasopresor en bolo · a la mano</div><div class="v">10–20 mcg<small>1–2 mL</small></div><div class="n">Epinefrina <span class="calc">10 mcg/mL</span></div></div>
+  ${pre?(M.pre?syrRow('Pretratamiento · T −3 min',bcalc('fent',pre.k)):syrRow('Pretratamiento · T −3 min',null,'sugerido: Fentanilo')):''}
+  ${cI?syrRow('Inducción · T 0',cI):syrRow('Inducción · T 0',null,'sugerido: '+NAMES[i1[0]]+' · toca Seleccionar')}
+  ${cN?syrRow('Bloqueo NM · T 0 +',cN):syrRow('Bloqueo NM · T 0 +',null,'sugerido: '+NAMES[n1.id]+' · toca Seleccionar')}
+  <div class="row rescue"><div class="k">Rescate · solo si hipotensión peri-intubación</div><div class="v">10–20 mcg<small>1–2 mL</small></div><div class="n">Epinefrina <span class="calc">10 mcg/mL · no de rutina</span></div></div>
  </div>`;
  const ci=ciSummary(p);
  if(!n1)ci.unshift(['ci','<b>Ningún bloqueante neuromuscular es utilizable</b> (contraindicado o no disponible). El cisatracurio no sirve para SIR por su inicio lento. Pide ayuda experta; valora intubación sin bloqueante o vía aérea quirúrgica según el contexto.','rocuronio, succinilcolina y vecuronio bloqueados']);
@@ -94,9 +103,9 @@ function renderPlan(){
  h+=`<div class="sec"><h3>Secuencia</h3>`;
  h+=step('T −10 min','Preparación y optimización',`<ul class="t">${prep(p).map(condLi).join('')}</ul>`,true);
  h+=step('T −5 min','Preoxigenación','<div class="note">3–5 min con FiO₂ 100 % (u 8 respiraciones a capacidad vital). Oxigenación apneica con cánula nasal durante la laringoscopia.</div>');
- h+=step('T −3 min','Pretratamiento',pre?bolus('fent',pre.k,pre.r,'first',pre.why):'<div class="note">No indicado en este contexto (riesgo de hipotensión). La lidocaína no se recomienda de rutina.</div>');
- h+=step('T 0','Inducción · opciones',ind.map(x=>{if(x[1]==='nd')return bolus(x[0],0,'','nd',x[2]);const d=indDose(x[0],p);return bolus(x[0],d.k,d.r,x[1],x[2],{cond:doseWhy(p)});}).join('')+ruleTag('R-09'),true);
- h+=step('T 0 +','Bloqueo neuromuscular · opciones',nm.L.map(x=>bolus(x.id,x.k,x.r,x.role,x.why,{basis:x.basis,max:x.max})).join(''),true);
+ h+=step('T −3 min','Pretratamiento',pre?bolus('fent',pre.k,pre.r,'first',pre.why,{sel:'pre'}):'<div class="note">No indicado en este contexto (riesgo de hipotensión). La lidocaína no se recomienda de rutina.</div>');
+ h+=step('T 0','Inducción · opciones',ind.map(x=>{if(x[1]==='nd')return bolus(x[0],0,'','nd',x[2]);const d=indDose(x[0],p);return bolus(x[0],d.k,d.r,x[1],x[2],{cond:doseWhy(p),sel:'ind'});}).join('')+ruleTag('R-09'),true);
+ h+=step('T 0 +','Bloqueo neuromuscular · opciones',nm.L.map(x=>bolus(x.id,x.k,x.r,x.role,x.why,{basis:x.basis,max:x.max,sel:'nmb'})).join(''),true);
  h+=step('+45 s','Laringoscopia e intubación','<div class="note">Videolaringoscopio de primera intención (ASA 2022: de elección en la vía aérea difícil prevista). Rocuronio: 45–60 s; succinilcolina: al terminar las fasciculaciones; vecuronio: 90–150 s. Confirmar con capnografía de onda.</div>');
  h+=step('+5 min','Post-intubación',`<ul class="t">${vent(p).map(condLi).join('')}<li><b>Iniciar analgosedación sin demora</b> (pestaña Infusiones).</li><li>Antes de extubar: monitorización cuantitativa en el aductor del pulgar y TOF ≥ 0,9 (ASA 2023; ESAIC 2023). Sin monitor cuantitativo no se puede descartar bloqueo residual.</li></ul>`);
  const sg=roundDose(16*p.w),sp=bprep('suga',sg);
@@ -104,6 +113,12 @@ function renderPlan(){
  h+=`</div><button class="cta" id="toInf">Infusiones de mantenimiento</button>`;
  $('plan').innerHTML=h;
  $('toInf').addEventListener('click',()=>show('v-inf'));
+ document.querySelectorAll('#plan .selbtn').forEach(b=>b.addEventListener('click',()=>{
+  const k=b.dataset.sel,id=b.dataset.id,y=window.scrollY;
+  if(k==='pre')M.pre=!M.pre; else M[k]=M[k]===id?'':id;
+  renderPlan();renderMaint();window.scrollTo(0,y);
+  toast(k==='pre'?(M.pre?'Pretratamiento seleccionado':'Pretratamiento retirado'):(M[k]?`${NAMES[id]} seleccionado`:`${NAMES[id]} retirado de la selección`));
+ }));
 }
 
 /* ================= infusiones ================= */
@@ -120,12 +135,12 @@ function defaults(p){
 function renderMaint(){
  if(!P)return;
  const p=P;
- if(M.ind===null){const d=defaults(p);M.ind=d.ind;M.nmb=d.nmb;M.sed=d.sed;M.bnm='none';M.adj=false;}
+ if(!M.init){const d=defaults(p);M.sed=d.sed;M.bnm='none';M.adj=false;M.init=true;}   // inductor y bloqueante NO se rellenan: solo lo seleccionado
  const old=p.edad>=65,low=p.state!=='estable'||old;
  const opt=(v,arr)=>arr.map(a=>`<option value="${a[0]}"${a[0]===v?' selected':''}>${a[1]}</option>`).join('');
  let h=expBanner()+`<p class="lead">Administrado en la SIR</p><div class="grid2">
- <label>Inductor<select id="mInd">${opt(M.ind,[['etom','Etomidato'],['keta','Ketamina'],['prop','Propofol']])}</select></label>
- <label>Bloqueante<select id="mNmb">${opt(M.nmb,[['roc','Rocuronio'],['succ','Succinilcolina'],['vec','Vecuronio']])}</select></label></div>
+ <label>Inductor<select id="mInd">${opt(M.ind,[['','— Sin registrar —'],['etom','Etomidato'],['keta','Ketamina'],['prop','Propofol']])}</select></label>
+ <label>Bloqueante<select id="mNmb">${opt(M.nmb,[['','— Sin registrar —'],['roc','Rocuronio'],['succ','Succinilcolina'],['vec','Vecuronio']])}</select></label></div>
  <p class="lead">Esquema</p><div class="grid2">
  <label>Analgesia<select id="mAnal">${opt(M.anal,[['fent','Fentanilo'],['none','Ninguna']])}</select></label>
  <label>Sedación<select id="mSed">${opt(M.sed,[['prop','Propofol'],['mida','Midazolam'],['dex','Dexmedetomidina'],['keta','Ketamina'],['none','Ninguna']])}</select></label>
@@ -135,10 +150,11 @@ function renderMaint(){
  <div class="seg" id="mH">${[6,8,10,12].map(x=>`<button data-h="${x}" class="${x===M.H?'on':''}">${x} h</button>`).join('')}</div>`;
 
  const CI=contraind(p),prc=id=>(drugPrec(p)[id]||[]).map(t=>warn(['prec',t])).join('');
- [M.ind,M.nmb].forEach(id=>{if(CI[id])h+=warn(['ci',`<b>${NAMES[id]}</b> figura como administrado pero está contraindicado. Verifica el registro y vigila sus efectos adversos.`,CI[id].join('; ')]);});
+ if(!M.ind||!M.nmb)h+=warn(['info','Registra aquí el inductor y el bloqueante administrados, o selecciónalos en Plan SIR. El resumen solo incluye lo seleccionado.',`sin registrar: ${[!M.ind?'inductor':'',!M.nmb?'bloqueante':''].filter(Boolean).join(' y ')}`]);
+ [M.ind,M.nmb].forEach(id=>{if(id&&CI[id])h+=warn(['ci',`<b>${NAMES[id]}</b> figura como administrado pero está contraindicado. Verifica el registro y vigila sus efectos adversos.`,CI[id].join('; ')]);});
  if(M.nmb==='roc')h+=warn(['prec','Rocuronio dura 45–70 min y el inductor solo minutos: inicia la analgosedación <b>ya</b> (riesgo de despertar paralizado).','rocuronio administrado']);
  else if(M.nmb==='vec')h+=warn(['prec','Vecuronio a dosis de SIR dura 60–90 min o más: inicia la analgosedación <b>ya</b>.','vecuronio administrado']);
- else h+=warn(['info','Succinilcolina: se recupera en 8–10 min. Para parálisis continua, primero un bolo de BNM no despolarizante.','succinilcolina administrada']);
+ else if(M.nmb==='succ')h+=warn(['info','Succinilcolina: se recupera en 8–10 min. Para parálisis continua, primero un bolo de BNM no despolarizante.','succinilcolina administrada']);
  if(M.ind==='etom')h+=warn(['info','Etomidato: dosis única, efecto de 3–5 min. No repetir ni infundir.','etomidato administrado']);
 
  h+=`<div class="sec"><h3>Infusiones</h3>`;
@@ -172,21 +188,32 @@ function renderMaint(){
  <button class="cta" id="copy">Copiar resumen</button>`;
  $('maint').innerHTML=h;
  const map={mInd:'ind',mNmb:'nmb',mAnal:'anal',mSed:'sed',mBnm:'bnm'};
- Object.keys(map).forEach(id=>$(id).addEventListener('change',e=>{M[map[id]]=e.target.value;renderMaint();}));
+ Object.keys(map).forEach(id=>$(id).addEventListener('change',e=>{M[map[id]]=e.target.value;renderMaint();if(id==='mInd'||id==='mNmb'){const y=window.scrollY;renderPlan();window.scrollTo(0,y);}}));
  $('mAdj').addEventListener('change',e=>{M.adj=e.target.value==='1';renderMaint();});
  document.querySelectorAll('#mH button').forEach(b=>b.addEventListener('click',()=>{M.H=+b.dataset.h;renderMaint();renderPlan();}));
  $('copy').addEventListener('click',copySummary);
 }
-function copySummary(){
- if(!P){toast('Primero calcula con datos válidos');return}
+/* Resumen: SOLO lo seleccionado (fuente única M). Sin opciones sugeridas ni medicamentos de rescate. */
+function summaryText(){
  const p=P,L=[];
  L.push(`SIR — ${escTitle(p)}`);
  const CI=contraind(p);Object.keys(CI).forEach(id=>L.push(`CONTRAINDICADO: ${NAMES[id]} (${CI[id].join('; ')}).`));
  L.push(`${p.sexo==='M'?'H':'M'}, ${p.edad} a, ${p.w} kg, ${p.h} cm (IMC ${p.bmi.toFixed(1)}). PA ${p.pas}/${p.pad} (PAM ${Math.round(p.pam)})${p.fc?', FC '+p.fc+', IS '+p.si.toFixed(2):''}${p.spo2?', SpO2 '+p.spo2+'%':''}.`);
- document.querySelectorAll('#plan .syr .row').forEach(rw=>{const sm=rw.querySelector('.v small');L.push('• '+rw.querySelector('.k').textContent+': '+rw.querySelector('.n').textContent.trim()+' '+rw.querySelector('.v').childNodes[0].textContent.trim()+(sm?' ('+sm.textContent+')':''));});
- L.push(`Administrado: ${NAMES[M.ind]} + ${NAMES[M.nmb]}. Infusiones para ${M.H} h:`);
- document.querySelectorAll('#maint .inf').forEach(c=>L.push('• '+c.querySelector('.nm').textContent+': '+c.querySelector('.rate').textContent+'. '+c.querySelector('.prep').textContent.replace(/\s+/g,' ').trim()));
- const txt=L.join('\n');
+ const line=(label,id,k,o)=>{const c=bcalc(id,k,o||{});return c.ok?`${label}: ${NAMES[id]} ${k} ${c.unit}/kg ${r(c.dose)} ${c.unit} (${r(c.vol,'mL')} mL de ${r(c.bp.conc)} ${c.bp.u}). Preparación: ${c.bp.txt}`:`${label}: ${NAMES[id]} (no calculado).`;};
+ const pre=pretreat(p);
+ if(M.pre&&pre)L.push(line('Pretratamiento · T −3 min','fent',pre.k));
+ L.push(M.ind?line('Inducción · T 0',M.ind,indDose(M.ind,p).k):'Inducción · T 0: sin seleccionar.');
+ if(M.nmb){const x=nmbList(p).L.find(y=>y.id===M.nmb);L.push(x.role==='ci'?`Bloqueo NM · T 0 +: ${NAMES[M.nmb]} — CONTRAINDICADO (${CI[M.nmb].join('; ')}).`:line('Bloqueo NM · T 0 +',M.nmb,x.k,{basis:x.basis,max:x.max}));}
+ else L.push('Bloqueo NM · T 0 +: sin seleccionar.');
+ const adm=[M.ind,M.nmb].filter(Boolean).map(id=>NAMES[id]);
+ L.push(`Administrado: ${adm.length?adm.join(' + '):'sin registrar'}.`);
+ const inf=[...document.querySelectorAll('#maint .inf')];
+ if(inf.length){L.push(`Infusiones para ${M.H} h:`);inf.forEach(c=>L.push('• '+c.querySelector('.nm').textContent+': '+c.querySelector('.rate').textContent+'. '+[...c.querySelector('.prep').childNodes].map(n=>n.textContent.trim()).filter(Boolean).join(' ').replace(/\s+/g,' ')));}
+ return L.join('\n');
+}
+function copySummary(){
+ if(!P){toast('Primero calcula con datos válidos');return}
+ const txt=summaryText();
  const done=()=>toast('Resumen copiado. Contiene datos clínicos: pégalo solo en la historia clínica.',3500),fail=()=>toast('No se pudo copiar');
  if(window.SirDocNative&&window.SirDocNative.copy){try{window.SirDocNative.copy(txt);done()}catch(e){fail()}return}
  try{navigator.clipboard.writeText(txt).then(done,fail)}catch(e){fail()}
@@ -232,9 +259,12 @@ function placeholder(msg){
  const h=`<div class="ph" role="status"><b>Sin resultados vigentes</b><p>${msg}</p></div>`;
  $('plan').innerHTML=h;$('maint').innerHTML=h;
 }
-function invalidate(){P=null;M.ind=null;placeholder('Los datos del paciente cambiaron. Pulsa <b>Calcular</b> en Paciente para obtener dosis actualizadas.');}
+function invalidate(){P=null;M.init=false;placeholder('Los datos del paciente cambiaron. Pulsa <b>Continuar al Plan SIR</b> en Paciente para obtener dosis actualizadas.');}
+/* Recalcula al cambiar escenario o sus opciones (sin mensajes en Paciente). */
+function refresh(){P=null;M.init=false;compute(true);}
 function compute(silent){
  const p=read(),v=validateFull(p),box=$('err');
+ const noEsc=!p.esc;v.errors=v.errors.filter(e=>!/escenario clínico/.test(e));   // el escenario se elige en Plan SIR
  if(v.errors.length){
   P=null;placeholder('Hay datos que corregir en Paciente:<br>• '+v.errors.join('<br>• '));
   if(!silent){box.className='alert';box.innerHTML='<b>Corrige antes de calcular:</b><br>• '+v.errors.join('<br>• ');}
@@ -248,6 +278,7 @@ function compute(silent){
   return false;
  }
  box.className='alert hide';
+ if(noEsc){P=null;placeholder('Datos del paciente completos. <b>Selecciona el escenario clínico</b> arriba para calcular el plan.');return 'noesc';}
  try{P=derive(p);renderPlan();renderMaint();return true}
  catch(e){P=null;placeholder('No fue posible calcular con estos datos. Revísalos y vuelve a intentarlo.');return false}
 }
@@ -255,28 +286,31 @@ function expBanner(){
  return `<div class="exp" role="note"><b>⚠ Atención:</b> algoritmo v${ALG.version} (${ALG.fecha}) · ${ALG.estado}. Verifica cada dosis antes de administrar.</div>`;
 }
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
- const v=b.dataset.v;if((v==='v-plan'||v==='v-inf')&&!P&&!compute(true)){show(v);return}
+ const v=b.dataset.v;if((v==='v-plan'||v==='v-inf')&&!P&&compute(true)!==true){show(v);return}
  show(v);
 }));
 $('calc').addEventListener('click',()=>{if(compute())show('v-plan');else window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})});
+$('selOk').addEventListener('click',()=>{SEL_OK=true;$('selWarn').classList.add('hide');show('v-pac');toast('Presentaciones y duración verificadas');});
+$('goSel').addEventListener('click',()=>show('v-sel'));
+$('extra').addEventListener('change',refresh);
 function renderExtra(){
  const x={poli:[['hemo','Hemorragia activa significativa'],['tce','TCE asociado']],raqui:[['tce','TCE asociado'],['sci72','Más de 48 h desde la lesión']],sangra:[['trauma','Origen traumático']],isq:[['trombo','Candidato a trombólisis o trombectomía']],sepsis:[['vaso','Con vasopresor en curso']],iam:[['vd','Compromiso de ventrículo derecho']]}[S.esc]||[];
  $('extra').innerHTML=x.map(a=>`<label><input type="checkbox" id="${a[0]}">${a[1]}</label>`).join('');
 }
-document.querySelectorAll('#esc button').forEach(b=>b.addEventListener('click',()=>{S.esc=b.dataset.v;document.querySelectorAll('#esc button').forEach(x=>x.classList.toggle('on',x===b));renderExtra();invalidate();}));
+document.querySelectorAll('#esc button').forEach(b=>b.addEventListener('click',()=>{S.esc=b.dataset.v;document.querySelectorAll('#esc button').forEach(x=>x.classList.toggle('on',x===b));renderExtra();refresh();}));
 document.querySelectorAll('#sexo button').forEach(b=>b.addEventListener('click',()=>{S.sexo=b.dataset.v;document.querySelectorAll('#sexo button').forEach(x=>x.classList.toggle('on',x===b));invalidate();}));
 $('v-pac').addEventListener('input',invalidate);
 $('v-pac').addEventListener('change',e=>{if(e.target.id!=='confirmVals')invalidate();});
 
 /* ================= teclado (escritorio) ================= */
 document.addEventListener('keydown',e=>{
- if((e.ctrlKey||e.metaKey)&&['1','2','3','4'].includes(e.key)){e.preventDefault();const v=['v-pac','v-plan','v-inf','v-aj'][+e.key-1];document.querySelector(`.tabs button[data-v="${v}"]`).click();}
+ if((e.ctrlKey||e.metaKey)&&['1','2','3','4','5'].includes(e.key)){e.preventDefault();const v=['v-sel','v-pac','v-plan','v-inf','v-info'][+e.key-1];document.querySelector(`.tabs button[data-v="${v}"]`).click();}
  else if(e.key==='Enter'&&document.querySelector('#v-pac.on')&&e.target.tagName==='INPUT'){e.preventDefault();$('calc').click();}
 });
 
 /* ================= ajustes ================= */
 function initSettings(){
- [['s-etom','etomOk'],['s-roc','rocOk'],['s-succ','succOk']].forEach(([id,k])=>{$(id).checked=ST[k];$(id).addEventListener('change',e=>{ST[k]=e.target.checked;save();M.ind=null;if(P)compute(true);})});
+ [['s-etom','etomOk'],['s-roc','rocOk'],['s-succ','succOk']].forEach(([id,k])=>{$(id).checked=ST[k];$(id).addEventListener('change',e=>{ST[k]=e.target.checked;save();if(P)refresh();})});
  renderPresList();
  const hs=()=>document.querySelectorAll('#s-h button').forEach(b=>b.classList.toggle('on',+b.dataset.h===ST.H));hs();
  document.querySelectorAll('#s-h button').forEach(b=>b.addEventListener('click',()=>{ST.H=M.H=+b.dataset.h;save();hs();if(P){renderPlan();renderMaint();}}));

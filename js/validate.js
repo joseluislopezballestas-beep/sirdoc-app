@@ -13,8 +13,8 @@ const FIELDS={
  h:{n:'Talla',u:'cm',req:true,min:120,max:230},
  pas:{n:'PAS',u:'mmHg',req:true,min:30,max:300},
  pad:{n:'PAD',u:'mmHg',req:true,min:10,max:200},
- fc:{n:'FC',u:'lpm',req:false,min:20,max:250},
- spo2:{n:'SpO₂',u:'%',req:false,min:40,max:100}
+ fc:{n:'FC',u:'lpm',req:true,min:20,max:250},
+ spo2:{n:'SpO₂',u:'%',req:true,min:40,max:100}
 };
 
 function validateFull(p){

@@ -237,7 +237,7 @@ function prep(p){
   const o=infPrep('nore',0.05,'mcg/kg/min',0.05,0.5,'abw',M.H);
   a(`<b>Optimizar hemodinamia ANTES de inducir.</b> Norepinefrina 0.05 mcg/kg/min = <b>${r(o.rate(0.05),'mL')} mL/h</b>, titular 0.05–0.5 (${r(o.rate(0.05),'mL')}–${r(o.rate(0.5),'mL')} mL/h).<div class="prep"><b>Preparación:</b> ${o.txt}</div>`,doseWhy(p));
  }
- a('Epinefrina push-dose 10–20 mcg (1–2 mL). <div class="prep"><b>Preparación:</b> 1 ampolla de epinefrina 1 mg/1 mL en 100 mL de SSN → 10 mcg/mL; cargar 10 mL en jeringa rotulada.</div>','rescate de hipotensión peri-intubación');
+ a('<b>EPINEFRINA PUSH-DOSE: 10–20 mcg (1–2 mL)</b> — preparar y tener a la mano. <div class="prep"><b>Preparación:</b> 1 ampolla de epinefrina 1 mg/1 mL en 100 mL de SSN → 10 mcg/mL; cargar 10 mL en jeringa rotulada.</div><div class="rescond"><b>CONDICIÓN DE ADMINISTRACIÓN:</b> administrar exclusivamente como medida de rescate ante hipotensión peri-intubación. No debe utilizarse de manera protocolaria ni como medicamento de administración rutinaria.</div>','rescate de hipotensión peri-intubación');
  if((p.esc==='poli'&&p.hemo)||(p.esc==='sangra'&&p.trauma))a('Hemoderivados en curso. Si la lesión tiene < 3 h: ácido tranexámico 1 g IV en 10 min + 1 g en 8 h (CRASH-2).','hemorragia traumática');
  else if(p.esc==='sangra')a('Hemoderivados en curso y control de la fuente de sangrado.','hemorragia no traumática');
  if(p.esc==='raqui')a('Atropina 0.5–1 mg cargada (ampolla 1 mg/1 mL, sin diluir): bradicardia vagal por laringoscopia o aspiración'+(p.fc&&p.fc<60?' — <b>ya hay bradicardia</b>.':'.'),'lesión medular');

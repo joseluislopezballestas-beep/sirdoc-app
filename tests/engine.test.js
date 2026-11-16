@@ -111,7 +111,7 @@ test('validación: datos ausentes, formato, imposibles e incoherentes bloquean e
 });
 
 test('validación: valores extremos posibles piden confirmación, no bloquean', () => {
-  const base = { esc: 'sangra', sexo: 'M', edad: 45, w: 70, h: 175, pas: 120, pad: 80, fc: 80, spo2: null, _fmt: [] };
+  const base = { esc: 'sangra', sexo: 'M', edad: 45, w: 70, h: 175, pas: 120, pad: 80, fc: 80, spo2: 96, _fmt: [] };
   const v = o => validateFull(Object.assign({}, base, o));
   let x = v({ pas: 60, pad: 35 }); assert.equal(x.errors.length, 0); assert.match(x.warns.join(), /PAS 60/);
   assert.match(v({ fc: 180 }).warns.join(), /FC 180/);

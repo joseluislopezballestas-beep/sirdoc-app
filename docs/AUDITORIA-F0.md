@@ -114,3 +114,12 @@ Verificación de cálculo (pruebas `tests/verify.test.js` y `tests/safety.test.j
 - 600 combinaciones aleatorias de datos incompletos, extremos o erróneos y comorbilidades: ningún NaN/Infinity, ninguna dosis ≤ 0 ni fuera del rango declarado; 399 casos bloqueados por datos inválidos y 201 calculados.
 - Contraindicaciones (hiperK, hipertermia maligna, enf. neuromuscular, quemadura, lesión medular > 48 h, alergia a aminoesteroides), ningún bloqueante utilizable, fármacos no disponibles, interacciones y presentaciones "otra" con validación: verificados por prueba.
 Límites: las pruebas verifican que la app hace lo que sus reglas dicen; la corrección clínica de las reglas depende de la matriz científica y de la revisión por especialistas.
+
+## Actualización v1.5.0 (2026-11-16) — revisión del autor
+| ID | Estado | Cambio |
+|---|---|---|
+| H-31 (nuevo, crítico) | **Corregido** | El resumen copiado tomaba la opción sugerida y no la seleccionada (Ketamina + Rocuronio generaba Etomidato). Fuente única de selección (`M`) para plan, "Administrado" y resumen; prueba de regresión con el caso reportado |
+| H-32 (nuevo) | **Corregido** | Presentaciones y duración de infusiones podían quedar sin revisar: pestaña Verificar con advertencia roja antes de los datos del paciente |
+| H-33 (nuevo) | **Corregido** | FC y SpO₂ opcionales permitían subestimar el riesgo hemodinámico: ahora obligatorias |
+| H-34 (nuevo) | **Corregido** | Epinefrina push-dose podía leerse como paso rutinario: condición de administración explícita y excluida del resumen |
+El autor confirmó como correctos los cálculos de dosis, diluciones, volúmenes y velocidades (sin cambios en esos algoritmos).

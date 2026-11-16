@@ -14,7 +14,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="css/app.css?v=1.4.0">
+<link rel="stylesheet" href="css/app.css?v=1.5.0">
 </head>
 <body>
 <div id="intro" aria-hidden="true">
@@ -37,20 +37,29 @@
 
 <main>
 <!-- PACIENTE -->
-<section id="v-pac" class="view on">
-  <p class="lead">Escenario</p>
-  <div class="esc" id="esc">
-    <button data-v="poli">Politrauma</button>
-    <button data-v="raqui">Raquimedular</button>
-    <button data-v="sangra">Sangrado</button>
-    <button data-v="epoc">EPOC</button>
-    <button data-v="ich">Ictus hemorrágico</button>
-    <button data-v="isq">Ictus isquémico</button>
-    <button data-v="ic">Falla cardiaca</button>
-    <button data-v="sepsis">Sepsis</button>
-    <button data-v="iam">IAM</button>
+<section id="v-sel" class="view on">
+  <div class="wn wn-ci redwarn" role="alert"><div class="wn-h"><span class="wn-i" aria-hidden="true">⛔</span>Advertencia: verifique antes de continuar</div>
+  <div class="wn-t">Antes de configurar el escenario clínico y calcular las dosificaciones, verifique las presentaciones farmacológicas disponibles en su servicio y seleccione las correspondientes. Compruebe también la duración predeterminada de las infusiones. Esto garantiza que los cálculos, las diluciones y las preparaciones generadas correspondan a los insumos realmente disponibles.</div></div>
+  <p class="lead">Disponibilidad en tu servicio</p>
+  <div class="checks">
+    <label><input type="checkbox" id="s-etom">Etomidato</label>
+    <label><input type="checkbox" id="s-roc">Rocuronio</label>
+    <label><input type="checkbox" id="s-succ">Succinilcolina</label>
   </div>
-  <div id="extra" class="checks"></div>
+  <p class="hint">MinSalud (2025) reporta el etomidato desabastecido y la succinilcolina en riesgo de desabastecimiento. Sin ellos, la app usa ketamina y vecuronio como respaldo.</p>
+
+  <p class="lead">Presentaciones disponibles</p>
+  <p class="hint">Elige la presentación que tienes. Volúmenes, diluciones y velocidades se recalculan con ella. "Otra presentación" acepta solo concentraciones dentro del rango plausible de cada fármaco.</p>
+  <div class="fields one" id="presList"></div>
+
+  <p class="lead">Duración predeterminada de las infusiones</p>
+  <div class="seg" id="s-h"><button data-h="6">6 h</button><button data-h="8">8 h</button><button data-h="10">10 h</button><button data-h="12">12 h</button></div>
+
+  <button class="cta" id="selOk" type="button">Presentaciones verificadas · continuar al paciente</button>
+</section>
+
+<section id="v-pac" class="view">
+  <div id="selWarn" class="wn wn-ci" role="alert"><div class="wn-h"><span class="wn-i" aria-hidden="true">⛔</span>Presentaciones sin verificar</div><div class="wn-t">Verifique primero las presentaciones disponibles y la duración de las infusiones en la pestaña <b>Verificar</b>. <button class="mini" id="goSel" type="button">Ir a Verificar</button></div></div>
 
   <p class="lead">Paciente <span class="req">* obligatorio</span></p>
   <div class="seg" id="sexo"><button data-v="M" class="on">Hombre</button><button data-v="F">Mujer</button></div>
@@ -60,8 +69,8 @@
     <label><span>Talla *</span><input id="talla" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="cm" aria-label="Talla (obligatorio)"></label>
     <label><span>PAS *</span><input id="pas" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="mmHg" aria-label="PAS (obligatorio)"></label>
     <label><span>PAD *</span><input id="pad" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="mmHg" aria-label="PAD (obligatorio)"></label>
-    <label><span>FC (opcional)</span><input id="fc" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="lpm" aria-label="FC (opcional)"></label>
-    <label><span>SpO₂ (opcional)</span><input id="spo2" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="%" aria-label="SpO₂ (opcional)"></label>
+    <label><span>FC *</span><input id="fc" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="lpm" aria-label="FC (obligatorio)"></label>
+    <label><span>SpO₂ *</span><input id="spo2" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="%" aria-label="SpO₂ (obligatorio)"></label>
   </div>
 
   <p class="lead">Comorbilidades</p>
@@ -90,32 +99,34 @@
     <label><input type="checkbox" id="aco">Anticonceptivo hormonal</label>
   </div>
   <div id="err" class="alert hide"></div>
-  <button class="cta" id="calc">Calcular</button>
+  <button class="cta" id="calc">Continuar al Plan SIR</button>
 </section>
 
 <!-- PLAN -->
-<section id="v-plan" class="view"><div id="plan"><p class="empty">Ingresa los datos del paciente.</p></div></section>
+<section id="v-plan" class="view">
+  <p class="lead">Escenario</p>
+  <div class="esc" id="esc">
+    <button data-v="poli">Politrauma</button>
+    <button data-v="raqui">Raquimedular</button>
+    <button data-v="sangra">Sangrado</button>
+    <button data-v="epoc">EPOC</button>
+    <button data-v="ich">Ictus hemorrágico</button>
+    <button data-v="isq">Ictus isquémico</button>
+    <button data-v="ic">Falla cardiaca</button>
+    <button data-v="sepsis">Sepsis</button>
+    <button data-v="iam">IAM</button>
+  </div>
+  <div id="extra" class="checks"></div>
+
+  <div id="plan"><p class="empty">Ingresa los datos del paciente y selecciona el escenario.</p></div>
+</section>
 
 <!-- INFUSIONES -->
 <section id="v-inf" class="view"><div id="maint"><p class="empty">Ingresa los datos del paciente.</p></div></section>
 
 <!-- AJUSTES -->
-<section id="v-aj" class="view">
-  <p class="lead">Disponibilidad en tu servicio</p>
-  <div class="checks">
-    <label><input type="checkbox" id="s-etom">Etomidato</label>
-    <label><input type="checkbox" id="s-roc">Rocuronio</label>
-    <label><input type="checkbox" id="s-succ">Succinilcolina</label>
-  </div>
-  <p class="hint">MinSalud (2025) reporta el etomidato desabastecido y la succinilcolina en riesgo de desabastecimiento. Sin ellos, la app usa ketamina y vecuronio como respaldo.</p>
-
-  <p class="lead">Presentaciones disponibles</p>
-  <p class="hint">Elige la presentación que tienes. Volúmenes, diluciones y velocidades se recalculan con ella. "Otra presentación" acepta solo concentraciones dentro del rango plausible de cada fármaco.</p>
-  <div class="fields one" id="presList"></div>
-
-  <p class="lead">Duración predeterminada de las infusiones</p>
-  <div class="seg" id="s-h"><button data-h="6">6 h</button><button data-h="8">8 h</button><button data-h="10">10 h</button><button data-h="12">12 h</button></div>
-
+<section id="v-info" class="view">
+  <p class="lead">Información clínica, técnica y legal</p>
   <p class="lead">Estado de las reglas clínicas</p>
   <p class="hint">Cada dosis de la app muestra su regla. Toca un enlace para abrir el estudio o la ficha técnica. Ninguna regla tiene aún validación clínica formal completa.</p>
   <ul class="rules" id="rules"></ul>
@@ -157,10 +168,11 @@
 </main>
 
 <nav class="tabs">
-  <button data-v="v-pac" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Paciente<kbd>Ctrl 1</kbd></button>
-  <button data-v="v-plan"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>Plan SIR<kbd>Ctrl 2</kbd></button>
-  <button data-v="v-inf"><svg viewBox="0 0 24 24"><path d="M9 3h6v4l3 3v9a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-9l3-3z"/><path d="M6 14h12"/></svg>Infusiones<kbd>Ctrl 3</kbd></button>
-  <button data-v="v-aj"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>Ajustes<kbd>Ctrl 4</kbd></button>
+  <button data-v="v-sel" class="on"><svg viewBox="0 0 24 24"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17h.01"/></svg>Verificar<kbd>Ctrl 1</kbd></button>
+  <button data-v="v-pac"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Paciente<kbd>Ctrl 2</kbd></button>
+  <button data-v="v-plan"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>Plan SIR<kbd>Ctrl 3</kbd></button>
+  <button data-v="v-inf"><svg viewBox="0 0 24 24"><path d="M9 3h6v4l3 3v9a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-9l3-3z"/><path d="M6 14h12"/></svg>Infusiones<kbd>Ctrl 4</kbd></button>
+  <button data-v="v-info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg>Info<kbd>Ctrl 5</kbd></button>
 </nav>
 
 <div id="disc" class="modal hide" role="dialog" aria-modal="true">
@@ -173,10 +185,10 @@
 </div>
 <div id="toast"></div>
 
-<script src="js/util.js?v=1.4.0"></script>
-<script src="js/validate.js?v=1.4.0"></script>
-<script src="js/data.js?v=1.4.0"></script>
-<script src="js/logic.js?v=1.4.0"></script>
-<script src="js/app.js?v=1.4.0"></script>
+<script src="js/util.js?v=1.5.0"></script>
+<script src="js/validate.js?v=1.5.0"></script>
+<script src="js/data.js?v=1.5.0"></script>
+<script src="js/logic.js?v=1.5.0"></script>
+<script src="js/app.js?v=1.5.0"></script>
 </body>
 </html>

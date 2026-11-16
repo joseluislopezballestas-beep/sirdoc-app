@@ -23,7 +23,7 @@ async function app() {
   const avail = (id, on) => check('s-' + id, on);
   return { w, d, $, set, check, fill, calc, text, card, avail, errors };
 }
-const OK = { edad: 45, peso: 70, talla: 175, pas: 120, pad: 80, fc: 85 };
+const OK = { edad: 45, peso: 70, talla: 175, pas: 120, pad: 80, fc: 85, spo2: 97 };
 const ESCS = ['poli', 'raqui', 'sangra', 'epoc', 'ich', 'isq', 'ic', 'sepsis', 'iam'];
 
 test('[seguridad] 600 combinaciones aleatorias de datos incompletos, extremos o erróneos: nunca una dosis inválida', async t => {
@@ -33,7 +33,7 @@ test('[seguridad] 600 combinaciones aleatorias de datos incompletos, extremos o 
   const CHECKS = ['hta', 'dm', 'erc', 'hepa', 'via', 'acid', 'hiperK', 'hm', 'neuro', 'quem', 'alRoc', 'mg', 'betab', 'potNMB', 'anticoag', 'aco'];
   let shown = 0, blocked = 0;
   for (let i = 0; i < 600; i++) {
-    const V = { edad: ['18', '45', '70', '99', '110'], peso: ['35', '52,5', '70', '140', '280'], talla: ['125', '150', '175', '210'], pas: ['55', '80', '95', '120', '185', '240'], pad: ['30', '50', '70', '95', '125'], fc: ['', '35', '60', '110', '170'], spo2: ['', '70', '88', '99'] };
+    const V = { edad: ['18', '45', '70', '99', '110'], peso: ['35', '52,5', '70', '140', '280'], talla: ['125', '150', '175', '210'], pas: ['55', '80', '95', '120', '185', '240'], pad: ['30', '50', '70', '95', '125'], fc: ['35', '60', '110', '170'], spo2: ['70', '88', '99'] };
     const f = k => (rnd() < 0.9 ? pick(V[k]) : pick(POOL));
     a.fill(pick(ESCS), { edad: f('edad'), peso: f('peso'), talla: f('talla'), pas: f('pas'), pad: f('pad'), fc: f('fc'), spo2: f('spo2') });
     CHECKS.forEach(c => a.check(c, rnd() < 0.15));
@@ -100,7 +100,7 @@ test('[no disponible] fármacos marcados en Ajustes aparecen como no disponibles
 });
 
 test('[tipos de aviso] contraindicación, precaución, evidencia insuficiente, no disponible e información son distinguibles', async () => {
-  const a = await app(); a.avail('etom', false); a.fill('poli', { ...OK, talla: 130, peso: 40, pas: 85, pad: 50, fc: '' }, ['hiperK']); a.calc();
+  const a = await app(); a.avail('etom', false); a.fill('poli', { ...OK, talla: 130, peso: 52, pas: 85, pad: 50 }, ['hiperK']); a.calc();
   const kinds = new Set([...a.d.querySelectorAll('#plan .wn')].map(e => [...e.classList].find(c => c.startsWith('wn-') && c !== 'wn')));
   for (const k of ['wn-ci', 'wn-prec', 'wn-ev', 'wn-nd', 'wn-info']) assert.ok(kinds.has(k), k);
   a.d.querySelectorAll('#plan .wn').forEach(e => assert.match(e.querySelector('.wn-h').textContent, /Contraindicación|Precaución|Evidencia insuficiente|No disponible|Información/));
