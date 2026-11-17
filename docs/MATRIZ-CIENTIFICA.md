@@ -1,6 +1,6 @@
-# Matriz científica — reglas farmacológicas de SirDoc (algoritmo v1.6.0)
+# Matriz científica — reglas farmacológicas de SirDoc (algoritmo v1.6.1)
 
-**Estado global: experimental, sin validación clínica formal.** Reglas aprobadas por el autor: R-01, R-02, R-03, R-11, R-12, R-13, R-17, R-18, R-19 y la parte de politrauma de R-10 (Md. Jose Luis Lopez Ballestas, médico, 2026-11-14). Se recomienda revisión independiente. Dentro de la app cada regla muestra el estado de su fuente, la fecha de revisión y los enlaces (Ajustes); la aprobación clínica se documenta solo en esta matriz.
+**Estado global: experimental, sin validación clínica formal.** Reglas aprobadas por el autor: R-01, R-02, R-03, R-11, R-12, R-13, R-17, R-18, R-19 y la parte de politrauma de R-10 (Md. Jose Luis Lopez Ballestas, médico, 2026-11-14); R-15, R-20, el techo de R-12, propofol alternativo en «Otro / general» (R-09) y la base de peso del rocuronio (R-21) (mismo autor, 2026-11-17). Se recomienda revisión independiente. Dentro de la app cada regla muestra el estado de su fuente, la fecha de revisión y los enlaces (Ajustes); la aprobación clínica se documenta solo en esta matriz.
 Estados: **Verificada** (texto pertinente contrastado) · **Parcial** · **Fuente identificada** (texto completo no revisado) · **Pendiente**. No se inventan referencias. Detalle y enlaces: `EVIDENCIA-2026-11-14.md`.
 
 | ID | Regla en la app | Fuente | Verificación | Aprobación clínica |
