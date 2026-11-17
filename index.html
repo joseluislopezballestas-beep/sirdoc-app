@@ -10,11 +10,12 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="SirDoc">
 <meta name="format-detection" content="telephone=no">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <title>SirDoc</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="css/app.css?v=1.5.0">
+<link rel="stylesheet" href="css/app.css?v=1.6.0">
 </head>
 <body>
 <div id="intro" aria-hidden="true">
@@ -38,7 +39,7 @@
 <main>
 <!-- PACIENTE -->
 <section id="v-sel" class="view on">
-  <div class="wn wn-ci redwarn" role="alert"><div class="wn-h"><span class="wn-i" aria-hidden="true">⛔</span>Advertencia: verifique antes de continuar</div>
+  <div class="wn wn-prec redwarn" role="alert"><div class="wn-h"><span class="wn-i" aria-hidden="true">⚠</span>Advertencia: verifique antes de continuar</div>
   <div class="wn-t">Antes de configurar el escenario clínico y calcular las dosificaciones, verifique las presentaciones farmacológicas disponibles en su servicio y seleccione las correspondientes. Compruebe también la duración predeterminada de las infusiones. Esto garantiza que los cálculos, las diluciones y las preparaciones generadas correspondan a los insumos realmente disponibles.</div></div>
   <p class="lead">Disponibilidad en tu servicio</p>
   <div class="checks">
@@ -59,44 +60,54 @@
 </section>
 
 <section id="v-pac" class="view">
-  <div id="selWarn" class="wn wn-ci" role="alert"><div class="wn-h"><span class="wn-i" aria-hidden="true">⛔</span>Presentaciones sin verificar</div><div class="wn-t">Verifique primero las presentaciones disponibles y la duración de las infusiones en la pestaña <b>Verificar</b>. <button class="mini" id="goSel" type="button">Ir a Verificar</button></div></div>
+  <div id="selWarn" class="wn wn-prec" role="alert"><div class="wn-h"><span class="wn-i" aria-hidden="true">⚠</span>Presentaciones sin verificar</div><div class="wn-t">Verifique primero las presentaciones disponibles y la duración de las infusiones en la pestaña <b>Verificar</b>. <button class="mini" id="goSel" type="button">Ir a Verificar</button></div></div>
 
   <p class="lead">Paciente <span class="req">* obligatorio</span></p>
   <div class="seg" id="sexo"><button data-v="M" class="on">Hombre</button><button data-v="F">Mujer</button></div>
   <div class="fields">
-    <label><span>Edad *</span><input id="edad" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="años" aria-label="Edad (obligatorio)"></label>
-    <label><span>Peso *</span><input id="peso" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="kg" aria-label="Peso (obligatorio)"></label>
-    <label><span>Talla *</span><input id="talla" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="cm" aria-label="Talla (obligatorio)"></label>
-    <label><span>PAS *</span><input id="pas" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="mmHg" aria-label="PAS (obligatorio)"></label>
-    <label><span>PAD *</span><input id="pad" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="mmHg" aria-label="PAD (obligatorio)"></label>
-    <label><span>FC *</span><input id="fc" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="lpm" aria-label="FC (obligatorio)"></label>
-    <label><span>SpO₂ *</span><input id="spo2" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="%" aria-label="SpO₂ (obligatorio)"></label>
+    <label><span>Edad *</span><span class="inu"><input id="edad" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="años" aria-label="Edad (obligatorio)"><i aria-hidden="true">años</i></span></label>
+    <label><span>Peso *</span><span class="inu"><input id="peso" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="kg" aria-label="Peso (obligatorio)"><i aria-hidden="true">kg</i></span></label>
+    <label><span>Talla *</span><span class="inu"><input id="talla" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="cm" aria-label="Talla (obligatorio)"><i aria-hidden="true">cm</i></span></label>
+    <label><span>PAS *</span><span class="inu"><input id="pas" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="mmHg" aria-label="PAS (obligatorio)"><i aria-hidden="true">mmHg</i></span></label>
+    <label><span>PAD *</span><span class="inu"><input id="pad" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="mmHg" aria-label="PAD (obligatorio)"><i aria-hidden="true">mmHg</i></span></label>
+    <label><span>FC *</span><span class="inu"><input id="fc" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="lpm" aria-label="FC (obligatorio)"><i aria-hidden="true">lpm</i></span></label>
+    <label><span>SpO₂ *</span><span class="inu"><input id="spo2" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="%" aria-label="SpO₂ (obligatorio)"><i aria-hidden="true">%</i></span></label>
   </div>
 
   <p class="lead">Comorbilidades</p>
   <div class="checks cols">
-    <label><input type="checkbox" id="hta">HTA</label>
-    <label><input type="checkbox" id="dm">Diabetes</label>
-    <label><input type="checkbox" id="erc">Enfermedad renal crónica</label>
-    <label><input type="checkbox" id="hepa">Hepatopatía</label>
-    <label><input type="checkbox" id="via">Vía aérea difícil anticipada</label>
-    <label><input type="checkbox" id="acid">Acidosis metabólica grave (pH &lt; 7,2)</label>
+    <label><input type="checkbox" autocomplete="off" id="hta">HTA</label>
+    <label><input type="checkbox" autocomplete="off" id="dm">Diabetes</label>
+    <label><input type="checkbox" autocomplete="off" id="erc">Enfermedad renal crónica</label>
+    <label><input type="checkbox" autocomplete="off" id="hepa">Hepatopatía</label>
+    <label><input type="checkbox" autocomplete="off" id="via">Vía aérea difícil anticipada</label>
+    <label><input type="checkbox" autocomplete="off" id="acid">Acidosis metabólica grave (pH &lt; 7,2)</label>
   </div>
   <p class="lead">Contraindicaciones de bloqueantes</p>
   <div class="checks cols">
-    <label><input type="checkbox" id="hiperK">Hiperkalemia (K⁺ &gt; 5,5)</label>
-    <label><input type="checkbox" id="hm">Hipertermia maligna (personal o familiar)</label>
-    <label><input type="checkbox" id="neuro">Enfermedad neuromuscular o denervación (distrofia, ELA, Guillain-Barré)</label>
-    <label><input type="checkbox" id="quem">Quemadura, aplastamiento o inmovilización &gt; 48 h</label>
-    <label><input type="checkbox" id="alRoc">Alergia a rocuronio o vecuronio</label>
+    <label><input type="checkbox" autocomplete="off" id="hiperK">Hiperkalemia (K⁺ &gt; 5,5)</label>
+    <label><input type="checkbox" autocomplete="off" id="hm">Hipertermia maligna (personal o familiar)</label>
+    <label><input type="checkbox" autocomplete="off" id="neuro">Enfermedad neuromuscular o denervación (distrofia, ELA, Guillain-Barré)</label>
+    <label><input type="checkbox" autocomplete="off" id="quem">Quemadura, aplastamiento o inmovilización &gt; 48 h</label>
+    <label><input type="checkbox" autocomplete="off" id="alRoc">Alergia a rocuronio o vecuronio</label>
+  </div>
+  <p class="lead">Alergias y otras precauciones</p>
+  <div class="checks cols">
+    <label><input type="checkbox" autocomplete="off" id="alSucc">Alergia a succinilcolina</label>
+    <label><input type="checkbox" autocomplete="off" id="alSuga">Alergia a sugammadex</label>
+    <label><input type="checkbox" autocomplete="off" id="alEtom">Alergia a etomidato</label>
+    <label><input type="checkbox" autocomplete="off" id="alKeta">Alergia a ketamina</label>
+    <label><input type="checkbox" autocomplete="off" id="alProp">Alergia a propofol</label>
+    <label><input type="checkbox" autocomplete="off" id="alFent">Alergia a fentanilo</label>
+    <label><input type="checkbox" autocomplete="off" id="pche">Déficit de pseudocolinesterasa (personal o familiar)</label>
   </div>
   <p class="lead">Interacciones y situaciones especiales</p>
   <div class="checks cols">
-    <label><input type="checkbox" id="mg">Miastenia gravis</label>
-    <label><input type="checkbox" id="betab">Betabloqueador o bradicardia basal</label>
-    <label><input type="checkbox" id="potNMB">Sulfato de magnesio o aminoglucósidos en curso</label>
-    <label><input type="checkbox" id="anticoag">Anticoagulación en curso</label>
-    <label><input type="checkbox" id="aco">Anticonceptivo hormonal</label>
+    <label><input type="checkbox" autocomplete="off" id="mg">Miastenia gravis</label>
+    <label><input type="checkbox" autocomplete="off" id="betab">Betabloqueador o bradicardia basal</label>
+    <label><input type="checkbox" autocomplete="off" id="potNMB">Sulfato de magnesio o aminoglucósidos en curso</label>
+    <label><input type="checkbox" autocomplete="off" id="anticoag">Anticoagulación en curso</label>
+    <label><input type="checkbox" autocomplete="off" id="aco">Anticonceptivo hormonal</label>
   </div>
   <div id="err" class="alert hide"></div>
   <button class="cta" id="calc">Continuar al Plan SIR</button>
@@ -115,6 +126,8 @@
     <button data-v="ic">Falla cardiaca</button>
     <button data-v="sepsis">Sepsis</button>
     <button data-v="iam">IAM</button>
+    <button data-v="otro">Otro / general</button>
+    <button type="button" id="escChg" class="chg">Cambiar escenario</button>
   </div>
   <div id="extra" class="checks"></div>
 
@@ -157,6 +170,9 @@
     <li><a href="https://doi.org/10.1097/ALN.0000000000004002" target="_blank" rel="noopener">ASA 2022 — Manejo de la vía aérea difícil</a></li>
     <li><a href="https://doi.org/10.1164/rccm.202311-2011ST" target="_blank" rel="noopener">ATS 2024 — Síndrome de dificultad respiratoria aguda</a></li>
     <li><a href="https://doi.org/10.1016/S0140-6736(10)60835-5" target="_blank" rel="noopener">CRASH-2 — Ácido tranexámico en trauma. Lancet 2010</a></li>
+    <li><a href="https://doi.org/10.1186/s13054-023-04327-7" target="_blank" rel="noopener">Guía europea de hemorragia mayor en trauma, 6.ª ed. Crit Care 2023</a></li>
+    <li><a href="https://doi.org/10.1097/CCM.0000000000002027" target="_blank" rel="noopener">SCCM/ASHP 2016 — Bloqueo neuromuscular sostenido en el adulto crítico</a></li>
+    <li><a href="https://www.ema.europa.eu/en/medicines/human/epar/dexdor" target="_blank" rel="noopener">Dexdor (dexmedetomidina) — Información de producto EMA</a></li>
     <li><a href="https://dailymed.nlm.nih.gov/dailymed/" target="_blank" rel="noopener">Fichas técnicas FDA (DailyMed): rocuronio, succinilcolina, cisatracurio, sugammadex</a></li>
     <li>INVIMA y MinSalud — Presentaciones y abastecimiento en Colombia</li>
   </ul>
@@ -185,10 +201,10 @@
 </div>
 <div id="toast"></div>
 
-<script src="js/util.js?v=1.5.0"></script>
-<script src="js/validate.js?v=1.5.0"></script>
-<script src="js/data.js?v=1.5.0"></script>
-<script src="js/logic.js?v=1.5.0"></script>
-<script src="js/app.js?v=1.5.0"></script>
+<script src="js/util.js?v=1.6.0"></script>
+<script src="js/validate.js?v=1.6.0"></script>
+<script src="js/data.js?v=1.6.0"></script>
+<script src="js/logic.js?v=1.6.0"></script>
+<script src="js/app.js?v=1.6.0"></script>
 </body>
 </html>

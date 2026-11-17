@@ -293,3 +293,17 @@ ul.t li{margin:6px 0}
 .p-sel{background:var(--acc);color:#fff}
 .rescue{border-top:2px dashed var(--warn)}
 .rescond{margin-top:8px;padding:8px 10px;border-radius:10px;border:2px solid var(--bad);color:var(--bad);font-size:14.5px;font-weight:600;background:var(--bad-soft)}
+/* v1.6.0 */
+.timer{min-height:44px}
+#selWarn .mini{background:var(--warn);color:#fff}
+.inu{position:relative;display:block}
+.inu input{padding-right:58px!important}
+.inu i{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-style:normal;font-size:14px;font-weight:600;color:var(--mut,#667);pointer-events:none}
+.esc .chg{display:none;border-style:dashed}
+.esc.picked button[data-v]:not(.on){display:none}
+.esc.picked .chg{display:inline-flex;align-items:center}
+.confbtn{display:block;width:100%;min-height:48px;margin-top:10px;border-radius:12px;border:2px solid var(--warn);background:var(--warn-soft);color:var(--tx);font-size:16px;font-weight:800}
+.selbtn[disabled]{border-color:var(--line);color:var(--mut,#667);background:var(--soft)}
+.offl{display:block;margin:2px 0 6px;padding:6px 8px;border-left:4px solid var(--warn);background:var(--warn-soft);font-weight:600}
+.rules a,.refs a{display:inline-block;min-height:44px;line-height:44px}
+button,select,input[type=text]{min-height:44px}

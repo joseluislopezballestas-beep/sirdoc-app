@@ -123,3 +123,35 @@ Límites: las pruebas verifican que la app hace lo que sus reglas dicen; la corr
 | H-33 (nuevo) | **Corregido** | FC y SpO₂ opcionales permitían subestimar el riesgo hemodinámico: ahora obligatorias |
 | H-34 (nuevo) | **Corregido** | Epinefrina push-dose podía leerse como paso rutinario: condición de administración explícita y excluida del resumen |
 El autor confirmó como correctos los cálculos de dosis, diluciones, volúmenes y velocidades (sin cambios en esos algoritmos).
+
+## Actualización v1.6.0 (2026-11-17) — matriz de medidas M01–M26
+Fuente: matriz «SirDoc v1.5.0 — Matriz de medidas a corregir» (hallazgos HA-01 a HA-17, D4, TEC04). Cada medida tiene prueba de aceptación en `tests/v16.test.js` o `tests/sweep.test.js`, salvo las indicadas.
+
+| Medida | Hallazgo | Estado | Nota |
+|---|---|---|---|
+| M01 Revalidar la selección | HA-01 (crítica) | Hecho | Rol actual del fármaco; borrado con aviso al cambiar escenario o estado |
+| M02 Dexmedetomidina/sin sedación + BNM continuo | HA-03 | Hecho | Bloqueo sin mL/h |
+| M03 Rangos fuera de ficha | HA-04 | Hecho · techo de dexmedetomidina 1,4 **pendiente de aprobación** | R-12, R-13 con fuente |
+| M04 Validación por especialistas independientes | HA-02 | **Pendiente** | Requiere panel externo; no lo resuelve el código |
+| M05 Fracción de ampolla | HA-06 | Hecho | Ketamina 50 mg, norepinefrina 1 mg |
+| M06 Estabilidad de la mezcla | HA-06 | Hecho | 24 h / propofol 12 h; 3.004 de 16.016 preparaciones del barrido con aviso |
+| M07 Sin diluir > 50 mL | HA-07 | Hecho | Recipiente siempre indicado |
+| M08 Rotulado de concentración | HA-08 | Hecho | 3 cifras significativas, ≤ 1 % en todo el barrido |
+| M09 Techos blandos | HA-14 | Hecho · valores **pendientes de aprobación** (R-20) | |
+| M10 Barrido en CI | D4 | Hecho | `tests/sweep.test.js` en `npm test` |
+| M11 Otro / general | HA-05 | Hecho · propofol alternativo en estable **pendiente de aprobación** | |
+| M12 Alergias y pseudocolinesterasa | HA-12 | Hecho | |
+| M13 Hemoderivados antes que vasopresor | HA-09 | Hecho · **pendiente de aprobación** (R-15) | Guía europea 2023 |
+| M14 Sepsis: sin midazolam | HA-10 | Hecho | |
+| M15 Base de peso en obesidad | HA-11 | Hecho · base única del rocuronio **decisión pendiente** | Tabla `BASIS`, R-21 |
+| M16 Dosis en la primera pantalla | HA-15 | Hecho | 375 × 812: primera fila a 542 px (Chrome) |
+| M17 Rojo solo para contraindicaciones | HA-16 | Hecho | |
+| M18 Unidad visible | HA-17 | Hecho | |
+| M19 Portada | HA-17 | Hecho (H-19) | Solo primera apertura |
+| M20 Controles ≥ 44 px | HA-17 | Hecho | 0 controles < 44 px a 375 px (Chrome) |
+| M21 Epinefrina push-dose | HA-17 | Hecho | Doble dilución en jeringa |
+| M22 Aviso muerto de FC | HA-17 | Hecho | |
+| M23 Especificación de cálculos | HA-13 | Hecho | Prueba de versión |
+| M24 Publicar solo si pasan las pruebas | HA-17 (H-22) | Hecho en el repositorio · **activación pendiente en GitHub** | Settings → Pages → Source «GitHub Actions» y variable `PAGES_ACTIONS=true` |
+| M25 Content-Security-Policy | HA-17 | Hecho | Sin errores de consola en http y file:// |
+| M26 Safari iOS y Firefox | TEC04 | Parcial | Datos del paciente se vacían al recargar (también con caché de página); prueba en Safari/Firefox reales pendiente |

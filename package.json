@@ -1,6 +1,6 @@
 {
   "name": "sirdoc-app",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "private": true,
   "description": "SirDoc — app web (PWA). Pruebas automatizadas del motor de cálculo y de la interfaz.",
   "scripts": {

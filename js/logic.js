@@ -5,7 +5,7 @@ function read(){
  const n=(id,key)=>{const x=parseNum($(id).value);if(!x.ok)fmt.push(key);return x.value};
  const p={esc:S.esc,sexo:S.sexo,edad:n('edad','edad'),w:n('peso','w'),h:n('talla','h'),pas:n('pas','pas'),pad:n('pad','pad'),fc:n('fc','fc'),spo2:n('spo2','spo2')};
  p._fmt=fmt;
- ['hta','dm','erc','hepa','hiperK','neuro','hm','mg','alRoc','betab','potNMB','aco','anticoag','quem','via','acid'].forEach(k=>{const e=$(k);p[k]=e?e.checked:false});
+ ['hta','dm','erc','hepa','hiperK','neuro','hm','mg','alRoc','alSucc','alSuga','alEtom','alKeta','alProp','alFent','pche','betab','potNMB','aco','anticoag','quem','via','acid'].forEach(k=>{const e=$(k);p[k]=e?e.checked:false});
  p.etomOk=ST.etomOk;p.rocOk=ST.rocOk;p.succOk=ST.succOk;
  ['tce','hemo','sci72','trombo','trauma','vaso','vd'].forEach(k=>{const e=$(k);p[k]=e?e.checked:false});
  return p;
@@ -74,6 +74,8 @@ function contraind(p){
  const C={};
  const s=succCI(p);if(s.length)C.succ=s;
  if(p.alRoc){C.roc=['alergia a rocuronio o vecuronio (aminoesteroides)'];C.vec=['alergia a rocuronio o vecuronio (aminoesteroides)'];}
+ const al=(k,id)=>{if(p[k])(C[id]=C[id]||[]).push('alergia a '+NAMES[id].toLowerCase());};
+ al('alSucc','succ');al('alSuga','suga');al('alEtom','etom');al('alKeta','keta');al('alProp','prop');al('alFent','fent');
  return C;
 }
 /* Precauciones e interacciones por fármaco: {id:[texto]} */
@@ -82,6 +84,7 @@ function drugPrec(p){
  if(p.mg){add('roc','Miastenia gravis: sensibilidad aumentada; considera dosis menor y monitoriza TOF.');add('vec','Miastenia gravis: sensibilidad aumentada; monitoriza TOF.');add('succ','Miastenia gravis: respuesta impredecible (resistencia).');}
  if(p.potNMB){['roc','vec','cis'].forEach(k=>add(k,'Magnesio o aminoglucósidos en curso: potencian y prolongan el bloqueo (ficha técnica). Monitoriza TOF.'));}
  if(p.erc)add('succ','ERC: úsala solo con potasio normal reciente.');
+ if(p.pche)add('succ','Déficit de pseudocolinesterasa: el bloqueo puede durar horas. Prefiere rocuronio; si se usa, prevé ventilación prolongada y no extubes sin TOF ≥ 0,9.');
  if(p.betab||(p.fc&&p.fc<60)){add('succ','Bradicardia o betabloqueador: atropina lista (bradicardia vagal).');add('fent','Bradicardia o betabloqueador: puede acentuar la bradicardia.');add('dex','Bradicardia o betabloqueador: alto riesgo de bradicardia grave.');}
  if(p.esc==='iam'||p.pas>=180)add('keta',p.esc==='iam'?'Isquemia miocárdica: aumenta FC, PA y consumo de O₂.':'PAS ≥ 180: puede elevar aún más la PA.');
  if(p.esc==='sepsis')add('etom','Sepsis: más supresión suprarrenal que con ketamina (sin diferencia de mortalidad).');
@@ -123,17 +126,20 @@ function inductorsBase(p){
   case 'sepsis':L.push(['etom','first','En sepsis, el ensayo RSI mostró menos colapso cardiovascular que con ketamina (20,9 % vs 30,6 %) sin diferencia de mortalidad. Dosis reducida.'],['keta','alt','Mortalidad similar, pero más colapso en sepsis: dosis reducida y vasopresor en curso.'],['prop','avoid','Vasoplejía y depresión miocárdica en el choque séptico.']);break;
   case 'iam':L.push(['etom','first','Mínima depresión miocárdica y sin taquicardia: preserva la perfusión coronaria. Dosis reducida.'],['keta','alt','Eleva la FC y el consumo miocárdico de O₂; en shock cardiogénico puede deprimir el miocardio. Solo a dosis baja.'],['prop','avoid','La hipotensión reduce la presión de perfusión coronaria.']);break;
   case 'raqui':L.push(['etom','first','Estabilidad hemodinámica ante el riesgo de shock neurogénico.'],['keta','alt','Alternativa con dosis según hemodinamia.'],['prop','avoid','Potencia la vasoplejía del shock neurogénico.']);break;
+  case 'otro':L.push(['etom','first','Menos hipotensión peri-intubación que la ketamina (ensayo RSI, NEJM 2026).'],['keta','alt','Alternativa válida; reducir dosis si hay shock o riesgo de hipotensión.'],st==='estable'&&p.doseState==='estable'?['prop','alt','Solo con hemodinamia estable: hipotensión dosis-dependiente.']:['prop','avoid','Riesgo de hipotensión con hemodinamia límite.']);break;
   default:L.push(['etom','first','Menos hipotensión peri-intubación que la ketamina (ensayo RSI, NEJM 2026).'],['keta','alt',p.tce?'Aceptable en TCE: no eleva la PIC de forma clínicamente relevante.':'Alternativa válida; reducir dosis si hay shock.'],['prop','avoid',p.hemo?'Colapso cardiovascular con hemorragia activa.':'Riesgo de hipotensión: en trauma el sangrado puede estar oculto aunque la PA sea normal.']);
  }
  return L;
 }
 function inductors(p){
- let L=inductorsBase(p);
- if(!p.etomOk){
-  L=L.filter(x=>x[0]!=='etom');
-  if(!L.some(x=>x[1]==='first')){const i=L.findIndex(x=>x[0]==='keta');if(i>=0){L[i]=['keta','first','Etomidato no disponible: ketamina a dosis ajustada a la hemodinamia. '+L[i][2]];const k=L.splice(i,1)[0];L.unshift(k);}}
-  L.push(['etom','nd','Marcado como no disponible en Ajustes.']);
+ const C=contraind(p),base=inductorsBase(p),gone=[];
+ let L=base.filter(x=>{const out=C[x[0]]||(x[0]==='etom'&&!p.etomOk);if(out)gone.push(x[0]);return !out;});
+ if(!L.some(x=>x[1]==='first')&&gone.length){
+  const first=base.find(x=>x[1]==='first');
+  let i=L.findIndex(x=>x[0]==='keta'&&x[1]==='alt');if(i<0)i=L.findIndex(x=>x[1]==='alt');
+  if(i>=0&&first){const why=`${NAMES[first[0]]} ${C[first[0]]?'contraindicado':'no disponible'}: `;const k=L.splice(i,1)[0];L.unshift([k[0],'first',why+(k[0]==='keta'?'ketamina a dosis ajustada a la hemodinamia. ':'')+k[2]]);}
  }
+ gone.forEach(id=>L.push(C[id]?[id,'ci','Contraindicado por '+C[id].join('; ')+'.']:[id,'nd','Marcado como no disponible en Ajustes.']));
  return L;
 }
 function nmbList(p){
@@ -148,7 +154,7 @@ function nmbList(p){
   succ:(p.esc==='raqui'?'Segura en las primeras 48 h de la lesión medular. ':'')+'1 mg/kg (ESAIC 2023, 1B); rango de la ficha técnica 0,3–1,1 mg/kg. Inicio 45 s, duración 8–10 min.'+(p.obese?' Peso real; tope de seguridad de la app 200 mg (la ficha no fija máximo).':''),
   vec:(first==='vec'?'Sin rocuronio ni succinilcolina utilizables. ':'Respaldo ante desabastecimiento. ')+'Inicio lento (90–150 s con 0,15–0,2 mg/kg): ventila con presión positiva suave mientras tanto. Duración 60–90 min o más. Sugammadex solo está establecido para reversión de rutina guiada por TOF (2–4 mg/kg); la reversión inmediata con 16 mg/kg tras vecuronio no está establecida en ficha técnica.'
  };
- const D={roc:{k:1.2,r:'1–1.2',basis:'abw'},succ:{k:1,r:'0.3–1.1',basis:'tbw',max:200},vec:{k:0.15,r:'0.1–0.2',basis:'ibw'}};
+ const D={roc:{k:1.2,r:'1–1.2',basis:BASIS.bolus.roc},succ:{k:1,r:'0.3–1.1',basis:BASIS.bolus.succ,max:200},vec:{k:0.15,r:'0.1–0.2',basis:BASIS.bolus.vec}};
  ['roc','succ','vec'].forEach(id=>{const ro=role(id);L.push(Object.assign({id,role:ro,why:ro==='ci'?'Contraindicado por '+C[id].join('; ')+'.':ro==='nd'?'Marcado como no disponible en Ajustes.':why[id]},D[id]));});
  L.sort((a,b)=>{const o={first:0,alt:1,ci:2,nd:3};return o[a.role]-o[b.role]});
  return {L,first};
@@ -181,6 +187,7 @@ function targets(p){
    a('Evitar hipotensión durante la inducción.','ictus isquémico');break;
   case 'ic':a('PAM ≥ 65 mmHg. Evitar hipoxemia e hipercapnia (empeoran la falla del VD).','falla cardiaca');break;
   case 'sepsis':a(p.edad>=65?'PAM inicial 60–65 mmHg (SSC 2026).':'PAM inicial 65 mmHg, con un margen de ± 5 mmHg (SSC 2026).',p.edad>=65?'sepsis · edad ≥ 65 años':'sepsis · edad < 65 años');a('Norepinefrina de primera línea; puede iniciarse por vía periférica sin esperar el catéter central. Añadir vasopresina cuando la norepinefrina llega a 0,25–0,5 mcg/kg/min; si la PAM sigue baja, epinefrina (SSC 2026).','choque séptico o hipoperfusión');a('Corticoides IV sugeridos (SSC 2026): pauta habitual hidrocortisona 200 mg/día (50 mg c/6 h), con o sin fludrocortisona. Antimicrobianos sin demora (idealmente en la primera hora) y control del foco.','choque séptico');break;
+  case 'otro':a('PAM ≥ 65 mmHg; evitar hipotensión e hipoxemia durante la inducción. Define la meta específica según la causa.','escenario fuera de los validados');break;
   case 'iam':a('PAM ≥ 65 mmHg: evitar la hipotensión (perfusión coronaria) y también la taquicardia y la hipertensión (consumo de O₂).','infarto agudo de miocardio');a('Tras intubar, SpO₂ 92–96 % evitando la hiperoxia (el techo es práctica clínica). Antes de intubar, oxígeno solo con SpO₂ < 90 % (ACC/AHA 2025).','infarto agudo de miocardio');a('Revascularización urgente de la arteria culpable; asistencia circulatoria mecánica en casos seleccionados (ACC/AHA 2025). La intubación no debe retrasar la reperfusión.','shock cardiogénico');a('No intubar de forma profiláctica solo para el cateterismo. Si está inestable, intubar en hemodinamia con vasopresores y asistencia mecánica listos.','infarto agudo de miocardio');if(p.vd)a('Dependiente de precarga; evitar nitratos y PEEP alta.','compromiso de ventrículo derecho');break;
  }
  return t;
@@ -192,36 +199,50 @@ function infPrep(id,perKg,unit,lo,hi,basis,H){
  const du=unit.startsWith('mcg')?'mcg':'mg';
  const f=du===p.u?1:(du==='mcg'?1/1000:1000);
  const ph=x=>(unit.endsWith('/min')?x*W.w*60:x*W.w)*f; // unidades de la presentación por hora
- const step=p.step||p.amt;
+ const step=p.step||p.amt;                               // con step se toma una fracción de la ampolla (mL enteros)
  const need=ph(perKg)*H;
  const total=Math.max(step,Math.ceil(need/step-1e-9)*step);
  const nAmp=Math.ceil(total/p.amt-1e-9);
  const dvol=total/p.amt*p.vol;
- const minR=cfg.minRate||2;
+ const minR=cfg.minRate||2, cap=cfg.cap||24;
  let Vf;
  if(cfg.pureOnly)Vf=dvol;
  else if(cfg.fixed){Vf=total/cfg.fixed[0];if(Vf>250)Vf=total/cfg.fixed[1];Vf=Math.max(Vf,dvol);} // una premezcla ya diluida no se vuelve a concentrar
- else{const c=(cfg.pure?[dvol]:[]).concat([50,100,250,500].filter(v=>v>=dvol));Vf=c.find(v=>ph(perKg)/(total/v)>=minR);if(Vf==null)Vf=c[c.length-1];}
+ else{const c=(cfg.pure&&dvol<=50?[dvol]:[]).concat([50,100,250,500].filter(v=>v>=dvol));Vf=c.find(v=>ph(perKg)/(total/v)>=minR);if(Vf==null)Vf=c[c.length-1];} // sin diluir solo si cabe en una jeringa de 50 mL
  const conc=total/Vf, rate=x=>ph(x)/conc;
  const partial=total<nAmp*p.amt-1e-9;
  let src;
  if(partial)src=`Tomar ${r(dvol,'mL')} mL (${r(total)} ${p.u}) de ${p.l}`;
  else if(p.powder)src=`${plural(nAmp,'vial','viales')} de ${p.l}, cada uno reconstituido con ${p.vol} mL de agua estéril (${r(dvol,'mL')} mL)`;
  else src=`${plural(nAmp,'ampolla','ampollas')} de ${p.l} (${r(dvol,'mL')} mL)`;
- const dil=Vf-dvol;
- const cTxt=(p.u==='mg'&&conc<0.1)?`${r(conc*1000)} mcg/mL`:`${r(conc)} ${p.u}/mL`;
- const txt=`${src}${dil>0.05?` + <b>${r(dil,'mL')} mL de ${cfg.dil}</b>`:', sin diluir'} = <b>${r(Vf,'mL')} mL</b> → ${cTxt}.`;
- return {W,ph,rate,Vf,conc,cTxt,txt,dStart:Vf/rate(perKg),dMax:Vf/rate(hi),pu:p.u};
+ const dil=Vf-dvol, undil=dil<=0.05;
+ const cTxt=(p.u==='mg'&&conc<0.1)?`${rc(conc*1000)} mcg/mL`:`${rc(conc)} ${p.u}/mL`;
+ const nS=Math.ceil(Vf/50-1e-9);
+ let cont;
+ if(id==='prop')cont=`frasco con equipo ventilado (desechar a las 12 h)${Vf>50.05?` o ${nS} jeringas de 50 mL cargadas una tras otra`:' o jeringa de 50 mL'} (en jeringa, desechar a las 6 h)`;
+ else if(Vf<=50.05)cont='jeringa de 50 mL';
+ else if(!undil)cont=`bolsa de ${cfg.dil}, volumen final ${r(Vf,'mL')} mL`;
+ else if(cfg.fixed)cont=`frascos premezclados infundidos directamente o ${nS} jeringas de 50 mL cargadas una tras otra`;
+ else cont=`${nS} jeringas de 50 mL cargadas una tras otra`;
+ const txt=`${src}${!undil?` + <b>${r(dil,'mL')} mL de ${cfg.dil}</b>`:', sin diluir'} = <b>${r(Vf,'mL')} mL</b> → ${cTxt} (${r(total)} ${p.u} en ${r(Vf,'mL')} mL). Recipiente: ${cont}.`;
+ const dStart=Vf/rate(perKg);
+ return {W,ph,rate,Vf,conc,cTxt,txt,cont,cap,overCap:dStart>cap+0.05,dStart,dMax:Vf/rate(hi),pu:p.u};
 }
+/* Hora de desecho si la mezcla se prepara ahora (hh:mm). */
+function discardAt(h){try{const d=new Date(Date.now()+h*3600e3);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}catch(e){return ''}}
+/* Avisos tipificados: icono + etiqueta + color; la condición que los activa se muestra siempre. */
+const WN={ci:['⛔','Contraindicación'],prec:['⚠','Precaución'],ev:['?','Evidencia insuficiente'],nd:['⊘','No disponible'],info:['i','Información']};
+function warn(w){const [k,t,c,lb2]=w,[ic,lb]=WN[k];return `<div class="wn wn-${k}" role="${k==='ci'?'alert':'note'}"><div class="wn-h"><span class="wn-i" aria-hidden="true">${ic}</span>${lb2||lb}</div><div class="wn-t">${t}${c?`<span class="cond">Condición: ${c}</span>`:''}</div></div>`;}
 function infCard(id,title,perKg,unit,lo,hi,basis,extra){
  const H=M.H,o=infPrep(id,perKg,unit,lo,hi,basis,H);
  if(![o.Vf,o.conc,o.rate(perKg),o.rate(lo),o.rate(hi),o.dStart].every(usable))return calcErr(title);
  const doseH=x=>{const v=o.ph(x);return o.pu==='mg'&&v<1?`${r(v*1000)} mcg/h`:`${r(v)} ${o.pu}/h`};
+ const capW=o.overCap?warn(['prec',`A la dosis de inicio la mezcla duraría ≈ ${r(o.dStart,'h')} h, más que su estabilidad (tope de la app: ${o.cap} h). Desecha el sobrante a las ${o.cap} h de preparada${discardAt(o.cap)?` (si se prepara ahora, a las ${discardAt(o.cap)})`:''}.`,`estabilidad de la mezcla > ${o.cap} h`]):'';
  return `<div class="drug first inf"><div class="hd"><span class="nm">${title}</span><span class="note">${o.cTxt}</span></div>
  <div class="rate">${r(o.rate(perKg),'mL')} mL/h</div>
  <div class="calc">Inicio ${perKg} ${unit} × ${r(o.W.w)} kg (${o.W.l}) = ${doseH(perKg)}<br>Rango ${lo}–${hi} ${unit} = <b>${r(o.rate(lo),'mL')}–${r(o.rate(hi),'mL')} mL/h</b></div>
  <div class="prep"><b>Preparación (${H} h):</b> ${o.txt}<br>Dura ≈ ${r(o.dStart,'h')} h a la dosis de inicio · ≈ ${r(o.dMax,'h')} h a la dosis máxima.</div>
- ${extra?`<div class="why">${extra}</div>`:''}${ruleTag(RULE_INF[id])}</div>`;
+ ${capW}${extra?`<div class="why">${extra}</div>`:''}${ruleTag(RULE_INF[id])}</div>`;
 }
 
 /* ================= plan ================= */
@@ -233,13 +254,14 @@ function prep(p){
  else a('Posición semi-Fowler o en rampa (conducto auditivo a nivel del esternón).','sin restricción de columna');
  if(p.esc==='epoc'||p.esc==='ic')a('Preoxigenación con VNI (CPAP/BiPAP, FiO₂ 100 %) 3–5 min; oxigenación apneica con cánula nasal.',p.esc==='epoc'?'EPOC':'falla cardiaca');
  else a('Preoxigenación con FiO₂ 100 % 3–5 min (VNI si hay hipoxemia); oxigenación apneica con cánula nasal.','todo paciente');
+ const hem=p.esc==='sangra'||(p.esc==='poli'&&p.hemo), traum=(p.esc==='poli'&&p.hemo)||(p.esc==='sangra'&&p.trauma);
+ if(hem)a(traum?'<b>Hemoderivados y control del sangrado primero, antes de inducir:</b> proporción 1:1:1 o sangre total en lugar de cristaloides; control del sangrado (cirugía, angioembolización, torniquete, pelvis). Si la lesión tiene < 3 h: ácido tranexámico 1 g IV en 10 min + 1 g en 8 h (CRASH-2).'+ruleTag('R-15'):'<b>Hemoderivados y control de la fuente de sangrado primero, antes de inducir</b> (endoscópico, intervencionista o quirúrgico).'+ruleTag('R-15'),traum?'hemorragia traumática':'hemorragia no traumática');
  if(p.state!=='estable'){
-  const o=infPrep('nore',0.05,'mcg/kg/min',0.05,0.5,'abw',M.H);
-  a(`<b>Optimizar hemodinamia ANTES de inducir.</b> Norepinefrina 0.05 mcg/kg/min = <b>${r(o.rate(0.05),'mL')} mL/h</b>, titular 0.05–0.5 (${r(o.rate(0.05),'mL')}–${r(o.rate(0.5),'mL')} mL/h).<div class="prep"><b>Preparación:</b> ${o.txt}</div>`,doseWhy(p));
+  const o=infPrep('nore',0.05,'mcg/kg/min',0.05,0.5,BASIS.inf.nore,M.H);
+  const lead=hem?'<b>Coadyuvante, no sustituye a los hemoderivados:</b> norepinefrina solo ante hipotensión que amenaza la vida mientras se repone volumen.':'<b>Optimizar hemodinamia ANTES de inducir.</b>';
+  a(`${lead} Norepinefrina 0.05 mcg/kg/min = <b>${r(o.rate(0.05),'mL')} mL/h</b>, titular 0.05–0.5 (${r(o.rate(0.05),'mL')}–${r(o.rate(0.5),'mL')} mL/h).<div class="prep"><b>Preparación:</b> ${o.txt}</div>`,hem?doseWhy(p)+' · hemorragia':doseWhy(p));
  }
- a('<b>EPINEFRINA PUSH-DOSE: 10–20 mcg (1–2 mL)</b> — preparar y tener a la mano. <div class="prep"><b>Preparación:</b> 1 ampolla de epinefrina 1 mg/1 mL en 100 mL de SSN → 10 mcg/mL; cargar 10 mL en jeringa rotulada.</div><div class="rescond"><b>CONDICIÓN DE ADMINISTRACIÓN:</b> administrar exclusivamente como medida de rescate ante hipotensión peri-intubación. No debe utilizarse de manera protocolaria ni como medicamento de administración rutinaria.</div>','rescate de hipotensión peri-intubación');
- if((p.esc==='poli'&&p.hemo)||(p.esc==='sangra'&&p.trauma))a('Hemoderivados en curso. Si la lesión tiene < 3 h: ácido tranexámico 1 g IV en 10 min + 1 g en 8 h (CRASH-2).','hemorragia traumática');
- else if(p.esc==='sangra')a('Hemoderivados en curso y control de la fuente de sangrado.','hemorragia no traumática');
+ a('<b>EPINEFRINA PUSH-DOSE: 10–20 mcg (1–2 mL)</b> — preparar y tener a la mano. <div class="prep"><b>Preparación (dos jeringas de 10 mL, sin bolsa):</b> jeringa A: 1 mL de epinefrina 1 mg/1 mL + 9 mL de SSN = 10 mL a 100 mcg/mL. Jeringa B: 1 mL de la jeringa A + 9 mL de SSN = 10 mL a <b>10 mcg/mL</b>. Rotula B y desecha A.</div><div class="rescond"><b>CONDICIÓN DE ADMINISTRACIÓN:</b> administrar exclusivamente como medida de rescate ante hipotensión peri-intubación. No debe utilizarse de manera protocolaria ni como medicamento de administración rutinaria.</div>','rescate de hipotensión peri-intubación');
  if(p.esc==='raqui')a('Atropina 0.5–1 mg cargada (ampolla 1 mg/1 mL, sin diluir): bradicardia vagal por laringoscopia o aspiración'+(p.fc&&p.fc<60?' — <b>ya hay bradicardia</b>.':'.'),'lesión medular');
  if((p.betab||(p.fc&&p.fc<60))&&p.esc!=='raqui')a('Atropina 0.5–1 mg cargada (ampolla 1 mg/1 mL, sin diluir).',p.fc&&p.fc<60?`FC ${p.fc} lpm`:'betabloqueador');
  if(p.esc==='ic')a('Si PAS < 100: iniciar norepinefrina antes de inducir; considerar dobutamina si hay bajo gasto. En edema pulmonar hipertensivo, nitroglicerina antes (no después) de intubar.','falla cardiaca');
@@ -264,10 +286,11 @@ function alerts(p){
  if(p.potNMB)w('prec','Potencian y prolongan el bloqueo neuromuscular no despolarizante (ficha técnica de rocuronio). Monitoriza TOF antes de extubar.','sulfato de magnesio o aminoglucósidos en curso');
  if(p.aco)w('info','Si se usa sugammadex, la anticoncepción hormonal pierde eficacia: método de respaldo durante 7 días.','anticonceptivo hormonal');
  if(p.ibwClamped)w('ev',`El peso ideal calculado (${r(p.ibwRaw)} kg) es menor de 35 kg y se usa 35 kg. Regla sin validación clínica (H-17).`,'talla baja');
- if(!p.fc)w('info','Sin FC no se calcula el índice de shock: el riesgo hemodinámico puede estar subestimado.','FC no registrada');
- if(p.obese)w('info','Dosis por peso magro (inductores, fentanilo), ajustado (rocuronio, infusiones) o ideal (vecuronio, cisatracurio); succinilcolina y sugammadex por peso real.',`IMC ${p.bmi.toFixed(1)}`);
+ if(p.obese)w('info',`Base de peso por fármaco. Bolos: ${basisTxt(BASIS.bolus)}. Infusiones: ${basisTxt(BASIS.inf)}. Bolos de bloqueante en UCI: el peso de su infusión.`,`IMC ${p.bmi.toFixed(1)}`);
  return a;
 }
+const WL={lbw:'peso magro',abw:'peso ajustado',ibw:'peso ideal',tbw:'peso real'};
+function basisTxt(o){const G={};Object.keys(o).forEach(id=>(G[o[id]]=G[o[id]]||[]).push(NAMES[id].toLowerCase()));return Object.keys(G).map(b=>`${WL[b]} (${G[b].join(', ')})`).join('; ');}
 /* Resumen de contraindicaciones y fármacos no disponibles para el plan (se muestra antes que todo lo demás). */
 function ciSummary(p){
  const C=contraind(p),L=[];

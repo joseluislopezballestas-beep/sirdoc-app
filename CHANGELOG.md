@@ -2,6 +2,34 @@
 
 Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) o **clínico** (requiere aprobación de especialista).
 
+## 1.6.0 — 2026-11-17 · Matriz de medidas M01–M26
+Implementación de la matriz de medidas de la auditoría de v1.5.0. Los cálculos por kg confirmados por el autor no cambian, salvo lo marcado **[clínico, pendiente de aprobación]**.
+
+**P1 — críticos y mayores**
+- **M01 (crítico):** la selección se revalida con los datos actuales. Si el fármaco seleccionado o registrado pasa a *Evitar*, *No disponible* o *Contraindicado*, la fila superior y el resumen muestran el aviso tipificado sin dosis y piden reconfirmar. Al cambiar el escenario o el estado hemodinámico, la selección se borra y se avisa.
+- **M02:** dexmedetomidina o «sin sedación» + BNM continuo: la tarjeta del BNM se sustituye por un bloqueo (sin mL/h) hasta elegir propofol, midazolam o ketamina.
+- **M03:** rótulos *fuera de ficha*: dexmedetomidina > 0,7 mcg/kg/h (ficha FDA 0,2–0,7); vecuronio > 1,2 mcg/kg/min (ficha 0,8–1,2; 1,2–1,7 según PDR); inicio de rocuronio 8 mcg/kg/min (ficha 10–12). R-13 documenta vecuronio y rocuronio con fuente; R-12 la ficha EMA. **[clínico, pendiente de aprobación]** techo de dexmedetomidina 1,5 → **1,4 mcg/kg/h** (máximo de la ficha EMA, que no debe superarse).
+- **M04:** no implementable por la app: requiere panel de revisores independientes (pendiente).
+
+**P2 — preparación y verificación**
+- **M05:** ketamina y norepinefrina en infusión por **fracción de ampolla** (pasos de 1 mL: 50 mg y 1 mg). Ej.: ketamina coadyuvante 70 kg, 8 h → 1 mL (50 mg) en 50 mL, dura ≈ 12 h (antes 500 mg en 250 mL, > 100 h).
+- **M06:** tope de estabilidad 24 h (propofol 12 h): si la mezcla duraría más, aviso con la hora de desecho.
+- **M07:** «sin diluir» solo si cabe en una jeringa de 50 mL; si no, bolsa o varias jeringas. Toda preparación indica su **recipiente**.
+- **M08:** concentración de la mezcla con 3 cifras significativas (error ≤ 0,5 %) y como cantidad/volumen.
+- **M09:** **[pendiente de aprobación, R-20]** techos blandos: etomidato > 40 mg, rocuronio > 200 mg, sugammadex > 2.000 mg muestran aviso y exigen confirmar antes de seleccionar o resumir. No cambian la dosis.
+- **M10:** barrido de regresión en `npm test` (16.016 preparaciones con recálculo independiente).
+
+**P3 — ámbito y seguridad**
+- **M11:** escenario **«Otro / general»** con aviso de fuera de ámbito arriba del plan y en el resumen. **[clínico, pendiente de aprobación]** propofol como alternativa solo con hemodinamia estable.
+- **M12:** alergias a succinilcolina, sugammadex, etomidato, ketamina, propofol y fentanilo (bloquean solo su fármaco, también en infusión); déficit de pseudocolinesterasa como precaución de succinilcolina.
+- **M13:** **[clínico, pendiente de aprobación, R-15]** en Sangrado y Politrauma con hemorragia: hemoderivados y control del sangrado primero; norepinefrina rotulada como coadyuvante ante hipotensión que amenaza la vida (guía europea 2023).
+- **M14:** sepsis inestable: la tarjeta de propofol propone reducir dosis o ketamina, no midazolam.
+- **M15:** tabla única de base de peso por fármaco (`BASIS`, R-21); el aviso de obesidad se genera de ella. **Decisión pendiente del autor:** rocuronio en bolo usa peso ajustado y en infusión peso ideal (sin cambio).
+
+**P4–P5 — interfaz y publicación**
+- M16 escenario compacto tras elegirlo; M17 avisos de Verificar en estilo de precaución (el rojo queda solo para contraindicaciones); M18 unidad visible en cada campo; M19 portada solo en la primera apertura; M20 controles ≥ 44 px; M21 epinefrina push-dose por doble dilución en jeringa (10 mcg/mL sin ambigüedad); M22 eliminado el aviso muerto de FC; M23 especificación de cálculos actualizada; M24 flujo de publicación que solo despliega si pasan las pruebas (requiere activarlo en GitHub); M25 Content-Security-Policy; M26 los datos del paciente se vacían al recargar (prueba manual en Safari iOS y Firefox pendiente).
+- Pruebas: 71/71.
+
 ## 1.5.0 — 2026-11-16 · Secuencia de uso, selección explícita y resumen fiel
 Correcciones solicitadas por el autor (sin cambios en cálculos, diluciones ni dosis, que se confirmaron correctos):
 - **Crítico — Copiar resumen:** el resumen incluía la opción *sugerida* de la fila superior (p. ej., etomidato) aunque el usuario hubiera elegido ketamina. Ahora todo sale de una **fuente única de selección**: botón *Seleccionar* en cada tarjeta de inducción, bloqueante y pretratamiento, sincronizado con "Administrado" en Infusiones. El resumen incluye solo lo seleccionado (si no hay selección: "sin seleccionar"), las infusiones configuradas y **no** incluye medicamentos de rescate. Las filas superiores del plan muestran lo seleccionado o "Sin seleccionar · sugerido: …".

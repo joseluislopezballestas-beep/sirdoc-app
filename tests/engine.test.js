@@ -67,8 +67,8 @@ test('infusiones: valores de referencia calculados a mano (70 kg, 8 h)', () => {
   assert.equal(o.Vf, 40); near(o.conc, 10); near(o.rate(10), 4.2);
   o = infPrep('dex', 0.4, 'mcg/kg/h', 0.2, 1.5, 'abw', 8);    // 28 mcg/h; 400 mcg en 100 mL (4 mcg/mL) → 7 mL/h
   assert.equal(o.Vf, 100); near(o.conc, 4); near(o.rate(0.4), 7);
-  o = infPrep('nore', 0.05, 'mcg/kg/min', 0.05, 0.5, 'abw', 8); // 0.21 mg/h; 4 mg en 100 mL (40 mcg/mL) → 5.25 mL/h
-  assert.equal(o.Vf, 100); near(o.conc, 0.04); near(o.rate(0.05), 5.25);
+  o = infPrep('nore', 0.05, 'mcg/kg/min', 0.05, 0.5, 'abw', 8); // 0.21 mg/h × 8 h = 1.68 → 2 mg (2 mL de la ampolla) en 50 mL (40 mcg/mL) → 5.25 mL/h
+  assert.equal(o.Vf, 50); near(o.conc, 0.04); near(o.rate(0.05), 5.25);
   o = infPrep('mida', 0.03, 'mg/kg/h', 0.02, 0.1, 'abw', 8);  // 2.1 mg/h; 1 amp 50 mg en 50 mL → 2.1 mL/h
   assert.equal(o.Vf, 50); near(o.conc, 1); near(o.rate(0.03), 2.1);
 });

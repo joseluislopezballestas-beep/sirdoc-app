@@ -114,7 +114,7 @@ test('[matriz] cada dosis muestra su regla, estado de fuente y aprobación', asy
   assert.match(t, /R-04 · Fuente pendiente de verificar/); assert.match(t, /R-09 ·/); assert.match(t, /R-10 ·/);
   assert.match(t, /R-01 · Fuente verificada · Revisión 14\/11\/2026/);                       // sugammadex
   assert.match(a.text('maint'), /R-12 ·/);
-  const rules = a.d.querySelectorAll('#rules li'); assert.equal(rules.length, 19);
+  const rules = a.d.querySelectorAll('#rules li'); assert.equal(rules.length, 21);
 });
 
 test('[H-07] las alertas llevan etiqueta de texto (no solo color)', async () => {
@@ -239,11 +239,11 @@ test('[v1.5] resumen: SOLO lo seleccionado (ketamina + rocuronio no genera etomi
   assert.deepEqual(a.errors, []);
 });
 
-test('[v1.5] pestañas en orden, advertencia roja de presentaciones, FC y SpO₂ obligatorias, epinefrina solo de rescate', async () => {
+test('[v1.5] pestañas en orden, advertencia de presentaciones, FC y SpO₂ obligatorias, epinefrina solo de rescate', async () => {
   const a = await app();
   assert.deepEqual([...a.d.querySelectorAll('.tabs button')].map(b => b.dataset.v), ['v-sel', 'v-pac', 'v-plan', 'v-inf', 'v-info']);
   assert.ok(a.$('v-sel').classList.contains('on'));
-  assert.match(a.$('v-sel').querySelector('.wn-ci').textContent, /ADVERTENCIA|Advertencia: verifique antes de continuar/i);
+  assert.match(a.$('v-sel').querySelector('.wn-prec').textContent, /ADVERTENCIA|Advertencia: verifique antes de continuar/i);
   assert.ok(a.$('v-sel').querySelector('#presList') && a.$('v-sel').querySelector('#s-h'));
   assert.ok(a.$('v-plan').querySelector('#esc'), 'el escenario se elige en Plan SIR');
   assert.doesNotMatch(a.$('v-pac').textContent, /opcional/i);

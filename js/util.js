@@ -4,6 +4,7 @@
    - Dosis (mg, mcg, kg): < 20 → 1 decimal; ≥ 20 → entero.
    - Volúmenes (mL): < 1 → 2 decimales; < 10 → 1 decimal; ≥ 10 → 1 decimal.
    - Horas: 1 decimal; ≥ 24 se muestra "> 24".
+   - Concentración de mezclas (rc): 3 cifras significativas.
    El redondeo afecta SOLO a lo que se muestra; los cálculos usan el valor exacto.
    ========================================================================= */
 function r(x,unit){ if(x==null||isNaN(x)||!isFinite(x))return '–';
@@ -12,6 +13,8 @@ function r(x,unit){ if(x==null||isNaN(x)||!isFinite(x))return '–';
  return x<20?(Math.round(x*10)/10)+'':Math.round(x)+''; }
 /* Redondeo de una dosis a la precisión que se muestra (< 20 → 0,1; ≥ 20 → 1).
    El volumen se calcula a partir de la dosis YA redondeada, para que dosis y mL coincidan. */
+/* Concentración de una mezcla: 3 cifras significativas (error de rotulado ≤ 0,5 %), nunca redondeo a 1 decimal. */
+function rc(x){ if(x==null||isNaN(x)||!isFinite(x))return '–'; return x>=100?String(Math.round(x)):String(Number(x.toPrecision(3))); }
 function roundDose(x){return x<20?Math.round(x*10)/10:Math.round(x)}
 const plural=(n,s,p)=>n+' '+(n===1?s:p);
 
@@ -28,4 +31,4 @@ function parseNum(raw){
 /* Un número es utilizable como dosis, volumen o velocidad solo si es finito y > 0. */
 const usable=x=>typeof x==='number'&&isFinite(x)&&x>0;
 
-if(typeof module!=='undefined')module.exports={r,roundDose,plural,parseNum,usable};
+if(typeof module!=='undefined')module.exports={r,rc,roundDose,plural,parseNum,usable};
