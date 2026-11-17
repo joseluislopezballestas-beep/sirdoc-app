@@ -31,4 +31,8 @@ function parseNum(raw){
 /* Un número es utilizable como dosis, volumen o velocidad solo si es finito y > 0. */
 const usable=x=>typeof x==='number'&&isFinite(x)&&x>0;
 
-if(typeof module!=='undefined')module.exports={r,rc,roundDose,plural,parseNum,usable};
+/* Coma decimal (es-CO) en lo que se muestra. No toca versiones (v1.6.1), separadores de miles (2.000) ni números pegados a letras. */
+function decComma(s){return String(s).replace(/(?<![\w.])(\d+)\.(\d+)(?![.\d])/g,(m,a,b)=>(b.length===3&&a!=='0')?m:a+','+b);}
+function commaDom(root){if(!root)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement&&n.parentElement.closest('.exp,script,style')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+ for(let n=w.nextNode();n;n=w.nextNode()){const t=decComma(n.nodeValue);if(t!==n.nodeValue)n.nodeValue=t;}}
+if(typeof module!=='undefined')module.exports={r,rc,roundDose,plural,parseNum,usable,decComma};

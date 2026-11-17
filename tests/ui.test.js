@@ -61,7 +61,7 @@ test('formato inválido: no se muestra ninguna dosis y se explica qué corregir'
 
 test('decimal con coma es aceptado (80,5 kg)', async () => {
   const a = await app(); a.fill('poli', { ...OK, peso: '80,5' }); a.calc();
-  assert.ok(a.doses() > 0); assert.match(a.text('plan'), /80\.5 ?kg real/);
+  assert.ok(a.doses() > 0); assert.match(a.text('plan'), /80,5 ?kg real/);
 });
 
 test('datos ausentes, PAD ≥ PAS, negativos y edad pediátrica bloquean', async () => {
@@ -96,8 +96,8 @@ test('el resumen copiado no incluye la firma del creador', async () => {
 
 test('la dosis mostrada y el volumen mostrado son coherentes (volumen = dosis redondeada / concentración)', async () => {
   const a = await app(); a.fill('poli', { ...OK, peso: '80,5' }); a.calc(); a.pick('ind', 'etom');
-  const m = a.text('plan').match(/Inducción · T 0 ?([\d.]+) mg ?([\d.]+) mL Etomidato/);
-  assert.ok(m, 'fila de inducción'); assert.equal(Number(m[2]), Math.round(Number(m[1]) / 2 * 10) / 10);   // etomidato 2 mg/mL
+  const m = a.text('plan').match(/Inducción · T 0 ?([\d.,]+) mg ?([\d.,]+) mL Etomidato/);
+  assert.ok(m, 'fila de inducción'); assert.equal(Number(m[2].replace(',','.')), Math.round(Number(m[1].replace(',','.')) / 2 * 10) / 10);   // etomidato 2 mg/mL
 });
 
 test('[clínico] sugammadex 16 mg/kg solo como reversión inmediata tras rocuronio (ficha técnica)', async () => {
@@ -141,7 +141,7 @@ test('[H-18] el cronómetro se guarda, se restaura tras recargar y se detiene', 
 test('[v1.3.0] rocuronio 1,2 mg/kg también en shock (se retiró 1,6 mg/kg)', async () => {
   const a = await app(); a.fill('sangra', { ...OK, pas: 85, pad: 55, fc: 120 }); a.calc();
   const t = a.text('plan');
-  assert.match(t, /Rocuronio✓ 1\.ª elección 84 mg/); assert.doesNotMatch(t, /1\.6 mg\/kg/);
+  assert.match(t, /Rocuronio✓ 1\.ª elección 84 mg/); assert.doesNotMatch(t, /1,6 mg\/kg/);
 });
 
 test('[v1.3.0] contraindicación de succinilcolina desde 48 h y BNM en infusión según ficha', async () => {
@@ -149,7 +149,7 @@ test('[v1.3.0] contraindicación de succinilcolina desde 48 h y BNM en infusión
   assert.match(a.d.querySelector('label:has(#quem)').textContent, /> 48 h/);
   a.fill('poli', OK); a.calc();
   const sel = a.$('mBnm'); sel.value = 'cis'; sel.dispatchEvent(new a.w.Event('change', { bubbles: true }));
-  assert.match(a.text('maint'), /Inicio 3 mcg\/kg\/min/); assert.match(a.text('maint'), /Rango 0\.5–10 mcg\/kg\/min/);
+  assert.match(a.text('maint'), /Inicio 3 mcg\/kg\/min/); assert.match(a.text('maint'), /Rango 0,5–10 mcg\/kg\/min/);
   const s2 = a.$('mBnm'); s2.value = 'roc'; s2.dispatchEvent(new a.w.Event('change', { bubbles: true }));
   const m = a.text('maint');
   assert.match(m, /Inicio 8 mcg\/kg\/min/); assert.match(m, /Rango 8–12 mcg\/kg\/min/); assert.match(m, /corticoides: riesgo de miopatía/);
@@ -175,7 +175,7 @@ test('[v1.3.3] TOF ≥ 0,9 antes de extubar y guías ESAIC/ASA enlazadas', async
 test('[v1.3.4] succinilcolina 1 mg/kg por peso real (ESAIC 2023)', async () => {
   const a = await app(); a.fill('poli', OK); a.calc();
   const t = a.text('plan');
-  assert.match(t, /SuccinilcolinaAlternativa 70 mg7(\.0)? mL · 10 mg\/mL 1 mg\/kg × 70 kg \(peso real\) · rango 0\.3–1\.1/);
+  assert.match(t, /SuccinilcolinaAlternativa 70 mg7(,0)? mL · 10 mg\/mL 1 mg\/kg × 70 kg \(peso real\) · rango 0,3–1,1/);
 });
 
 test('[v1.3.5] sepsis: etomidato de elección, metas SSC 2026 y vasopresor en curso = shock', async () => {
@@ -184,7 +184,7 @@ test('[v1.3.5] sepsis: etomidato de elección, metas SSC 2026 y vasopresor en cu
   assert.match(t, /Sepsis \/ choque séptico/); assert.match(t, /PAM inicial 60–65 mmHg \(SSC 2026\)\.Condición: sepsis · edad ≥ 65 años/);
   assert.match(t, /Etomidato✓ 1\.ª elección/); assert.match(t, /R-17 ·/); assert.match(t, /Dosis de inductor reducidas aunque la PA sea normal\.Condición: sepsis/);
   a.fill('sepsis', { ...OK }); a.$('vaso').checked = true; a.$('vaso').dispatchEvent(new a.w.Event('change', { bubbles: true })); a.calc();
-  t = a.text('plan'); assert.match(t, /Riesgo alto de colapso.*Condición: shock: vasopresor en curso/); assert.match(t, /Norepinefrina 0\.05 mcg\/kg\/min/);
+  t = a.text('plan'); assert.match(t, /Riesgo alto de colapso.*Condición: shock: vasopresor en curso/); assert.match(t, /Norepinefrina 0,05 mcg\/kg\/min/);
   assert.deepEqual(a.errors, []);
 });
 
@@ -223,11 +223,11 @@ test('[v1.5] resumen: SOLO lo seleccionado (ketamina + rocuronio no genera etomi
   let sum = a.w.eval('summaryText()');
   assert.match(sum, /Inducción · T 0: sin seleccionar\./); assert.match(sum, /Bloqueo NM · T 0 \+: sin seleccionar\./);
   assert.match(sum, /Administrado: sin registrar\./); assert.doesNotMatch(sum, /Etomidato|Rocuronio|Epinefrina/);
-  assert.match(a.text('plan'), /Inducción · T 0—Sin seleccionar sugerido: Etomidato/);
+  assert.match(a.text('plan'), /Inducción · T 0 ?[\d,]+ mg ?[\d,]+ mL ?Etomidato Sugerido · sin seleccionar/);
   a.pick('ind', 'keta'); a.pick('nmb', 'roc');
   sum = a.w.eval('summaryText()');
-  assert.match(sum, /Inducción · T 0: Ketamina [\d.]+ mg\/kg [\d.]+ mg \([\d.]+ mL de 10 mg\/mL\)/);
-  assert.match(sum, /Bloqueo NM · T 0 \+: Rocuronio 1\.2 mg\/kg 86 mg \(8\.6 mL de 10 mg\/mL\)/);
+  assert.match(sum, /Inducción · T 0: Ketamina [\d.,]+ mg\/kg [\d.,]+ mg \([\d.,]+ mL de 10 mg\/mL\)/);
+  assert.match(sum, /Bloqueo NM · T 0 \+: Rocuronio 1,2 mg\/kg 86 mg \(8,6 mL de 10 mg\/mL\)/);
   assert.match(sum, /Administrado: Ketamina \+ Rocuronio\./);
   assert.doesNotMatch(sum, /Etomidato/); assert.doesNotMatch(sum, /Epinefrina/);
   // la selección del plan y el registro "Administrado" son el mismo dato
@@ -235,7 +235,7 @@ test('[v1.5] resumen: SOLO lo seleccionado (ketamina + rocuronio no genera etomi
   a.$('mInd').value = 'etom'; a.$('mInd').dispatchEvent(new a.w.Event('change', { bubbles: true }));
   assert.match(a.w.eval('summaryText()'), /Inducción · T 0: Etomidato/);
   assert.match(a.d.querySelector('#plan .selbtn.on[data-sel="ind"]').dataset.id, /etom/);
-  assert.match(a.text('plan'), /Inducción · T 0 ?[\d.]+ mg ?[\d.]+ mL ?Etomidato/);
+  assert.match(a.text('plan'), /Inducción · T 0 ?[\d.,]+ mg ?[\d.,]+ mL ?Etomidato/);
   assert.deepEqual(a.errors, []);
 });
 

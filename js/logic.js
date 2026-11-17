@@ -94,11 +94,17 @@ function drugPrec(p){
  return P;
 }
 /* Motivo de las dosis de inductor (condición clínica que la determina). */
-function doseWhy(p){
- if(p.state==='shock')return `shock: ${p.vaso&&p.esc==='sepsis'?'vasopresor en curso':[p.pas<90?'PAS < 90':'',p.pam<65?'PAM < 65':'',p.si&&p.si>=1?'IS ≥ 1':''].filter(Boolean).join(', ')}`;
- if(p.state==='riesgo')return `riesgo de hipotensión: ${[p.pas<100?'PAS < 100':'',p.si&&p.si>=0.8?'IS ≥ 0,8':''].filter(Boolean).join(', ')}`;
- if(p.doseState==='riesgo')return p.esc==='ic'?'falla cardiaca':p.esc==='sepsis'?'sepsis (colapso frecuente aunque la PA sea normal)':p.esc==='iam'?'infarto agudo de miocardio':p.esc==='sangra'?'hemorragia (la PA puede ser engañosamente normal)':(p.esc==='poli'&&p.hemo)?'hemorragia activa significativa':'edad ≥ 75 años';
- return 'hemodinamia estable';
+function doseWhy(p,id){
+ const W=[];
+ if(p.state==='shock')W.push(`shock: ${p.vaso&&p.esc==='sepsis'?'vasopresor en curso':[p.pas<90?'PAS < 90':'',p.pam<65?'PAM < 65':'',p.si&&p.si>=1?'IS ≥ 1':''].filter(Boolean).join(', ')}`);
+ else if(p.state==='riesgo')W.push(`riesgo de hipotensión: ${[p.pas<100?'PAS < 100':'',p.si&&p.si>=0.8?'IS ≥ 0,8':''].filter(Boolean).join(', ')}`);
+ if(p.doseState!=='estable'){
+  const sc=p.esc==='ic'?'falla cardiaca':p.esc==='sepsis'?'sepsis (colapso frecuente aunque la PA sea normal)':p.esc==='iam'?'infarto agudo de miocardio':p.esc==='sangra'?'hemorragia (la PA puede ser engañosamente normal)':(p.esc==='poli'&&p.hemo)?'hemorragia activa significativa':'';
+  if(sc)W.push(sc);
+  if(p.edad>=75)W.push('edad ≥ 75 años');
+ }
+ if(id==='prop'&&p.doseState==='estable'&&p.edad>=65)W.push('edad ≥ 65 años (propofol)');
+ return W.length?W.join(' · '):'hemodinamia estable';
 }
 function indDose(id,p){
  const st=p.doseState;
@@ -167,26 +173,42 @@ function pretreat(p){
  if(p.esc==='isq'&&p.trombo&&p.pas>=185)return {k:1,r:'0.5–1',why:'Candidato a reperfusión con PA ≥ 185/110: ayuda a no superar el umbral durante la laringoscopia.'};
  return null;
 }
+/* Meta de PA con TCE (BTF 4.ª ed.): una sola regla por edad para politrauma, raquimedular y sangrado traumático. */
+function tceTarget(p){const lim=(p.edad>=50&&p.edad<=69)?100:110;return [`PAS ≥ ${lim} mmHg; evitar SpO₂ < 90 % y PaCO₂ fuera de 35–45 mmHg (BTF 4.ª ed.). No aplicar hipotensión permisiva.`,`TCE asociado · edad ${p.edad} años`];}
+/* TCE solo cuenta en los escenarios que lo preguntan; en sangrado, solo si el origen es traumático. */
+const hasTce=p=>!!p.tce&&(p.esc==='poli'||p.esc==='raqui'||(p.esc==='sangra'&&p.trauma));
 /* Cada meta o paso se devuelve como [texto, condición que lo activa]. */
 function targets(p){
  const t=[],a=(x,c)=>t.push([x,c]);
  switch(p.esc){
   case 'poli':
-   if(p.tce){const lim=(p.edad>=50&&p.edad<=69)?100:110;a(`PAS ≥ ${lim} mmHg; evitar SpO₂ < 90 % y PaCO₂ fuera de 35–45 mmHg (BTF 4.ª ed.). No aplicar hipotensión permisiva.`,`TCE asociado · edad ${p.edad} años`);}
+   if(p.tce)a(...tceTarget(p));
    if(p.hemo&&!p.tce)a('Hipotensión permisiva: PAS 80–90 mmHg hasta el control del sangrado.','hemorragia activa significativa sin TCE');
-   if(p.hemo)a('Hemoderivados en proporción 1:1:1 o sangre total en lugar de cristaloides (ATLS 11). Control del sangrado (cirugía, angioembolización, torniquete, pelvis).','hemorragia activa significativa');
    if(!p.hemo){if(!p.tce)a('PAM ≥ 65 mmHg; no aplicar hipotensión permisiva.','sin hemorragia activa significativa');a('Reevaluar sangrado oculto (tórax, abdomen, pelvis, huesos largos): una PA normal no lo descarta. Si aparece, marca "Hemorragia activa significativa".','politrauma sin hemorragia activa reconocida');}
    break;
-  case 'raqui':a('PAM de al menos 75–80 mmHg, sin aumentarla activamente por encima de 90–95 mmHg, durante 3–7 días (AO Spine/Praxis 2024). Un ECA de 2025 (Sajdeya) no encontró mejor recuperación neurológica al elevar la PAM por encima de 85–90 y sí más complicaciones: evita la hipotensión sin forzar la PA.','lesión medular aguda');if(p.tce)a('PAS ≥ 110 mmHg.','TCE asociado');break;
-  case 'sangra':a(p.trauma?'PAS 80–90 mmHg hasta el control quirúrgico o endoscópico.':'PAM ≥ 65 mmHg.',p.trauma?'hemorragia de origen traumático sin TCE':'hemorragia no traumática');a('Reanimar con hemoderivados antes de inducir siempre que sea posible.','paciente sangrando');break;
+  case 'raqui':a('PAM de al menos 75–80 mmHg, sin aumentarla activamente por encima de 90–95 mmHg, durante 3–7 días (AO Spine/Praxis 2024). Un ECA de 2025 (Sajdeya) no encontró mejor recuperación neurológica al elevar la PAM por encima de 85–90 y sí más complicaciones: evita la hipotensión sin forzar la PA.','lesión medular aguda');if(p.tce)a(...tceTarget(p));break;
+  case 'sangra':
+   if(p.trauma&&p.tce)a(...tceTarget(p));
+   else if(p.trauma)a('Hipotensión permisiva: PAS 80–90 mmHg hasta el control del sangrado.','hemorragia de origen traumático sin TCE');
+   else a('PAM ≥ 65 mmHg.','hemorragia no traumática');
+   break;
   case 'epoc':a('SpO₂ objetivo 88–92 %. Evitar hiperinsuflación dinámica (auto-PEEP).','EPOC');break;
   case 'ich':a('PAS objetivo 140 mmHg (rango 130–150). Evitar descensos < 130 mmHg (AHA/ASA 2022).','hemorragia intracerebral');a('PaCO₂ 35–45 mmHg; cabecera a 30°.','hemorragia intracerebral');break;
   case 'isq':
+   if(p.state==='shock'){a('Primero corregir la hipotensión: PAM ≥ 65 mmHg antes y durante la inducción; la penumbra depende de la presión de perfusión. Las metas de reducción de PA solo aplican una vez corregido el shock.','ictus isquémico en shock');break;}
    if(p.trombo)a('PA < 185/110 antes de la trombólisis o la trombectomía y < 180/105 al menos 24 h tras la trombólisis. No bajar la PAS a < 140 mmHg: sin beneficio tras trombólisis y perjudicial en las primeras 72 h tras trombectomía exitosa (AHA/ASA 2026, sección 4.3).','candidato a reperfusión');
    else a('Con PA < 220/120 mmHg, bajarla en las primeras 48–72 h no mejora el pronóstico; con ≥ 220/120 o comorbilidad que lo exija (falla cardiaca aguda, disección aórtica), reducción inicial ≈ 15 % (AHA/ASA 2026).','sin reperfusión');
    a('Evitar hipotensión durante la inducción.','ictus isquémico');break;
   case 'ic':a('PAM ≥ 65 mmHg. Evitar hipoxemia e hipercapnia (empeoran la falla del VD).','falla cardiaca');break;
-  case 'sepsis':a(p.edad>=65?'PAM inicial 60–65 mmHg (SSC 2026).':'PAM inicial 65 mmHg, con un margen de ± 5 mmHg (SSC 2026).',p.edad>=65?'sepsis · edad ≥ 65 años':'sepsis · edad < 65 años');a('Norepinefrina de primera línea; puede iniciarse por vía periférica sin esperar el catéter central. Añadir vasopresina cuando la norepinefrina llega a 0,25–0,5 mcg/kg/min; si la PAM sigue baja, epinefrina (SSC 2026).','choque séptico o hipoperfusión');a('Corticoides IV sugeridos (SSC 2026): pauta habitual hidrocortisona 200 mg/día (50 mg c/6 h), con o sin fludrocortisona. Antimicrobianos sin demora (idealmente en la primera hora) y control del foco.','choque séptico');break;
+  case 'sepsis':{
+   a(p.edad>=65?'PAM inicial 60–65 mmHg (SSC 2026).':'PAM inicial 65 mmHg, con un margen de ± 5 mmHg (SSC 2026).',p.edad>=65?'sepsis · edad ≥ 65 años':'sepsis · edad < 65 años');
+   const choque=p.state==='shock'||p.vaso;
+   if(choque||p.state==='riesgo')a('Norepinefrina de primera línea; puede iniciarse por vía periférica sin esperar el catéter central. Añadir vasopresina cuando la norepinefrina llega a 0,25–0,5 mcg/kg/min; si la PAM sigue baja, epinefrina (SSC 2026).',choque?'choque séptico':'riesgo de hipotensión: hipoperfusión posible');
+   else a('Sin shock ni vasopresor: vigilar PA, perfusión y lactato; si aparece hipotensión que no responde a volumen, norepinefrina de primera línea (SSC 2026).','sepsis sin shock ni vasopresor');
+   if(choque)a('Corticoides IV sugeridos (SSC 2026): pauta habitual hidrocortisona 200 mg/día (50 mg c/6 h), con o sin fludrocortisona.','choque séptico');
+   a('Antimicrobianos sin demora (idealmente en la primera hora) y control del foco.','sepsis');
+   break;}
+
   case 'otro':a('PAM ≥ 65 mmHg; evitar hipotensión e hipoxemia durante la inducción. Define la meta específica según la causa.','escenario fuera de los validados');break;
   case 'iam':a('PAM ≥ 65 mmHg: evitar la hipotensión (perfusión coronaria) y también la taquicardia y la hipertensión (consumo de O₂).','infarto agudo de miocardio');a('Tras intubar, SpO₂ 92–96 % evitando la hiperoxia (el techo es práctica clínica). Antes de intubar, oxígeno solo con SpO₂ < 90 % (ACC/AHA 2025).','infarto agudo de miocardio');a('Revascularización urgente de la arteria culpable; asistencia circulatoria mecánica en casos seleccionados (ACC/AHA 2025). La intubación no debe retrasar la reperfusión.','shock cardiogénico');a('No intubar de forma profiláctica solo para el cateterismo. Si está inestable, intubar en hemodinamia con vasopresores y asistencia mecánica listos.','infarto agudo de miocardio');if(p.vd)a('Dependiente de precarga; evitar nitratos y PEEP alta.','compromiso de ventrículo derecho');break;
  }
@@ -308,7 +330,7 @@ function vent(p){
   case 'sepsis':a.push('Ventilación protectora: 6 mL/kg de peso ideal y presión meseta < 30 cmH₂O si hay SDRA; evitar la hiperventilación.');break;
   case 'iam':a.push('6–8 mL/kg de peso ideal; evitar la hipercapnia y la acidosis.',p.vd?'Compromiso de VD: la menor PEEP eficaz y volumen con prudencia; la presión positiva puede desplomar el gasto. Considerar vasodilatador pulmonar inhalado si está disponible.':'PEEP 5–8 cmH₂O (reduce la poscarga del VI); vigilar la caída de la precarga.');break;
   case 'ic':a.push('PEEP 5–8 cmH₂O (reduce la poscarga del VI); vigilar la caída de la precarga y la falla del VD.');break;
-  case 'poli':if(p.tce)a.push('Normocapnia (PaCO₂ 35–45 mmHg).');break;
+  case 'poli':case 'raqui':case 'sangra':if(hasTce(p))a.push('Normocapnia (PaCO₂ 35–45 mmHg).');break;
  }
  return a;
 }

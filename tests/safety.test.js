@@ -48,8 +48,9 @@ test('[seguridad] 600 combinaciones aleatorias de datos incompletos, extremos o 
       doses.forEach(t => { if (t.trim().startsWith('—')) return; const v = parseFloat(t); assert.ok(isFinite(v) && v > 0, `caso ${i}: valor ${t}`); });
       // las dosis por kg nunca superan el rango declarado de su tarjeta
       a.d.querySelectorAll('#plan .drug .calc').forEach(e => {
-        const m = e.textContent.match(/^([\d.]+) (?:mg|mcg)\/kg .*? rango ([\d.]+)–([\d.]+)/);
-        if (m) assert.ok(+m[1] >= +m[2] - 1e-9 && +m[1] <= +m[3] + 1e-9, `caso ${i}: ${m[1]} fuera de ${m[2]}–${m[3]}`);
+        const m = e.textContent.match(/^([\d.,]+) (?:mg|mcg)\/kg .*? rango ([\d.,]+)–([\d.,]+)/);
+        const N = s => Number(String(s).replace(',', '.'));
+        if (m) assert.ok(N(m[1]) >= N(m[2]) - 1e-9 && N(m[1]) <= N(m[3]) + 1e-9, `caso ${i}: ${m[1]} fuera de ${m[2]}–${m[3]}`);
       });
     } else { blocked++; assert.match(all, /Sin resultados vigentes|Ingresa los datos/, `caso ${i}`); }
   }
@@ -117,7 +118,7 @@ test('[interacciones] miastenia, magnesio/aminoglucósidos, betabloqueador, anti
   assert.match(a.card('plan', 'Rocuronio').textContent, /Miastenia gravis: sensibilidad aumentada/);
   assert.match(a.card('plan', 'Rocuronio').textContent, /potencian y prolongan el bloqueo/);
   assert.match(a.card('plan', 'Ketamina').textContent, /Isquemia miocárdica/);
-  assert.match(t, /Atropina 0\.5–1 mg cargada/); assert.match(t, /método de respaldo 7 días/); assert.match(t, /prolonga transitoriamente el TTPa/);
+  assert.match(t, /Atropina 0,5–1 mg cargada/); assert.match(t, /método de respaldo 7 días/); assert.match(t, /prolonga transitoriamente el TTPa/);
   a.$('mSed').value = 'dex'; a.$('mSed').dispatchEvent(new a.w.Event('change', { bubbles: true }));
   assert.match(a.text('maint'), /alto riesgo de bradicardia grave/);
 });
@@ -127,10 +128,10 @@ test('[politrauma] sin hemorragia: normotensión, sin ácido tranexámico; con h
   let t = a.text('plan');
   assert.match(t, /Politraumatizado sin hemorragia activa/); assert.match(t, /PAM ≥ 65 mmHg; no aplicar hipotensión permisiva/);
   assert.doesNotMatch(t, /tranexámico/); assert.doesNotMatch(t, /hipotensión permisiva: PAS 80–90/i); assert.match(t, /Reevaluar sangrado oculto/);
-  assert.match(a.card('plan', 'Etomidato').textContent, /0\.3 mg\/kg/);
+  assert.match(a.card('plan', 'Etomidato').textContent, /0,3 mg\/kg/);
   a.check('hemo'); a.calc(); t = a.text('plan');
   assert.match(t, /Politraumatizado con hemorragia activa/); assert.match(t, /Hipotensión permisiva: PAS 80–90 mmHg.*Condición: hemorragia activa significativa sin TCE/);
-  assert.match(t, /ácido tranexámico/); assert.match(a.card('plan', 'Etomidato').textContent, /0\.2 mg\/kg.*Dosis para: hemorragia activa significativa/);
+  assert.match(t, /ácido tranexámico/); assert.match(a.card('plan', 'Etomidato').textContent, /0,2 mg\/kg.*Dosis para: hemorragia activa significativa/);
   a.check('tce'); a.calc(); t = a.text('plan');
   assert.doesNotMatch(t, /Hipotensión permisiva/); assert.match(t, /No aplicar hipotensión permisiva.*Condición: TCE asociado/);
 });
@@ -140,7 +141,7 @@ test('[presentaciones] cambiar presentación recalcula volúmenes; "otra" solo a
   const succVol = () => a.card('plan', 'Succinilcolina').querySelector('.prep').textContent;
   assert.match(succVol(), /100 mg\/2 mL/);
   const s = a.$('ps-succ'); s.value = '1'; s.dispatchEvent(new a.w.Event('change'));
-  assert.match(succVol(), /Cargar 1\.0 mL \(100 mg\) de Succinilcolina 1 g\/10 mL/);
+  assert.match(succVol(), /Cargar 1,0 mL \(100 mg\) de Succinilcolina 1 g\/10 mL/);
   // otra presentación inválida (rocuronio 100 mg/5 mL = 20 mg/mL) → rechazada, sigue la estándar
   const r = a.$('ps-roc'); r.value = '-1'; r.dispatchEvent(new a.w.Event('change'));
   a.$('pa-roc').value = '100'; a.$('pv-roc').value = '5'; a.$('pb-roc').click();
@@ -150,6 +151,6 @@ test('[presentaciones] cambiar presentación recalcula volúmenes; "otra" solo a
   const e = a.$('ps-etom'); e.value = '-1'; e.dispatchEvent(new a.w.Event('change'));
   a.$('pa-etom').value = '40'; a.$('pv-etom').value = '10'; a.$('pb-etom').click();
   a.calc(); const et = a.card('plan', 'Etomidato').textContent.replace(/\s+/g, ' ');
-  assert.match(et, /21 mg5\.3 mL · 4 mg\/mL/); assert.match(et, /40 mg\/10 mL \(otra\)/);
+  assert.match(et, /21 mg5,3 mL · 4 mg\/mL/); assert.match(et, /40 mg\/10 mL \(otra\)/);
   assert.deepEqual(a.errors, []);
 });

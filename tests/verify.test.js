@@ -43,10 +43,10 @@ const PRESN = { etom: 1, keta: 1, prop: 2, fent: 2, mida: 3, dex: 3, roc: 1, suc
 function checkBolus(card, W, ctx) {
   const name = card.querySelector('.nm').textContent;
   const dose = card.querySelector('.dose'); if (!dose) return 0;
-  const dm = dose.textContent.match(/^([\d.]+) (mg|mcg)([\d.]+) mL · ([\d.]+) (mg|mcg)\/mL/);
+  const dm = dose.textContent.match(/^([\d.,]+) (mg|mcg)([\d.,]+) mL · ([\d.,]+) (mg|mcg)\/mL/);
   assert.ok(dm, `${ctx} ${name}: formato de dosis ${dose.textContent}`);
   const D = num(dm[1]), V = num(dm[3]), C = num(dm[4]);
-  const cm = card.querySelector('.calc').textContent.match(/^([\d.]+) (mg|mcg)\/kg × ([\d.]+) kg \((peso [a-z]+)\)( · rango [^·]+?)?( ?· máx\. (\d+) (?:mg|mcg))?(?:Dosis|$)/);
+  const cm = card.querySelector('.calc').textContent.match(/^([\d.,]+) (mg|mcg)\/kg × ([\d.,]+) kg \((peso [a-z]+)\)( · rango [^·]+?)?( ?· máx\. (\d+) (?:mg|mcg))?(?:Dosis|$)/);
   assert.ok(cm, `${ctx} ${name}: línea de cálculo ${card.querySelector('.calc').textContent}`);
   const k = num(cm[1]), wl = cm[4], wexp = W[wl];
   assert.ok(close(num(cm[3]), wexp, 0.01, 0.06), `${ctx} ${name}: peso ${cm[3]} ≠ ${wexp} (${wl})`);
@@ -54,7 +54,7 @@ function checkBolus(card, W, ctx) {
   assert.ok(close(D, roundDose(exp), 0.006, 0.051), `${ctx} ${name}: dosis ${D} ≠ ${roundDose(exp)}`);
   assert.ok(close(V, D / C, 0.02, 0.051), `${ctx} ${name}: volumen ${V} ≠ ${D}/${C}`);
   const prep = card.querySelector('.prep').textContent;
-  const dil = prep.match(/Cargar ([\d.]+) mL \(([\d.]+) (mg|mcg)\) de .+? \(?([\d.]+)? ?.*?\+ ([\d.]+) mL de SSN = ([\d.]+) mL a ([\d.]+) (mg|mcg)\/mL \((\d+) ampollas?\)/);
+  const dil = prep.match(/Cargar ([\d.,]+) mL \(([\d.,]+) (mg|mcg)\) de .+? \(?([\d.,]+)? ?.*?\+ ([\d.,]+) mL de SSN = ([\d.,]+) mL a ([\d.,]+) (mg|mcg)\/mL \((\d+) ampollas?\)/);
   if (dil) {
     const [dv, drawn, , , sv, fv, T] = [num(dil[1]), num(dil[2]), 0, 0, num(dil[5]), num(dil[6]), num(dil[7])];
     assert.ok(close(dv + sv, fv, 0.01, 0.06), `${ctx} ${name}: ${dv} + ${sv} ≠ ${fv} mL`);
@@ -62,7 +62,7 @@ function checkBolus(card, W, ctx) {
     assert.ok(close(T, C), `${ctx} ${name}: concentración de jeringa ${T} ≠ ${C}`);
     assert.ok(drawn + 1e-9 >= D, `${ctx} ${name}: se cargan ${drawn} < dosis ${D}`);
   } else {
-    const pm = prep.match(/^(\d+) (ampollas?|vial(?:es)?) de .*?(?:sin diluir \(([\d.]+) (mg|mcg)\/mL\)|reconstituir cada uno con (\d+) mL de agua estéril → ([\d.]+) (mg|mcg)\/mL)/);
+    const pm = prep.match(/^(\d+) (ampollas?|vial(?:es)?) de .*?(?:sin diluir \(([\d.,]+) (mg|mcg)\/mL\)|reconstituir cada uno con (\d+) mL de agua estéril → ([\d.,]+) (mg|mcg)\/mL)/);
     assert.ok(pm, `${ctx} ${name}: preparación ${prep}`);
     const c2 = num(pm[3] || pm[6]);
     assert.ok(close(c2, C), `${ctx} ${name}: concentración ${c2} ≠ ${C}`);
@@ -72,9 +72,9 @@ function checkBolus(card, W, ctx) {
 /* Comprueba cada tarjeta de infusión: dosis/h, mL/h, concentración, volumen final y duración. */
 function checkInf(card, W, H, ctx) {
   const name = card.querySelector('.nm').textContent;
-  const rate = parseFloat(card.querySelector('.rate').textContent);
+  const rate = num(card.querySelector('.rate').textContent.trim().split(' ')[0]);
   const calc = card.querySelector('.calc').textContent;
-  const m = calc.match(/^Inicio ([\d.]+) (mg|mcg)\/kg\/(h|min) × ([\d.]+) kg \((peso [a-z]+)\) = ([\d.]+) (mg|mcg)\/hRango ([\d.]+)–([\d.]+) (mg|mcg)\/kg\/(h|min) = ([\d.]+)–([\d.]+) mL\/h/);
+  const m = calc.match(/^Inicio ([\d.,]+) (mg|mcg)\/kg\/(h|min) × ([\d.,]+) kg \((peso [a-z]+)\) = ([\d.,]+) (mg|mcg)\/hRango ([\d.,]+)–([\d.,]+) (mg|mcg)\/kg\/(h|min) = ([\d.,]+)–([\d.,]+) mL\/h/);
   assert.ok(m, `${ctx} ${name}: línea ${calc}`);
   const k = num(m[1]), du = m[2], per = m[3], wl = m[5];
   assert.ok(close(num(m[4]), W[wl], 0.01, 0.06), `${ctx} ${name}: peso ${m[4]} ≠ ${W[wl]}`);
@@ -83,18 +83,18 @@ function checkInf(card, W, H, ctx) {
   const shownIn = su === du ? shown : (su === 'mcg' ? shown / 1000 : shown * 1000);
   assert.ok(close(shownIn, doseH, 0.02, 0.06), `${ctx} ${name}: ${shownIn} ${du}/h ≠ ${doseH}`);
   const prep = card.querySelector('.prep').textContent;
-  const pm = prep.match(/= ([\d.]+) mL → ([\d.]+) (mg|mcg)\/mL/);
+  const pm = prep.match(/= ([\d.,]+) mL → ([\d.,]+) (mg|mcg)\/mL/);
   assert.ok(pm, `${ctx} ${name}: preparación ${prep}`);
   const Vf = num(pm[1]); let C = num(pm[2]); const cu = pm[3];
   const Cdu = cu === du ? C : (cu === 'mcg' ? C / 1000 : C * 1000);   // concentración en la unidad de la dosis
   assert.ok(close(rate, doseH / Cdu, 0.02, 0.051), `${ctx} ${name}: ${rate} mL/h ≠ ${doseH}/${Cdu}`);
   assert.ok(close(num(m[12]), perH(num(m[8])) / Cdu, 0.02, 0.051) && close(num(m[13]), perH(num(m[9])) / Cdu, 0.02, 0.051), `${ctx} ${name}: rango mL/h`);
-  const dur = prep.match(/Dura ≈ ([\d.]+|> 24) h a la dosis de inicio/);
+  const dur = prep.match(/Dura ≈ ([\d.,]+|> 24) h a la dosis de inicio/);
   assert.ok(dur, `${ctx} ${name}: duración`);
   const durExp = Vf / rate;
   if (dur[1] !== '> 24') assert.ok(close(num(dur[1]), durExp, 0.03, 0.11), `${ctx} ${name}: dura ${dur[1]} ≠ ${durExp}`);
   assert.ok(durExp + 0.15 >= H, `${ctx} ${name}: la mezcla dura ${durExp.toFixed(2)} h < ${H} h solicitadas`);
-  const tot = prep.match(/\(([\d.]+) (mg|mcg)\)|(\d+) (?:ampollas?|viales?) de .+?\(([\d.]+) mL\)/);
+  const tot = prep.match(/\(([\d.,]+) (mg|mcg)\)|(\d+) (?:ampollas?|viales?) de .+?\(([\d.,]+) mL\)/);
   assert.ok(Vf > 0 && rate > 0 && C > 0, `${ctx} ${name}: valores positivos`);
   return 1;
 }
@@ -156,7 +156,7 @@ test('[verificación] norepinefrina previa a la inducción: velocidad y preparac
   const a = await app(); const P = PATIENTS[4], W = weights(P.sexo, P.peso, P.talla);
   a.sex(P.sexo); const { sexo, ...v } = P; a.fill('sepsis', v); a.calc();
   const t = a.$('plan').textContent.replace(/\s+/g, ' ');
-  const m = t.match(/Norepinefrina 0\.05 mcg\/kg\/min = ([\d.]+) mL\/h.*?= ([\d.]+) mL → ([\d.]+) (mcg|mg)\/mL/);
+  const m = t.match(/Norepinefrina 0,05 mcg\/kg\/min = ([\d.,]+) mL\/h.*?= ([\d.,]+) mL → ([\d.,]+) (mcg|mg)\/mL/);
   assert.ok(m, 'texto de norepinefrina');
   const C = m[4] === 'mg' ? num(m[3]) * 1000 : num(m[3]);
   const w = W.obese ? W['peso ajustado'] : W['peso real'];

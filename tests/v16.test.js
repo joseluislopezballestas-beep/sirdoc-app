@@ -35,7 +35,7 @@ test('[M01] EPOC estable + propofol → shock: la selección se borra y no queda
   const a = await app(); a.fill('epoc', OK); a.calc(); a.pick('ind', 'prop');
   assert.match(a.row(0).textContent, /Propofol/); assert.match(a.row(0).querySelector('.v').textContent, /mg/);
   for (const k in SHOCK) a.set(k, SHOCK[k]); a.calc();
-  assert.equal(a.row(0).querySelector('.v').textContent.trim(), '—');
+  assert.match(a.row(0).textContent, /Sugerido · sin seleccionar/); // v1.6.2: sugerencia con dosis, no selección
   assert.doesNotMatch(a.row(0).textContent, /Propofol/);
   assert.match(a.text('plan'), /Se borró la selección previa \(Propofol\)/);
   assert.match(a.summary(), /Inducción · T 0: sin seleccionar/);
@@ -48,7 +48,7 @@ test('[M01] Sangrado en shock + propofol registrado en Infusiones: aviso «Evita
   assert.equal(r0.querySelector('.v').textContent.trim(), '—'); assert.match(r0.textContent, /Propofol.*Evitar.*reconfirma/);
   assert.match(a.text('maint'), /Evitar.*Propofol.*«Evitar»/);
   assert.match(a.summary(), /Inducción · T 0: Propofol — EVITAR en este contexto.*Dosis no calculada; reconfirma/);
-  assert.doesNotMatch(a.summary(), /Propofol [\d.]+ mg\/kg/);
+  assert.doesNotMatch(a.summary(), /Propofol [\d.,]+ mg\/kg/);
 });
 
 test('[M01] etomidato seleccionado y luego marcado no disponible: no aparece su dosis', async () => {
@@ -56,7 +56,7 @@ test('[M01] etomidato seleccionado y luego marcado no disponible: no aparece su 
   assert.match(a.row(0).querySelector('.v').textContent, /mg/);
   a.check('s-etom', false);
   assert.equal(a.row(0).querySelector('.v').textContent.trim(), '—'); assert.match(a.row(0).textContent, /Etomidato.*No disponible/);
-  assert.match(a.summary(), /Etomidato — NO DISPONIBLE/); assert.doesNotMatch(a.summary(), /Etomidato [\d.]+ mg\/kg/);
+  assert.match(a.summary(), /Etomidato — NO DISPONIBLE/); assert.doesNotMatch(a.summary(), /Etomidato [\d.,]+ mg\/kg/);
   assert.deepEqual(a.errors, []);
 });
 
@@ -76,7 +76,7 @@ test('[M03] rangos fuera de ficha rotulados y regla del vecuronio con fuente', a
   const a = await app(); a.fill('sepsis', OK); a.calc();
   a.sel('mSed', 'dex');
   const dex = a.card('maint', 'Dexmedetomidina').textContent;
-  assert.match(dex, /Rango 0\.2–1\.4 mcg\/kg\/h/); assert.match(dex, /Tramo > 0,7 mcg\/kg\/h: fuera de ficha FDA/);
+  assert.match(dex, /Rango 0,2–1,4 mcg\/kg\/h/); assert.match(dex, /Tramo > 0,7 mcg\/kg\/h: fuera de ficha FDA/);
   a.sel('mSed', 'prop'); a.sel('mBnm', 'vec');
   assert.match(a.card('maint', 'Vecuronio').textContent, /Tramo > 1,2 mcg\/kg\/min: fuera de ficha.*R-13/);
   a.sel('mBnm', 'roc');
@@ -89,9 +89,9 @@ test('[M03] rangos fuera de ficha rotulados y regla del vecuronio con fuente', a
 test('[M05] ketamina coadyuvante 70 kg, 8 h: fracción de ampolla y duración ≤ 24 h', async () => {
   const a = await app(); a.fill('sepsis', OK); a.calc(); a.sel('mAdj', '1');
   const c = a.card('maint', 'Ketamina · coadyuvante').textContent;
-  assert.match(c, /Tomar 1\.0 mL \(50 mg\) de Ketamina 500 mg\/10 mL/);
-  const dur = c.match(/Dura ≈ ([\d.]+|> 24) h a la dosis de inicio/)[1];
-  assert.notEqual(dur, '> 24'); assert.ok(Number(dur) <= 24);
+  assert.match(c, /Tomar 1,0 mL \(50 mg\) de Ketamina 500 mg\/10 mL/);
+  const dur = c.match(/Dura ≈ ([\d.,]+|> 24) h a la dosis de inicio/)[1];
+  assert.notEqual(dur, '> 24'); assert.ok(Number(dur.replace(',', '.')) <= 24);
   assert.doesNotMatch(c, /ampolla de 500 mg se usa en fracción/);
 });
 
@@ -137,7 +137,7 @@ test('[M13] sangrado con PA 80/50: hemoderivados primero; norepinefrina después
   for (const [esc, ch] of [['sangra', []], ['sangra', ['trauma']], ['poli', ['hemo']]]) {
     const a = await app(); a.fill(esc, { ...OK, pas: 80, pad: 50, fc: 120 }, ch); a.calc();
     const items = [...a.d.querySelectorAll('#plan details.step')[0].querySelectorAll('li')].map(l => l.textContent);
-    const iH = items.findIndex(t => /^Hemoderivados/.test(t)), iN = items.findIndex(t => /Norepinefrina 0\.05/.test(t));
+    const iH = items.findIndex(t => /^Hemoderivados/.test(t)), iN = items.findIndex(t => /Norepinefrina 0,05/.test(t));
     assert.ok(iH >= 0 && iN > iH, `${esc}: orden ${iH}/${iN}`);
     assert.match(items[iN], /^Coadyuvante, no sustituye a los hemoderivados/);
   }

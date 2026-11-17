@@ -1,4 +1,4 @@
-# Especificación de cálculos — SirDoc (algoritmo v1.6.1)
+# Especificación de cálculos — SirDoc (algoritmo v1.6.2)
 
 Documento técnico. Describe **cómo** calcula la app; no afirma que las reglas clínicas estén validadas.
 Estado clínico de cada regla: ver `MATRIZ-CIENTIFICA.md`. Una prueba (`tests/v16.test.js`) comprueba que la versión
@@ -64,7 +64,16 @@ se cargan mL enteros de la presentación y se completa con SSN hasta 10 mg/mL.
 - Rangos rotulados fuera de ficha: dexmedetomidina > 0,7 mcg/kg/h (máximo 1,4); vecuronio > 1,2 mcg/kg/min; inicio de rocuronio 8 mcg/kg/min.
 - Bloqueo neuromuscular continuo bloqueado (sin velocidad) si la sedación es dexmedetomidina o ninguna.
 
+## 5b. Reglas transversales (v1.6.2)
+- Meta de PA con TCE (`tceTarget`, BTF 4.ª ed.): PAS ≥ 100 entre 50 y 69 años, ≥ 110 fuera de ese rango; misma regla en politrauma,
+  raquimedular y sangrado de origen traumático (`hasTce`). Con TCE no se aplica hipotensión permisiva.
+- Sepsis: norepinefrina con shock, vasopresor o riesgo de hipotensión; corticoides solo con shock o vasopresor en curso.
+- Ictus isquémico en shock: primero corregir la hipotensión; las metas de reducción no se muestran.
+- «Dosis para» (`doseWhy(p, id)`) lista cada condición que cambió la dosis: estado, escenario, edad ≥ 75 y, en propofol, edad ≥ 65.
+- Fila superior del plan: sin selección muestra la dosis sugerida y «Usar»; una sugerencia no pasa al resumen hasta seleccionarla.
+
 ## 6. Redondeo de presentación (`r`, `rc`)
+Lo que se muestra (plan, infusiones, resumen, avisos) usa **coma decimal** (`decComma`); el punto queda solo en versiones y miles (2.000).
 Dosis < 20 → 1 decimal, ≥ 20 → entero; mL < 1 → 2 decimales, resto 1 decimal; horas 1 decimal (≥ 24 → "> 24");
 concentración de mezclas, 3 cifras significativas (error ≤ 0,5 %).
 Las velocidades se muestran con 1 decimal (precisión habitual de bombas); el cálculo interno no se redondea.

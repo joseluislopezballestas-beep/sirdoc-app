@@ -81,6 +81,13 @@ function syrRow(label,c,unsel){
  <div class="n">${NAMES[c.id]} <span class="calc">${c.k} ${c.unit}/kg</span></div></div>`;
 }
 
+/* Fila superior sin selección (H-11): muestra ya la dosis sugerida y un botón para usarla. */
+function syrSug(label,c,cat){
+ if(!c||!c.ok||!c.conf)return null;
+ return `<div class="row unsel sug"><div class="k">${label}</div><div class="v">${r(c.dose)} ${c.unit}<small>${r(c.vol,'mL')} mL</small></div>
+ <div class="n">${NAMES[c.id]} <span class="pill p-warn">Sugerido · sin seleccionar</span> <span class="calc">${c.k} ${c.unit}/kg</span></div>
+ <button type="button" class="selbtn usebtn" data-sel="${cat}" data-id="${c.id}">Usar ${NAMES[c.id]}</button></div>`;
+}
 /* ================= plan ================= */
 const OTRO_W=['ev','<b>Caso fuera de los escenarios validados</b> (p. ej., insuficiencia respiratoria hipoxémica, asma, estado epiléptico, intoxicación): el plan usa la lógica por defecto. Revisa cada decisión.','escenario «Otro / general»'];
 /* Revalida la selección con el rol ACTUAL del fármaco: Evitar, No disponible o Contraindicado no muestran dosis. */
@@ -101,7 +108,7 @@ function bindConf(root){
   CONF[b.dataset.id+':'+b.dataset.dose]=true;const y=window.scrollY;renderPlan();renderMaint();window.scrollTo(0,y);toast('Dosis confirmada');
  }));
 }
-function escTitle(p){return ESC[p.esc]+(p.esc==='poli'?(p.hemo?' con hemorragia activa':' sin hemorragia activa'):'')+(p.tce?' + TCE':'');}
+function escTitle(p){return ESC[p.esc]+(p.esc==='poli'?(p.hemo?' con hemorragia activa':' sin hemorragia activa'):'')+(hasTce(p)?' + TCE':'');}
 function renderPlan(){
  const p=P,pre=pretreat(p),ind=inductors(p),nm=nmbList(p);
  const st=p.state==='shock'?'<span class="pill p-bad">Shock</span>':p.state==='riesgo'?'<span class="pill p-warn">Riesgo de hipotensión</span>':'<span class="pill p-ok">Estable</span>';
@@ -116,9 +123,9 @@ function renderPlan(){
   <div class="chip"><b>${p.si?p.si.toFixed(2):'–'}</b>Índ. shock</div>
  </div>
  <div class="syr">
-  ${pre?(M.pre?syrRow('Pretratamiento · T −3 min',bcalc('fent',pre.k)):syrRow('Pretratamiento · T −3 min',null,'sugerido: Fentanilo')):''}
-  ${cI?syrRow('Inducción · T 0',cI):syrRow('Inducción · T 0',null,i1?'sugerido: '+NAMES[i1[0]]+' · toca Seleccionar':'ningún inductor utilizable')}
-  ${cN?syrRow('Bloqueo NM · T 0 +',cN):n1?syrRow('Bloqueo NM · T 0 +',null,'sugerido: '+NAMES[n1.id]+' · toca Seleccionar'):syrRow('Bloqueo NM · T 0 +',{none:true})}
+  ${pre?(M.pre?syrRow('Pretratamiento · T −3 min',bcalc('fent',pre.k)):((!contraind(p).fent&&syrSug('Pretratamiento · T −3 min',bcalc('fent',pre.k),'pre'))||syrRow('Pretratamiento · T −3 min',null,'sugerido: Fentanilo'))):''}
+  ${cI?syrRow('Inducción · T 0',cI):((i1&&syrSug('Inducción · T 0',bcalc(i1[0],indDose(i1[0],p).k),'ind'))||syrRow('Inducción · T 0',null,i1?'sugerido: '+NAMES[i1[0]]+' · toca Seleccionar':'ningún inductor utilizable'))}
+  ${cN?syrRow('Bloqueo NM · T 0 +',cN):n1?(syrSug('Bloqueo NM · T 0 +',bcalc(n1.id,n1.k,{basis:n1.basis,max:n1.max}),'nmb')||syrRow('Bloqueo NM · T 0 +',null,'sugerido: '+NAMES[n1.id]+' · toca Seleccionar')):syrRow('Bloqueo NM · T 0 +',{none:true})}
   <div class="row rescue"><div class="k">Rescate · solo si hipotensión peri-intubación</div><div class="v">10–20 mcg<small>1–2 mL</small></div><div class="n">Epinefrina <span class="calc">10 mcg/mL · no de rutina</span></div></div>
  </div>`;
  const ci=ciSummary(p);
@@ -130,10 +137,10 @@ function renderPlan(){
 
  const step=(tm,title,body,open)=>`<details class="step"${open?' open':''}><summary><span class="tm">${tm}</span>${title}</summary><div class="body">${body}</div></details>`;
  h+=`<div class="sec"><h3>Secuencia</h3>`;
- h+=step('T −10 min','Preparación y optimización',`<ul class="t">${prep(p).map(condLi).join('')}</ul>`,true);
+ h+=step('T −10 min','Preparación y optimización'+(p.state!=='estable'||p.esc==='sangra'||(p.esc==='poli'&&p.hemo)?' · <b>pasos críticos antes de inducir</b>':''),`<ul class="t">${prep(p).map(condLi).join('')}</ul>`,p.state!=='estable'||p.esc==='sangra'||(p.esc==='poli'&&p.hemo));
  h+=step('T −5 min','Preoxigenación','<div class="note">3–5 min con FiO₂ 100 % (u 8 respiraciones a capacidad vital). Oxigenación apneica con cánula nasal durante la laringoscopia.</div>');
- h+=step('T −3 min','Pretratamiento',pre?(contraind(p).fent?bolus('fent',0,'','ci','Contraindicado por '+contraind(p).fent.join('; ')+'.'):bolus('fent',pre.k,pre.r,'first',pre.why,{sel:'pre'})):'<div class="note">No indicado en este contexto (riesgo de hipotensión). La lidocaína no se recomienda de rutina.</div>');
- h+=step('T 0','Inducción · opciones',ind.map(x=>{if(x[1]==='nd'||x[1]==='ci')return bolus(x[0],0,'',x[1],x[2]);const d=indDose(x[0],p);return bolus(x[0],d.k,d.r,x[1],x[2],{cond:doseWhy(p),sel:'ind'});}).join('')+ruleTag('R-09'),true);
+ h+=step('T −3 min','Pretratamiento',pre?(contraind(p).fent?bolus('fent',0,'','ci','Contraindicado por '+contraind(p).fent.join('; ')+'.'):bolus('fent',pre.k,pre.r,'first',pre.why,{sel:'pre'})):`<div class="note">${p.state!=='estable'?'No indicado: riesgo de hipotensión ('+doseWhy(p)+').':'No indicado en este escenario con estos datos.'} La lidocaína no se recomienda de rutina.</div>`);
+ h+=step('T 0','Inducción · opciones',ind.map(x=>{if(x[1]==='nd'||x[1]==='ci')return bolus(x[0],0,'',x[1],x[2]);const d=indDose(x[0],p);return bolus(x[0],d.k,d.r,x[1],x[2],{cond:doseWhy(p,x[0]),sel:'ind'});}).join('')+ruleTag('R-09'),true);
  h+=step('T 0 +','Bloqueo neuromuscular · opciones',nm.L.map(x=>bolus(x.id,x.k,x.r,x.role,x.why,{basis:x.basis,max:x.max,sel:'nmb'})).join(''),true);
  h+=step('+45 s','Laringoscopia e intubación','<div class="note">Videolaringoscopio de primera intención (ASA 2022: de elección en la vía aérea difícil prevista). Rocuronio: 45–60 s; succinilcolina: al terminar las fasciculaciones; vecuronio: 90–150 s. Confirmar con capnografía de onda.</div>');
  h+=step('+5 min','Post-intubación',`<ul class="t">${vent(p).map(condLi).join('')}<li><b>Iniciar analgosedación sin demora</b> (pestaña Infusiones).</li><li>Antes de extubar: monitorización cuantitativa en el aductor del pulgar y TOF ≥ 0,9 (ASA 2023; ESAIC 2023). Sin monitor cuantitativo no se puede descartar bloqueo residual.</li></ul>`);
@@ -141,7 +148,7 @@ function renderPlan(){
  const sgTxt=CIs?`<b>Sugammadex contraindicado</b> (${CIs.join('; ')}): no cuentes con reversión farmacológica inmediata.`:`Sugammadex 16 mg/kg (${cS.W.l}): <b>${r(cS.dose)} mg = ${r(cS.vol,'mL')} mL</b>. ${cS.bp.txt}${ceilWarn(cS)}`;
  h+=step('Rescate','Vía aérea fallida',`<ul class="t"><li>${sgTxt} <b>Ficha técnica: reversión inmediata solo tras rocuronio</b> (≈3 min después de una dosis única de 1,2 mg/kg). Tras vecuronio no está establecida. Si el plan usa rocuronio, ten el sugammadex calculado y a mano antes de inducir. Para reversión no urgente, ASA 2023 y ESAIC 2023 recomiendan sugammadex sobre neostigmina en bloqueo profundo, moderado o superficial por rocuronio o vecuronio, guiado por TOF. No sustituye el plan quirúrgico.${n1&&n1.id==='vec'?' <b>Este plan usa vecuronio: no cuentes con sugammadex para una reversión inmediata.</b>':''}${(drugPrec(p).suga||[]).map(t=>warn(['prec',t])).join('')}${ruleTag('R-01')}</li><li>Dispositivo supraglótico → si no se puede intubar ni oxigenar: cricotiroidotomía.</li></ul>`);
  h+=`</div><button class="cta" id="toInf">Infusiones de mantenimiento</button>`;
- $('plan').innerHTML=h;
+ $('plan').innerHTML=h;commaDom($('plan'));
  $('toInf').addEventListener('click',()=>show('v-inf'));
  bindConf('#plan');
  document.querySelectorAll('#plan .selbtn').forEach(b=>b.addEventListener('click',()=>{
@@ -211,7 +218,7 @@ function renderMaint(){
  if(M.adj&&M.sed!=='keta'){
   if(CI.keta)h+=ciCard('keta','Ketamina · coadyuvante');
   else h+=infCard('keta','Ketamina · coadyuvante',1,'mcg/kg/min',1,2,B.keta,'Ahorra opioide (PADIS 2018: bolo opcional de 0,5 mg/kg, omitir si se indujo con ketamina; luego 1–2 mcg/kg/min). Se toma solo la fracción de ampolla necesaria.'+(p.esc==='epoc'?' Broncodilatadora.':''));}
- const neuro=p.esc==='ich'||p.esc==='isq'||(p.esc==='poli'&&p.tce);
+ const neuro=p.esc==='ich'||p.esc==='isq'||hasTce(p);
  if(M.sed==='prop'){
   if(CI.prop)h+=ciCard('prop','Propofol · sedación');
   else{const st=(low||p.esc==='ic')?5:10;
@@ -241,7 +248,7 @@ function renderMaint(){
  else if(p.esc==='epoc')rass='RASS −3 a −4 mientras haya broncoespasmo grave; luego aligerar.';
  h+=`<div class="sec"><h3>Metas</h3><ul class="t"><li>Sedación: ${rass}</li><li>Analgesia primero: CPOT &lt; 3 o BPS &lt; 5.</li><li>Vigila la hipotensión post-intubación los primeros 30 min.</li><li>Rotula cada mezcla: fármaco, cantidad, volumen, concentración, hora y responsable.</li></ul></div>
  <button class="cta" id="copy">Copiar resumen</button>`;
- $('maint').innerHTML=h;
+ $('maint').innerHTML=h;commaDom($('maint'));
  const map={mInd:'ind',mNmb:'nmb',mAnal:'anal',mSed:'sed',mBnm:'bnm'};
  Object.keys(map).forEach(id=>$(id).addEventListener('change',e=>{M[map[id]]=e.target.value;if(id==='mInd'||id==='mNmb')M.cleared='';renderMaint();if(id==='mInd'||id==='mNmb'){const y=window.scrollY;renderPlan();window.scrollTo(0,y);}}));
  $('mAdj').addEventListener('change',e=>{M.adj=e.target.value==='1';renderMaint();});
@@ -269,7 +276,7 @@ function summaryText(){
  L.push(`Administrado: ${adm.length?adm.join(' + '):'sin registrar'}.`);
  const inf=[...document.querySelectorAll('#maint .inf')];
  if(inf.length){L.push(`Infusiones para ${M.H} h:`);inf.forEach(c=>L.push('• '+c.querySelector('.nm').textContent+': '+c.querySelector('.rate').textContent+'. '+[...c.querySelector('.prep').childNodes].map(n=>n.textContent.trim()).filter(Boolean).join(' ').replace(/\s+/g,' ')));}
- return L.join('\n');
+ return decComma(L.join('\n'));
 }
 function copySummary(){
  if(!P){toast('Primero calcula con datos válidos');return}
@@ -327,13 +334,13 @@ function compute(silent){
  const noEsc=!p.esc;v.errors=v.errors.filter(e=>!/escenario clínico/.test(e));   // el escenario se elige en Plan SIR
  if(v.errors.length){
   P=null;placeholder('Hay datos que corregir en Paciente:<br>• '+v.errors.join('<br>• '));
-  if(!silent){box.className='alert';box.innerHTML='<b>Corrige antes de calcular:</b><br>• '+v.errors.join('<br>• ');}
+  if(!silent){box.className='alert';box.innerHTML='<b>Corrige antes de calcular:</b><br>• '+v.errors.join('<br>• ');commaDom(box);}
   return false;
  }
  const sig=signature(p);
  if(v.warns.length&&sig!==confirmedSig){
   P=null;placeholder('Hay valores extremos pendientes de confirmar en Paciente.');
-  if(!silent){box.className='alert w';box.innerHTML='<b>Valores inusuales — confirma que son correctos:</b><br>• '+v.warns.join('<br>• ')+'<button class="cta" id="confirmVals" type="button">Los datos son correctos · calcular</button>';
+  if(!silent){box.className='alert w';box.innerHTML='<b>Valores inusuales — confirma que son correctos:</b><br>• '+v.warns.join('<br>• ')+'<button class="cta" id="confirmVals" type="button">Los datos son correctos · calcular</button>';commaDom(box);
    $('confirmVals').addEventListener('click',()=>{confirmedSig=sig;if(compute())show('v-plan');});}
   return false;
  }
@@ -359,7 +366,7 @@ $('selOk').addEventListener('click',()=>{SEL_OK=true;$('selWarn').classList.add(
 $('goSel').addEventListener('click',()=>show('v-sel'));
 $('extra').addEventListener('change',refresh);
 function renderExtra(){
- const x={poli:[['hemo','Hemorragia activa significativa'],['tce','TCE asociado']],raqui:[['tce','TCE asociado'],['sci72','Más de 48 h desde la lesión']],sangra:[['trauma','Origen traumático']],isq:[['trombo','Candidato a trombólisis o trombectomía']],sepsis:[['vaso','Con vasopresor en curso']],iam:[['vd','Compromiso de ventrículo derecho']]}[S.esc]||[];
+ const x={poli:[['hemo','Hemorragia activa significativa'],['tce','TCE asociado']],raqui:[['tce','TCE asociado'],['sci72','Más de 48 h desde la lesión']],sangra:[['trauma','Origen traumático'],['tce','TCE asociado (origen traumático)']],isq:[['trombo','Candidato a trombólisis o trombectomía']],sepsis:[['vaso','Con vasopresor en curso']],iam:[['vd','Compromiso de ventrículo derecho']]}[S.esc]||[];
  $('extra').innerHTML=x.map(a=>`<label><input type="checkbox" id="${a[0]}">${a[1]}</label>`).join('');
 }
 document.querySelectorAll('#esc button[data-v]').forEach(b=>b.addEventListener('click',()=>{S.esc=b.dataset.v;document.querySelectorAll('#esc button[data-v]').forEach(x=>x.classList.toggle('on',x===b));$('esc').classList.add('picked');renderExtra();refresh();}));

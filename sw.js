@@ -1,6 +1,6 @@
 // SirDoc: funciona sin conexión una vez instalada (iPhone/Android desde el navegador)
-const CACHE = 'sirdoc-1.6.1';
-const V = '?v=1.6.1'; // debe coincidir con index.html: todos los archivos de una misma versión
+const CACHE = 'sirdoc-1.6.2';
+const V = '?v=1.6.2'; // debe coincidir con index.html: todos los archivos de una misma versión
 const FILES = ['./', 'index.html', 'css/app.css' + V, 'js/util.js' + V, 'js/validate.js' + V, 'js/data.js' + V, 'js/logic.js' + V, 'js/app.js' + V,
   'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 self.addEventListener('install', e => { // cache:'reload' evita guardar copias viejas de la caché HTTP del navegador (versiones mezcladas)

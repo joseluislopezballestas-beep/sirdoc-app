@@ -2,6 +2,17 @@
 
 Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) o **clínico** (requiere aprobación de especialista).
 
+## 1.6.2 — 2026-11-17 · Correcciones del informe de pruebas por escenario
+Cambios propuestos en el «Informe de pruebas por escenario» (120 casos), aplicados por instrucción de Md. Jose Luis Lopez Ballestas (autor, médico) 2026-11-17. H-02 se deja como está por decisión del autor.
+- **[clínico, aprobado] H-01:** meta de PA con TCE por edad (BTF) también en raquimedular (antes PAS ≥ 110 fija).
+- **[clínico, aprobado] H-03:** sangrado de origen traumático con casilla «TCE asociado»: con TCE no hay hipotensión permisiva.
+- **[clínico, aprobado] H-04:** sepsis sin shock ni vasopresor: sin corticoides ni condición «choque séptico»; vigilancia y norepinefrina si aparece hipotensión.
+- **[clínico, aprobado] H-08:** ictus isquémico en shock: primero corregir la hipotensión; sin metas de reducción de PA.
+- H-05: el texto de pretratamiento no indicado dice el motivo real. H-06: «Dosis para» con todas las condiciones (edad ≥ 65 en propofol, edad ≥ 75).
+- H-07: coma decimal en pantalla, resumen y avisos. H-09: hemoderivados una sola vez (Preparación). H-10: condición de la epinefrina en ámbar.
+- H-11: la fila superior muestra la dosis sugerida con botón «Usar»; Preparación plegada salvo pasos críticos (hemoderivados o vasopresor). H-12: avisos arriba. Marca de agua más tenue.
+- Pruebas: `tests/v162.test.js` con la matriz de 120 casos y coherencia de condiciones. 82 pruebas.
+
 ## 1.6.1 — 2026-11-17 · Aprobaciones del autor y base de peso del rocuronio
 - **[clínico, aprobado]** Aprobado por Md. Jose Luis Lopez Ballestas (autor, médico) 2026-11-17: techo de dexmedetomidina 1,4 mcg/kg/h (R-12); techos blandos R-20; propofol alternativo en «Otro / general» solo con hemodinamia estable (R-09); hemoderivados antes del vasopresor en sangrado y politrauma con hemorragia (R-15).
 - **[clínico, decisión del autor]** Rocuronio por **peso ajustado en bolo y en infusión** cuando IMC ≥ 30 (antes la infusión usaba peso ideal). Fuentes: Erstad & Barletta 2021; Sakızcı-Uyar 2016; McDowell 2024 (añadidas a R-02 y R-21).

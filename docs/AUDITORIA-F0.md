@@ -165,3 +165,23 @@ Erstad & Barletta 2021 (no despolarizantes por peso ideal o ajustado/magro), Sak
 frente a peso magro en inicio y condiciones) y McDowell 2024 (peso ideal frente a real en SIR: no se demostró no inferioridad; parálisis más corta).
 Cambio de cálculo: la infusión de rocuronio en IMC ≥ 30 pasa de peso ideal a peso ajustado (mayor dosis/h). Pruebas: 72/72, sin discrepancias.
 Sigue pendiente: revisión por especialistas independientes (M04), activación de Pages por Actions (M24), pruebas en Safari/Firefox reales (M26).
+
+## Actualización v1.6.2 (2026-11-17) — informe de pruebas por escenario
+Fuente: «SirDoc 1.6.1 — Informe de pruebas por escenario» (114 casos; 120 desde v1.6.2 con la casilla TCE en sangrado). Cambios aplicados por instrucción del autor (Md. Jose Luis Lopez Ballestas, médico, 2026-11-17).
+
+| ID | Estado | Cambio |
+|---|---|---|
+| H-01 | **Corregido** | Meta de PA con TCE por edad compartida (`tceTarget`) en politrauma, raquimedular y sangrado traumático |
+| H-02 | Sin cambio | Decisión del autor: se deja como está |
+| H-03 | **Corregido** | Casilla «TCE asociado» en sangrado de origen traumático; sin hipotensión permisiva con TCE |
+| H-04 | **Corregido** | Sepsis sin shock ni vasopresor: sin corticoides ni condición de choque |
+| H-05 | **Corregido** | Motivo real cuando no se sugiere pretratamiento |
+| H-06 | **Corregido** | «Dosis para» lista estado, escenario, edad ≥ 75 y edad ≥ 65 en propofol |
+| H-07 | **Corregido** | Coma decimal en plan, infusiones, resumen y avisos |
+| H-08 | **Corregido** | Ictus isquémico en shock: primero corregir la hipotensión |
+| H-09 | **Corregido** | Hemoderivados solo en Preparación |
+| H-10 | **Corregido** | Condición de la epinefrina en ámbar |
+| H-11 | **Parcial** | Dosis sugerida y botón «Usar» en la fila superior; Preparación plegada salvo pasos críticos. El plan completo sigue siendo largo (≈ 5.800 px en shock con hemorragia) porque las opciones y la preparación crítica quedan abiertas a propósito |
+| H-12 | **Corregido** | Avisos en la parte superior; marca de agua más tenue (opacidad 0,018) |
+
+Pruebas: 82/82, incluida la matriz de 120 casos con aserciones de coherencia (`tests/v162.test.js`).
