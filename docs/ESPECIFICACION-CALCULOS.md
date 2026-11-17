@@ -1,4 +1,4 @@
-# Especificación de cálculos — SirDoc (algoritmo v1.6.0)
+# Especificación de cálculos — SirDoc (algoritmo v1.6.1)
 
 Documento técnico. Describe **cómo** calcula la app; no afirma que las reglas clínicas estén validadas.
 Estado clínico de cada regla: ver `MATRIZ-CIENTIFICA.md`. Una prueba (`tests/v16.test.js`) comprueba que la versión
@@ -28,7 +28,7 @@ de este documento coincide con `ALG.version`.
 - Peso magro (Janmahasatian): H 9270·peso / (6680 + 216·IMC); M 9270·peso / (8780 + 244·IMC).
 - Peso ajustado = ideal + 0,4 × (real − ideal).
 - Obesidad (cambio de peso de dosificación) si IMC ≥ 30. La base de cada fármaco está en **una sola tabla** (`BASIS`, regla R-21);
-  el cálculo y el texto del aviso de obesidad la leen de ahí.
+  el cálculo y el texto del aviso de obesidad la leen de ahí. Rocuronio usa **peso ajustado en bolo y en infusión** (unificado en v1.6.1).
 - PAM = (PAS + 2·PAD) / 3. Índice de shock = FC / PAS.
 - Estado: *shock* si PAS < 90, PAM < 65 o IS ≥ 1 (en sepsis, también con vasopresor en curso); *riesgo* si PAS < 100 o IS ≥ 0,8; si no, *estable*.
 - Estado de dosificación: *riesgo* también con PA normal si el escenario es falla cardiaca, sangrado, politrauma con hemorragia activa,
@@ -39,7 +39,7 @@ de este documento coincide con `ALG.version`.
 2. **Redondeo** (`roundDose`): < 20 → 0,1; ≥ 20 → entero.
 3. volumen (mL) = dosis redondeada / concentración final (mg/mL o mcg/mL).
 4. Si dosis, peso, concentración o volumen no son finitos y > 0 → **no se muestra dosis** (tarjeta "No calculado").
-5. **Techos blandos** (`CEIL`, R-20, pendiente de aprobación): etomidato > 40 mg, rocuronio > 200 mg, sugammadex > 2.000 mg.
+5. **Techos blandos** (`CEIL`, R-20, aprobados por el autor 2026-11-17): etomidato > 40 mg, rocuronio > 200 mg, sugammadex > 2.000 mg.
    La dosis se muestra con aviso y no se puede seleccionar ni pasa al resumen hasta confirmar peso y dosis.
 
 Ampollas: se cuentan con `ceil(dosis / contenido)`. Ketamina y succinilcolina más concentradas que 10 mg/mL se diluyen en jeringa:

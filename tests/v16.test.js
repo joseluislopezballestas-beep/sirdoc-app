@@ -213,3 +213,15 @@ test('[M16] tras elegir escenario solo queda visible el elegido, con opción de 
   a.$('escChg').click(); assert.ok(!a.$('esc').classList.contains('picked'));
   assert.equal(a.w.eval('S.esc'), 'poli');
 });
+
+test('[v1.6.1] rocuronio con la misma base de peso (ajustado) en bolo e infusión en obesidad', async () => {
+  const A = await app();
+  assert.equal(A.w.eval('BASIS.bolus.roc'), 'abw');
+  assert.equal(A.w.eval('BASIS.inf.roc'), 'abw');
+  A.fill('otro', { ...OK, peso: 130, talla: 170 });
+  A.calc(); A.sel('mSed', 'prop'); A.sel('mBnm', 'roc');
+  const c = A.card('maint', 'Rocuronio');
+  assert.ok(c, 'tarjeta de rocuronio en infusiones');
+  assert.match(c.textContent, /peso ajustado/);
+  assert.doesNotMatch(c.textContent, /peso ideal/);
+});

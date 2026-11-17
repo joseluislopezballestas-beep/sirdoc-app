@@ -131,19 +131,19 @@ Fuente: matriz «SirDoc v1.5.0 — Matriz de medidas a corregir» (hallazgos HA-
 |---|---|---|---|
 | M01 Revalidar la selección | HA-01 (crítica) | Hecho | Rol actual del fármaco; borrado con aviso al cambiar escenario o estado |
 | M02 Dexmedetomidina/sin sedación + BNM continuo | HA-03 | Hecho | Bloqueo sin mL/h |
-| M03 Rangos fuera de ficha | HA-04 | Hecho · techo de dexmedetomidina 1,4 **pendiente de aprobación** | R-12, R-13 con fuente |
+| M03 Rangos fuera de ficha | HA-04 | Hecho · techo de dexmedetomidina 1,4 **aprobado por el autor 2026-11-17** (v1.6.1) | R-12, R-13 con fuente |
 | M04 Validación por especialistas independientes | HA-02 | **Pendiente** | Requiere panel externo; no lo resuelve el código |
 | M05 Fracción de ampolla | HA-06 | Hecho | Ketamina 50 mg, norepinefrina 1 mg |
 | M06 Estabilidad de la mezcla | HA-06 | Hecho | 24 h / propofol 12 h; 3.004 de 16.016 preparaciones del barrido con aviso |
 | M07 Sin diluir > 50 mL | HA-07 | Hecho | Recipiente siempre indicado |
 | M08 Rotulado de concentración | HA-08 | Hecho | 3 cifras significativas, ≤ 1 % en todo el barrido |
-| M09 Techos blandos | HA-14 | Hecho · valores **pendientes de aprobación** (R-20) | |
+| M09 Techos blandos | HA-14 | Hecho · valores **aprobados por el autor 2026-11-17** (R-20, v1.6.1) | |
 | M10 Barrido en CI | D4 | Hecho | `tests/sweep.test.js` en `npm test` |
-| M11 Otro / general | HA-05 | Hecho · propofol alternativo en estable **pendiente de aprobación** | |
+| M11 Otro / general | HA-05 | Hecho · propofol alternativo solo en estable **aprobado por el autor 2026-11-17** (v1.6.1) | |
 | M12 Alergias y pseudocolinesterasa | HA-12 | Hecho | |
-| M13 Hemoderivados antes que vasopresor | HA-09 | Hecho · **pendiente de aprobación** (R-15) | Guía europea 2023 |
+| M13 Hemoderivados antes que vasopresor | HA-09 | Hecho · **aprobado por el autor 2026-11-17** (R-15, v1.6.1) | Guía europea 2023 |
 | M14 Sepsis: sin midazolam | HA-10 | Hecho | |
-| M15 Base de peso en obesidad | HA-11 | Hecho · base única del rocuronio **decisión pendiente** | Tabla `BASIS`, R-21 |
+| M15 Base de peso en obesidad | HA-11 | Hecho · rocuronio unificado en **peso ajustado** (bolo e infusión) por decisión del autor 2026-11-17 (v1.6.1) | Tabla `BASIS`, R-21 |
 | M16 Dosis en la primera pantalla | HA-15 | Hecho | 375 × 812: primera fila a 542 px (Chrome) |
 | M17 Rojo solo para contraindicaciones | HA-16 | Hecho | |
 | M18 Unidad visible | HA-17 | Hecho | |
@@ -155,3 +155,13 @@ Fuente: matriz «SirDoc v1.5.0 — Matriz de medidas a corregir» (hallazgos HA-
 | M24 Publicar solo si pasan las pruebas | HA-17 (H-22) | Hecho en el repositorio · **activación pendiente en GitHub** | Settings → Pages → Source «GitHub Actions» y variable `PAGES_ACTIONS=true` |
 | M25 Content-Security-Policy | HA-17 | Hecho | Sin errores de consola en http y file:// |
 | M26 Safari iOS y Firefox | TEC04 | Parcial | Datos del paciente se vacían al recargar (también con caché de página); prueba en Safari/Firefox reales pendiente |
+
+## Actualización v1.6.1 (2026-11-17) — aprobaciones del autor
+Aprobado por Md. Jose Luis Lopez Ballestas (autor, médico), 2026-11-17: (1) techo de dexmedetomidina 1,4 mcg/kg/h (ficha EMA, R-12);
+(2) techos blandos R-20 (etomidato 40 mg, rocuronio 200 mg, sugammadex 2.000 mg); (3) propofol como alternativa en «Otro / general»
+solo con hemodinamia estable (R-09); (4) hemoderivados y control del sangrado antes del vasopresor en sangrado y politrauma con hemorragia (R-15);
+(5) base de peso del rocuronio unificada en **peso ajustado** para bolo e infusión (R-02, R-11, R-13, R-21), por ser la opción mejor respaldada:
+Erstad & Barletta 2021 (no despolarizantes por peso ideal o ajustado/magro), Sakızcı-Uyar 2016 (1,2 mg/kg por peso corregido sin diferencias
+frente a peso magro en inicio y condiciones) y McDowell 2024 (peso ideal frente a real en SIR: no se demostró no inferioridad; parálisis más corta).
+Cambio de cálculo: la infusión de rocuronio en IMC ≥ 30 pasa de peso ideal a peso ajustado (mayor dosis/h). Pruebas: 72/72, sin discrepancias.
+Sigue pendiente: revisión por especialistas independientes (M04), activación de Pages por Actions (M24), pruebas en Safari/Firefox reales (M26).

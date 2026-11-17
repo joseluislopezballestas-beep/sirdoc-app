@@ -2,6 +2,11 @@
 
 Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) o **clínico** (requiere aprobación de especialista).
 
+## 1.6.1 — 2026-11-17 · Aprobaciones del autor y base de peso del rocuronio
+- **[clínico, aprobado]** Aprobado por Md. Jose Luis Lopez Ballestas (autor, médico) 2026-11-17: techo de dexmedetomidina 1,4 mcg/kg/h (R-12); techos blandos R-20; propofol alternativo en «Otro / general» solo con hemodinamia estable (R-09); hemoderivados antes del vasopresor en sangrado y politrauma con hemorragia (R-15).
+- **[clínico, decisión del autor]** Rocuronio por **peso ajustado en bolo y en infusión** cuando IMC ≥ 30 (antes la infusión usaba peso ideal). Fuentes: Erstad & Barletta 2021; Sakızcı-Uyar 2016; McDowell 2024 (añadidas a R-02 y R-21).
+- Prueba nueva: misma base de peso del rocuronio en bolo e infusión. 72 pruebas, sin discrepancias en el barrido.
+
 ## 1.6.0 — 2026-11-17 · Matriz de medidas M01–M26
 Implementación de la matriz de medidas de la auditoría de v1.5.0. Los cálculos por kg confirmados por el autor no cambian, salvo lo marcado **[clínico, pendiente de aprobación]**.
 
