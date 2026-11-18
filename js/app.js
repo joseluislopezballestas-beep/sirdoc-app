@@ -3,10 +3,11 @@
 (function intro(){
  const el=document.getElementById('intro');if(!el)return;
  // Solo en la primera apertura: desde la segunda, la herramienta queda usable de inmediato (H-19).
- let seen=false;try{seen=localStorage.getItem('sirdoc.intro')==='1';localStorage.setItem('sirdoc.intro','1')}catch(e){}
+ // v1.7.0: se muestra una vez por versión instalada (tras cada actualización), no en cada apertura.
+ let seen=false;try{const k='sirdoc.intro.'+(typeof ALG!=='undefined'?ALG.version:'');seen=localStorage.getItem(k)==='1';localStorage.setItem(k,'1')}catch(e){}
  if(seen){el.remove();return;}
  const hide=()=>{if(el.classList.contains('out'))return;el.classList.add('out');setTimeout(()=>el.remove(),600)};
- el.addEventListener('click',hide);setTimeout(hide,2700);
+ el.addEventListener('click',hide);setTimeout(hide,3200);
 })();
 /* ================= estado y utilidades ================= */
 const $=id=>document.getElementById(id);
@@ -63,13 +64,13 @@ function bolus(id,k,range,role,why,opts={}){
  <div class="dose">${r(c.dose)} ${c.unit}<small>${r(c.vol,'mL')} mL · ${r(c.bp.conc)} ${c.bp.u}</small></div>
  <div class="calc">${k} ${c.unit}/kg × ${r(c.W.w)} kg (${c.W.l}) · rango ${range}${c.capped?` · máx. ${c.max} ${c.unit}`:''}${opts.cond?`<br>Dosis para: ${opts.cond}`:''}</div>
  <div class="prep">${c.bp.txt}</div>
- <div class="why">${why}</div>${cw}${pr_}${evNote(id)}${ruleTag(RULE_BOLUS[id])}${sb}</div>`;
+ <div class="why">${why}</div>${cw}${pr_}${evNote(id)}${sb}</div>`;
 }
 /* Techo blando (R-20): la dosis se muestra con aviso y exige confirmar peso y dosis. */
 function ceilWarn(c){
  if(!c.over)return '';
  if(c.conf)return warn(['prec',`Dosis ${r(c.dose)} ${c.unit} por encima del techo de revisión (${CEIL[c.id]} ${c.unit}): <b>confirmada</b>.`,`${NAMES[c.id]} > ${CEIL[c.id]} ${c.unit}`]);
- return warn(['prec',`Dosis ${r(c.dose)} ${c.unit} por encima del techo de revisión de la app (${CEIL[c.id]} ${c.unit}). Verifica el peso y la dosis antes de administrar.`,`${NAMES[c.id]} > ${CEIL[c.id]} ${c.unit} · ${ruleTag('R-20').replace(/<[^>]+>/g,'')}`])+`<button type="button" class="confbtn" data-id="${c.id}" data-dose="${c.dose}">Confirmo peso y dosis de ${NAMES[c.id]}</button>`;
+ return warn(['prec',`Dosis ${r(c.dose)} ${c.unit} por encima del techo de revisión de la app (${CEIL[c.id]} ${c.unit}). Verifica el peso y la dosis antes de administrar.`,`${NAMES[c.id]} > ${CEIL[c.id]} ${c.unit} · `])+`<button type="button" class="confbtn" data-id="${c.id}" data-dose="${c.dose}">Confirmo peso y dosis de ${NAMES[c.id]}</button>`;
 }
 function syrRow(label,c,unsel){
  if(c&&c.blocked)return `<div class="row ci"><div class="k">${label}</div><div class="v">—</div><div class="n">${NAMES[c.id]} ${PILL[c.role]} <span class="calc">Sin dosis: reconfirma la elección. ${c.why}</span></div></div>`;
@@ -133,20 +134,20 @@ function renderPlan(){
  if(!n1)ci.unshift(['ci','<b>Ningún bloqueante neuromuscular es utilizable</b> (contraindicado o no disponible). El cisatracurio no sirve para SIR por su inicio lento. Pide ayuda experta; valora intubación sin bloqueante o vía aérea quirúrgica según el contexto.','rocuronio, succinilcolina y vecuronio bloqueados']);
  h=h.replace('<div class="strip">',(ci.length?`<div class="cibox">${ci.map(warn).join('')}</div>`:'')+'<div class="strip">');
  alerts(p).forEach(a=>h+=warn(a));
- h+=`<div class="sec"><h3>Metas</h3><ul class="t">${targets(p).map(condLi).join('')}</ul>${ruleTag(p.esc==='sepsis'?'R-17':p.esc==='iam'?'R-18':'R-10')}</div>`;
+ h+=`<div class="sec"><h3>Metas</h3><ul class="t">${targets(p).map(condLi).join('')}</ul></div>`;
 
  const step=(tm,title,body,open)=>`<details class="step"${open?' open':''}><summary><span class="tm">${tm}</span>${title}</summary><div class="body">${body}</div></details>`;
  h+=`<div class="sec"><h3>Secuencia</h3>`;
  h+=step('T −10 min','Preparación y optimización'+(p.state!=='estable'||p.esc==='sangra'||(p.esc==='poli'&&p.hemo)?' · <b>pasos críticos antes de inducir</b>':''),`<ul class="t">${prep(p).map(condLi).join('')}</ul>`,p.state!=='estable'||p.esc==='sangra'||(p.esc==='poli'&&p.hemo));
  h+=step('T −5 min','Preoxigenación','<div class="note">3–5 min con FiO₂ 100 % (u 8 respiraciones a capacidad vital). Oxigenación apneica con cánula nasal durante la laringoscopia.</div>');
  h+=step('T −3 min','Pretratamiento',pre?(contraind(p).fent?bolus('fent',0,'','ci','Contraindicado por '+contraind(p).fent.join('; ')+'.'):bolus('fent',pre.k,pre.r,'first',pre.why,{sel:'pre'})):`<div class="note">${p.state!=='estable'?'No indicado: riesgo de hipotensión ('+doseWhy(p)+').':'No indicado en este escenario con estos datos.'} La lidocaína no se recomienda de rutina.</div>`);
- h+=step('T 0','Inducción · opciones',ind.map(x=>{if(x[1]==='nd'||x[1]==='ci')return bolus(x[0],0,'',x[1],x[2]);const d=indDose(x[0],p);return bolus(x[0],d.k,d.r,x[1],x[2],{cond:doseWhy(p,x[0]),sel:'ind'});}).join('')+ruleTag('R-09'),true);
+ h+=step('T 0','Inducción · opciones',ind.map(x=>{if(x[1]==='nd'||x[1]==='ci')return bolus(x[0],0,'',x[1],x[2]);const d=indDose(x[0],p);return bolus(x[0],d.k,d.r,x[1],x[2],{cond:doseWhy(p,x[0]),sel:'ind'});}).join(''),true);
  h+=step('T 0 +','Bloqueo neuromuscular · opciones',nm.L.map(x=>bolus(x.id,x.k,x.r,x.role,x.why,{basis:x.basis,max:x.max,sel:'nmb'})).join(''),true);
  h+=step('+45 s','Laringoscopia e intubación','<div class="note">Videolaringoscopio de primera intención (ASA 2022: de elección en la vía aérea difícil prevista). Rocuronio: 45–60 s; succinilcolina: al terminar las fasciculaciones; vecuronio: 90–150 s. Confirmar con capnografía de onda.</div>');
  h+=step('+5 min','Post-intubación',`<ul class="t">${vent(p).map(condLi).join('')}<li><b>Iniciar analgosedación sin demora</b> (pestaña Infusiones).</li><li>Antes de extubar: monitorización cuantitativa en el aductor del pulgar y TOF ≥ 0,9 (ASA 2023; ESAIC 2023). Sin monitor cuantitativo no se puede descartar bloqueo residual.</li></ul>`);
  const cS=bcalc('suga',16),CIs=contraind(p).suga;
  const sgTxt=CIs?`<b>Sugammadex contraindicado</b> (${CIs.join('; ')}): no cuentes con reversión farmacológica inmediata.`:`Sugammadex 16 mg/kg (${cS.W.l}): <b>${r(cS.dose)} mg = ${r(cS.vol,'mL')} mL</b>. ${cS.bp.txt}${ceilWarn(cS)}`;
- h+=step('Rescate','Vía aérea fallida',`<ul class="t"><li>${sgTxt} <b>Ficha técnica: reversión inmediata solo tras rocuronio</b> (≈3 min después de una dosis única de 1,2 mg/kg). Tras vecuronio no está establecida. Si el plan usa rocuronio, ten el sugammadex calculado y a mano antes de inducir. Para reversión no urgente, ASA 2023 y ESAIC 2023 recomiendan sugammadex sobre neostigmina en bloqueo profundo, moderado o superficial por rocuronio o vecuronio, guiado por TOF. No sustituye el plan quirúrgico.${n1&&n1.id==='vec'?' <b>Este plan usa vecuronio: no cuentes con sugammadex para una reversión inmediata.</b>':''}${(drugPrec(p).suga||[]).map(t=>warn(['prec',t])).join('')}${ruleTag('R-01')}</li><li>Dispositivo supraglótico → si no se puede intubar ni oxigenar: cricotiroidotomía.</li></ul>`);
+ h+=step('Rescate','Vía aérea fallida',`<ul class="t"><li>${sgTxt} <b>Ficha técnica: reversión inmediata solo tras rocuronio</b> (≈3 min después de una dosis única de 1,2 mg/kg). Tras vecuronio no está establecida. Si el plan usa rocuronio, ten el sugammadex calculado y a mano antes de inducir. Para reversión no urgente, ASA 2023 y ESAIC 2023 recomiendan sugammadex sobre neostigmina en bloqueo profundo, moderado o superficial por rocuronio o vecuronio, guiado por TOF. No sustituye el plan quirúrgico.${n1&&n1.id==='vec'?' <b>Este plan usa vecuronio: no cuentes con sugammadex para una reversión inmediata.</b>':''}${(drugPrec(p).suga||[]).map(t=>warn(['prec',t])).join('')}</li><li>Dispositivo supraglótico → si no se puede intubar ni oxigenar: cricotiroidotomía.</li></ul>`);
  h+=`</div><button class="cta" id="toInf">Infusiones de mantenimiento</button>`;
  $('plan').innerHTML=h;commaDom($('plan'));
  $('toInf').addEventListener('click',()=>show('v-inf'));
@@ -442,8 +443,8 @@ function renderPresList(){
  });
  const SB=PL.StatusBar;if(!SB)return;
  const mq=window.matchMedia('(prefers-color-scheme: dark)');
- const set=()=>{try{SB.setOverlaysWebView({overlay:true});SB.setStyle({style:mq.matches?'DARK':'LIGHT'})}catch(e){}};
- set();mq.addEventListener&&mq.addEventListener('change',set);
+ const set=()=>{try{SB.setOverlaysWebView({overlay:true});SB.setStyle({style:document.documentElement.getAttribute('data-sirdoc-theme')==='day'?'LIGHT':'DARK'})}catch(e){}};
+ set();new MutationObserver(set).observe(document.documentElement,{attributes:true,attributeFilter:['data-sirdoc-theme']});
 })();
 
 /* botón atrás del contenedor Android: devuelve '1' si la app lo manejó */

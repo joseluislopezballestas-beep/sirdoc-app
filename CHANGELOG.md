@@ -2,6 +2,17 @@
 
 Cada entrada indica si el cambio es **técnico** (no altera contenido clínico) o **clínico** (requiere aprobación de especialista).
 
+## 1.7.0 — 2026-11-17 · Diseño Clinical 2.0 (sin cambios de cálculo)
+Por instrucción de Md. Jose Luis Lopez Ballestas (autor, médico), 2026-11-17. Las dosis, reglas, validaciones y textos de recomendación no cambian.
+- Capa visual `css/sirdoc-clinical.css` y botón Noche / Alta luz (`js/sirdoc-theme.js`), aportados por el autor, con ajustes:
+  densidad compacta (botones ≥ 48 px; el plan de un shock con hemorragia mide ≈ 5.600 px a 375 px, frente a ≈ 6.500 px con la capa sin ajustar),
+  tema aplicado en `<head>` sin destellos, color de la barra del navegador y barra de estado nativa sincronizados con el tema.
+- La app abre siempre en modo noche; el modo claro solo por elección manual (se recuerda).
+- Numeración y estado de las reglas clínicas (R-xx, estado de fuente, fecha de revisión) solo en Info; retirados de Plan SIR e Infusiones. Las citas de estudios dentro de las recomendaciones se mantienen.
+- Portada nueva «vía aérea asegurada» (trazo de ECG que pasa a capnografía), una vez por versión instalada y se salta con un toque; respeta «reducir movimiento».
+- Marca de agua con el nombre del autor eliminada; el crédito «Created and designed» con el caduceo queda solo en Info.
+- Contraste WCAG AA comprobado en 162 textos visibles (noche y alta luz). Pruebas: 85 (`tests/v170.test.js`).
+
 ## 1.6.2 — 2026-11-17 · Correcciones del informe de pruebas por escenario
 Cambios propuestos en el «Informe de pruebas por escenario» (120 casos), aplicados por instrucción de Md. Jose Luis Lopez Ballestas (autor, médico) 2026-11-17. H-02 se deja como está por decisión del autor.
 - **[clínico, aprobado] H-01:** meta de PA con TCE por edad (BTF) también en raquimedular (antes PAS ≥ 110 fija).

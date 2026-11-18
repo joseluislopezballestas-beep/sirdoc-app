@@ -264,7 +264,7 @@ function infCard(id,title,perKg,unit,lo,hi,basis,extra){
  <div class="rate">${r(o.rate(perKg),'mL')} mL/h</div>
  <div class="calc">Inicio ${perKg} ${unit} × ${r(o.W.w)} kg (${o.W.l}) = ${doseH(perKg)}<br>Rango ${lo}–${hi} ${unit} = <b>${r(o.rate(lo),'mL')}–${r(o.rate(hi),'mL')} mL/h</b></div>
  <div class="prep"><b>Preparación (${H} h):</b> ${o.txt}<br>Dura ≈ ${r(o.dStart,'h')} h a la dosis de inicio · ≈ ${r(o.dMax,'h')} h a la dosis máxima.</div>
- ${capW}${extra?`<div class="why">${extra}</div>`:''}${ruleTag(RULE_INF[id])}</div>`;
+ ${capW}${extra?`<div class="why">${extra}</div>`:''}</div>`;
 }
 
 /* ================= plan ================= */
@@ -277,7 +277,7 @@ function prep(p){
  if(p.esc==='epoc'||p.esc==='ic')a('Preoxigenación con VNI (CPAP/BiPAP, FiO₂ 100 %) 3–5 min; oxigenación apneica con cánula nasal.',p.esc==='epoc'?'EPOC':'falla cardiaca');
  else a('Preoxigenación con FiO₂ 100 % 3–5 min (VNI si hay hipoxemia); oxigenación apneica con cánula nasal.','todo paciente');
  const hem=p.esc==='sangra'||(p.esc==='poli'&&p.hemo), traum=(p.esc==='poli'&&p.hemo)||(p.esc==='sangra'&&p.trauma);
- if(hem)a(traum?'<b>Hemoderivados y control del sangrado primero, antes de inducir:</b> proporción 1:1:1 o sangre total en lugar de cristaloides; control del sangrado (cirugía, angioembolización, torniquete, pelvis). Si la lesión tiene < 3 h: ácido tranexámico 1 g IV en 10 min + 1 g en 8 h (CRASH-2).'+ruleTag('R-15'):'<b>Hemoderivados y control de la fuente de sangrado primero, antes de inducir</b> (endoscópico, intervencionista o quirúrgico).'+ruleTag('R-15'),traum?'hemorragia traumática':'hemorragia no traumática');
+ if(hem)a(traum?'<b>Hemoderivados y control del sangrado primero, antes de inducir:</b> proporción 1:1:1 o sangre total en lugar de cristaloides; control del sangrado (cirugía, angioembolización, torniquete, pelvis). Si la lesión tiene < 3 h: ácido tranexámico 1 g IV en 10 min + 1 g en 8 h (CRASH-2).':'<b>Hemoderivados y control de la fuente de sangrado primero, antes de inducir</b> (endoscópico, intervencionista o quirúrgico).',traum?'hemorragia traumática':'hemorragia no traumática');
  if(p.state!=='estable'){
   const o=infPrep('nore',0.05,'mcg/kg/min',0.05,0.5,BASIS.inf.nore,M.H);
   const lead=hem?'<b>Coadyuvante, no sustituye a los hemoderivados:</b> norepinefrina solo ante hipotensión que amenaza la vida mientras se repone volumen.':'<b>Optimizar hemodinamia ANTES de inducir.</b>';

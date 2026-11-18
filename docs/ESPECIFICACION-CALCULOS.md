@@ -1,4 +1,4 @@
-# Especificación de cálculos — SirDoc (algoritmo v1.6.2)
+# Especificación de cálculos — SirDoc (algoritmo v1.7.0)
 
 Documento técnico. Describe **cómo** calcula la app; no afirma que las reglas clínicas estén validadas.
 Estado clínico de cada regla: ver `MATRIZ-CIENTIFICA.md`. Una prueba (`tests/v16.test.js`) comprueba que la versión

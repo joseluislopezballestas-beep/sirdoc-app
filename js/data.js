@@ -1,6 +1,6 @@
 'use strict';
 /* Versión del algoritmo clínico y estado de validación (se muestra en la app). */
-const ALG={version:'1.6.2',fecha:'2026-11-17',estado:'Experimental · sin validación clínica formal'};
+const ALG={version:'1.7.0',fecha:'2026-11-17',estado:'Experimental · sin validación clínica formal'};
 /* Matriz científica (docs/MATRIZ-CIENTIFICA.md). Estado de verificación y aprobación de cada regla.
    No se inventan fuentes: "pendiente" significa que aún no se contrastó con la fuente primaria. */
 const RULES={

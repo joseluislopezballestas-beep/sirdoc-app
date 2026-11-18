@@ -107,14 +107,15 @@ test('[clínico] sugammadex 16 mg/kg solo como reversión inmediata tras rocuron
   assert.doesNotMatch(t, /el sugammadex también lo revierte/);
 });
 
-test('[matriz] cada dosis muestra su regla, estado de fuente y aprobación', async () => {
+test('[matriz v1.7.0] reglas R-xx solo en Info: el plan y las infusiones no muestran numeración ni estado de fuente', async () => {
   const a = await app(); a.fill('poli', OK); a.calc();
-  const t = a.text('plan');
-  assert.match(t, /R-05 · Fuente identificada; texto completo no revisado · Revisión 14\/11\/2026/);   // etomidato
-  assert.match(t, /R-04 · Fuente pendiente de verificar/); assert.match(t, /R-09 ·/); assert.match(t, /R-10 ·/);
-  assert.match(t, /R-01 · Fuente verificada · Revisión 14\/11\/2026/);                       // sugammadex
-  assert.match(a.text('maint'), /R-12 ·/);
+  for (const id of ['plan', 'maint']) {
+    assert.doesNotMatch(a.text(id), /\bR-\d{2}\b/, id);
+    assert.doesNotMatch(a.text(id), /Fuente (verificada|identificada|pendiente)|Revisión \d{2}\/\d{2}\/\d{4}/, id);
+  }
   const rules = a.d.querySelectorAll('#rules li'); assert.equal(rules.length, 21);
+  const info = a.text('rules');
+  assert.match(info, /R-05/); assert.match(info, /R-01/); assert.match(info, /Fuente verificada/); assert.match(info, /Revisión 14\/11\/2026/);
 });
 
 test('[H-07] las alertas llevan etiqueta de texto (no solo color)', async () => {
@@ -182,7 +183,7 @@ test('[v1.3.5] sepsis: etomidato de elección, metas SSC 2026 y vasopresor en cu
   const a = await app(); a.fill('sepsis', { ...OK, edad: 70 }); a.calc();
   let t = a.text('plan');
   assert.match(t, /Sepsis \/ choque séptico/); assert.match(t, /PAM inicial 60–65 mmHg \(SSC 2026\)\.Condición: sepsis · edad ≥ 65 años/);
-  assert.match(t, /Etomidato✓ 1\.ª elección/); assert.match(t, /R-17 ·/); assert.match(t, /Dosis de inductor reducidas aunque la PA sea normal\.Condición: sepsis/);
+  assert.match(t, /Etomidato✓ 1\.ª elección/); assert.match(t, /Dosis de inductor reducidas aunque la PA sea normal\.Condición: sepsis/);
   a.fill('sepsis', { ...OK }); a.$('vaso').checked = true; a.$('vaso').dispatchEvent(new a.w.Event('change', { bubbles: true })); a.calc();
   t = a.text('plan'); assert.match(t, /Riesgo alto de colapso.*Condición: shock: vasopresor en curso/); assert.match(t, /Norepinefrina 0,05 mcg\/kg\/min/);
   assert.deepEqual(a.errors, []);
@@ -192,7 +193,7 @@ test('[v1.3.5] IAM: oxígeno según ACC/AHA 2025, fentanilo si PA alta y VD', as
   const a = await app(); a.fill('iam', { ...OK, pas: 160, pad: 95 }); a.calc();
   let t = a.text('plan');
   assert.match(t, /Infarto agudo de miocardio/); assert.match(t, /SpO₂ < 90 % \(ACC\/AHA 2025\)/);
-  assert.match(t, /Parches de desfibrilación/); assert.match(t, /consumo miocárdico de O₂/); assert.match(t, /R-18 ·/);
+  assert.match(t, /Parches de desfibrilación/); assert.match(t, /consumo miocárdico de O₂/); assert.match(a.text('rules'), /R-18/);
   a.$('vd').checked = true; a.$('vd').dispatchEvent(new a.w.Event('change', { bubbles: true })); a.calc();
   assert.match(a.text('plan'), /Compromiso de VD/);
   assert.deepEqual(a.errors, []);
@@ -202,12 +203,12 @@ test('[v1.3.6] sepsis: sedación sin midazolam por defecto, hidrocortisona y lí
   const a = await app(); a.fill('sepsis', { ...OK, pas: 85, pad: 50, fc: 120 }); a.calc();
   const t = a.text('plan');
   assert.match(t, /hidrocortisona 200 mg\/día/); assert.match(t, /30 mL\/kg en las primeras 3 h/); assert.match(t, /0,25–0,5 mcg\/kg\/min/);
-  assert.match(t, /R-17 · Fuente identificada; texto completo no revisado · Revisión 14\/11\/2026/);
+  assert.match(a.text('rules'), /R-17/);
   const m = a.text('maint'); assert.match(m, /Propofol · sedación/); assert.doesNotMatch(m, /Midazolam · sedación/);
   const b = await app(); b.fill('iam', { ...OK, pas: 135, pad: 85, fc: 105 }); b.calc();
   const u = b.text('plan');
   assert.match(u, /Fentanilo/); assert.match(u, /rango 1–3/); assert.match(u, /SpO₂ 92–96 %/); assert.match(u, /No usar betabloqueadores ni esmolol/);
-  assert.match(u, /No intubar de forma profiláctica/); assert.match(u, /R-18 · .*Revisión 14\/11\/2026/);
+  assert.match(u, /No intubar de forma profiláctica/); assert.match(a.text('rules'), /R-18/);
   assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []);
 });
 

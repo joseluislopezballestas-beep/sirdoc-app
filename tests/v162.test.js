@@ -114,7 +114,8 @@ test('[H-10, H-12, marca de agua] colores y posición', () => {
   const rc = css.match(/\.rescond\{[^}]+\}/)[0];
   assert.doesNotMatch(rc, /--bad/); assert.match(rc, /--warn/);
   assert.match(css.match(/#toast\{[^}]+\}/)[0], /top:/);
-  assert.ok(Number(css.match(/#wm\{[^}]*opacity:([\d.]+)/)[1]) <= 0.02);
+  assert.ok(!/#wm\{/.test(css), 'v1.7.0: marca de agua eliminada');
+  assert.ok(!fs.readFileSync(INDEX, 'utf8').includes('id="wm"'));
 });
 
 test('[H-11] fila superior: dosis sugerida visible y «Usar» la selecciona; la preparación crítica queda abierta', async () => {

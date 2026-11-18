@@ -78,7 +78,7 @@ test('[M03] rangos fuera de ficha rotulados y regla del vecuronio con fuente', a
   const dex = a.card('maint', 'Dexmedetomidina').textContent;
   assert.match(dex, /Rango 0,2–1,4 mcg\/kg\/h/); assert.match(dex, /Tramo > 0,7 mcg\/kg\/h: fuera de ficha FDA/);
   a.sel('mSed', 'prop'); a.sel('mBnm', 'vec');
-  assert.match(a.card('maint', 'Vecuronio').textContent, /Tramo > 1,2 mcg\/kg\/min: fuera de ficha.*R-13/);
+  assert.match(a.card('maint', 'Vecuronio').textContent, /Tramo > 1,2 mcg\/kg\/min: fuera de ficha \(0,8–1,2\); 1,2–1,7 según compendios de UCI \(PDR\)/);
   a.sel('mBnm', 'roc');
   assert.match(a.card('maint', 'Rocuronio').textContent, /Inicio 8 mcg\/kg\/min: por debajo de la ficha/);
   const R = a.w.eval('RULES'), RI = a.w.eval('RULE_INF');

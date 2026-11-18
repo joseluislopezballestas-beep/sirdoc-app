@@ -185,3 +185,8 @@ Fuente: «SirDoc 1.6.1 — Informe de pruebas por escenario» (114 casos; 120 de
 | H-12 | **Corregido** | Avisos en la parte superior; marca de agua más tenue (opacidad 0,018) |
 
 Pruebas: 82/82, incluida la matriz de 120 casos con aserciones de coherencia (`tests/v162.test.js`).
+
+## Actualización v1.7.0 (2026-11-17) — diseño Clinical 2.0
+Sin cambios en el motor de cálculo ni en las reglas. Capa visual del autor integrada con ajustes de densidad, tema noche por defecto, reglas R-xx solo en Info, portada por versión y sin marca de agua.
+Verificación: 85/85 pruebas; contraste WCAG AA en 162 textos visibles del plan (noche y alta luz, shock + hiperkalemia + hemorragia); 0 errores de consola; 320 y 375 px.
+Pendiente del archivo del autor: pruebas con guantes y luz real de ambulancia, lector de pantalla y zoom 200 %.
